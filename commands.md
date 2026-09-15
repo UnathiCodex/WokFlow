@@ -1,4 +1,5 @@
-# WokFlow
+# WokFlow 
+*13.09.2026*
 
 ### Setup git
 
@@ -11,6 +12,8 @@ git commit -m "Message"
 ### Setup npm
 
 ```bash
-npm install -D vite typescript
-npm run dev
+node -v
+npm install -D typescript @types/node@26
+npm install dinero.js@2.0.2
+npm start
 ```

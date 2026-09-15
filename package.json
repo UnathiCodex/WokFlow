@@ -1,0 +1,14 @@
+{
+  "name": "wokflow",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.1",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "dinero.js": "^2.0.2"
+  }
+}
