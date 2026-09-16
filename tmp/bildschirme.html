@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>WokFlow · Entwurf</title>
+
+        <link rel="stylesheet" href="bildschirme.css">
+    </head>
+    <body data-checkout-language="de">
+
+        <h1><span class="brand">WokFlow</span> · Entwurf</h1>
+        <p class="intro">Zum Ausprobieren: Getränke wählen, Mengen ändern, über die Tischnummer zum Tischplan zurückgehen. Alles bleibt in dieser Vorschau und wird beim Neuladen zurückgesetzt; es wird nichts gespeichert, gedruckt oder bezahlt. Rechnung und getrenntes Kassieren verwenden die Bestellung des geöffneten Tisches; der Chef-Abschluss bleibt ein separates Layoutbeispiel.</p>
+        <p class="hinweis"><a href="?vorschau=1#tables">Handyansicht öffnen</a> · <a href="?chef=1#closing">Chef-Ansicht öffnen</a> · Hyperreadable</p>
+        <div class="design-controls">
+            <fieldset class="font-picker">
+                <legend>Akzent</legend>
+                <label><input id="accent-red" type="radio" name="accent" checked>Roter Akzent</label>
+                <label><input id="accent-neutral" type="radio" name="accent">Neutral</label>
+            </fieldset>
+        </div>
+
+        <h2 id="tables">1. Tischplan · Innen und Garten</h2>
+        <p class="hinweis">Die Anordnung folgt deinen Skizzen. Alle Tische sind schlichte Rechtecke; die Belegung ist ein Beispiel.</p>
+        <div class="reihe" data-screen="tables">
+            <div class="phone table-preview">
+                <div class="top">
+                    <a class="k" href="#reservations">Reservierungen <span lang="zh-Hans">预订</span></a>
+                    <a class="k" href="#today">Heute <span lang="zh-Hans">今日</span></a>
+                </div>
+                <div class="gruppen" role="group" aria-label="Restaurantbereich">
+                    <button type="button" class="g on" data-map-area="indoor" aria-pressed="true">Innen</button>
+                    <button type="button" class="g" data-map-area="garden" aria-pressed="false">Garten</button>
+                </div>
+                <div data-map-panel="indoor" role="group" aria-label="Tische innen"></div>
+                <div data-map-panel="garden" role="group" aria-label="Tische im Garten" hidden></div>
+            </div>
+            <div class="pc table-desktop">
+                <div class="top">
+                    <strong>Tischplan</strong>
+                    <span class="k">Theke</span>
+                </div>
+                <div class="gruppen" role="group" aria-label="Restaurantbereich am PC">
+                    <button type="button" class="g on" data-map-area="indoor" aria-pressed="true">Innen</button>
+                    <button type="button" class="g" data-map-area="garden" aria-pressed="false">Garten</button>
+                </div>
+                <div data-map-panel="indoor" role="group" aria-label="Tische innen"></div>
+                <div data-map-panel="garden" role="group" aria-label="Tische im Garten" hidden></div>
+            </div>
+            <div class="frage">
+                <p>1–6 sind schlichte Tische, genauso groß wie 12–16. Tisch 20 bleibt kleiner. 21/22 und 23/24 stehen ganz links, Tisch 20 unten daneben. 19 über 18 steht senkrecht rechts, Tisch 17 auf Höhe von 19. Die Abstände bei 21/22 und 24/23 sind angeglichen.</p>
+                <p>18, 19, 23, 24 sind einzeln buchbar. Für eine gemeinsame Gästegruppe wird eine der beiden Nummern verwendet. Die Auswahl „Ganz“ entfällt ebenso wie die zusätzliche Nummer 25. 9, G15 und G16 sind vorläufig aus der Handschrift gelesen.</p>
+                <p>Nur zwei Bereiche: Innen und Garten. Über dem Garten steht der bisherige Raum; der Gang im Garten hat mehr Abstand.</p>
+                <p>Originalskizzen: <a href="references/table-plan-indoor-2026-09-14.jpeg">Innen</a> · <a href="references/table-plan-garden-2026-09-14.jpeg">Garten</a>. Referenzfotos: <a href="references/table-7-2026-09-14.png">Tisch 7</a> · <a href="references/tables-10-11-2026-09-14.png">10/11</a> · <a href="references/benches-2026-09-14.png">Bänke</a> · <a href="references/table-16-2026-09-14.png">16</a>.</p>
+                <p>Ein Tisch öffnet seine eigene Beispielbestellung. Die umrandete Tischnummer führt nach dem simulierten Abschicken hierher zurück.</p>
+                <p><b>Schieben:</b> In „Bestellt“ auf „Schieben“ tippen, dann hier den Zieltisch antippen und die Frage bestätigen. Ist der Zieltisch belegt, lautet die Frage „zusammenführen?“. Kein Rückgängig nötig; „Abbrechen“ im Fenster lässt die Zielwahl offen.</p>
+                <p><b>Reservierungen:</b> Der Knopf oben links ist vorbereitet, damit Online-Reservierungen später eingetragen und Tische als reserviert markiert werden können; der Bildschirm dazu fehlt noch. Die Überschrift „Tische“ entfällt, weil der Plan sich selbst erklärt.</p>
+                <p><b>Mitnehmen:</b> Die Taste in der Mitte ist der Platz für Gäste an der Theke, die nur Essen mitnehmen. Drinnen heißt sie „M“. Sie öffnet die Bestellung ohne Buffet, Getränke und Speisen teilen sich die Reiter. Beim Schieben kann sie Quelle sein, aber kein Ziel.</p>
+            </div>
+        </div>
+        <p class="demo-status" id="demo-status" role="status" aria-live="polite"></p>
+
+        <h2 id="order">2. Bonieren (Handy)</h2>
+        <p class="hinweis">Bestellen und Bestellt haben eigene Reiter. Der Pfeil führt zur Gruppenliste; die letzte Auswahl öffnet ein Pop-up. Minus und Rückgängig bleiben in der Bestellliste.</p>
+        <div class="reihe" data-screen="order">
+            <div class="phone" id="order-phone">
+                <div class="top order-header">
+                    <button
+                        type="button" class="order-table-number"
+                        data-active-table
+                        data-compact-table
+                        data-return-tables
+                        aria-label="Tisch 14 · Zurück zum Tischplan · 返回桌位">14</button>
+                    <div class="order-tabs" role="tablist" aria-label="Bestellung">
+                        <button
+                            type="button" class="g on" id="catalog-tab"
+                            data-order-view="catalog" role="tab"
+                            aria-controls="catalog-view"
+                            aria-selected="true">Bestellen <span lang="zh-Hans">点单</span></button>
+                        <button
+                            type="button" class="g" id="ordered-tab"
+                            data-order-view="ordered" role="tab"
+                            aria-controls="ordered-view"
+                            aria-selected="false">Bestellt <span lang="zh-Hans">已点</span></button>
+                    </div>
+                </div>
+                <div id="catalog-view" role="tabpanel" aria-labelledby="catalog-tab">
+                    <div class="gruppen" role="tablist" aria-label="Bestellbereich">
+                        <button class="g on" id="drinks-tab" role="tab"
+                            aria-selected="true"
+                            aria-controls="drinks-panel"
+                            data-section="drinks">Getränke <span lang="zh-Hans">饮料</span></button>
+                        <button class="g" id="buffet-tab" role="tab"
+                            aria-selected="false"
+                            aria-controls="buffet-panel"
+                            data-section="buffet">Buffet <span lang="zh-Hans">自助餐</span></button>
+                        <button class="g" id="food-tab" role="tab"
+                            aria-selected="false"
+                            aria-controls="food-panel"
+                            data-section="food">Speisen <span lang="zh-Hans">菜品</span></button>
+                    </div>
+                    <div class="order-content" id="catalog-scroll">
+                        <section id="drinks-panel" class="order-panel" role="tabpanel" aria-labelledby="drinks-tab">
+                            <div class="menu-heading">
+                                <button class="category group-back"
+                                    type="button"
+                                    data-open-groups="drinks"
+                                    aria-label="Zurück zu Getränkegruppen"
+                                    aria-controls="drinks-groups">‹</button>
+                                <h3 id="drinks-group-name">Limonaden <small lang="zh-Hans">汽水</small></h3>
+                            </div>
+                            <div class="tasten group-grid" id="drinks-groups" aria-label="Getränkegruppen" hidden></div>
+                            <div class="tasten" id="drinks-items"></div>
+                        </section>
+                        <section id="buffet-panel" class="order-panel" role="tabpanel" aria-labelledby="buffet-tab" hidden>
+                            <details class="period-choice" id="period-choice">
+                                <summary class="period-banner" aria-label="Buffetart wechseln · 切换自助餐">
+                                    <span id="period-name">Sonntagsbuffet <span lang="zh-Hans">周日自助餐</span></span>
+                                    <time id="period-time">11:30–21:30</time>
+                                </summary>
+                                <div class="period-options" role="group" aria-label="Buffetart">
+                                    <button type="button" data-period="lunch"><span>Mittag <small lang="zh-Hans">午餐</small></span><time>11:30–14:30</time></button>
+                                    <button type="button" data-period="dinner"><span>Abend <small lang="zh-Hans">晚餐</small></span><time>17:00–21:30</time></button>
+                                    <button type="button" data-period="sunday"><span>Sonntag <small lang="zh-Hans">周日</small></span><time>11:30–21:30</time></button>
+                                    <button type="button" data-period="holiday"><span>Feiertag <small lang="zh-Hans">节假日</small></span><time>11:30–21:30</time></button>
+                                </div>
+                            </details>
+                            <div class="buffet-counters" id="buffet-counters" data-buffet="sunday"></div>
+                        </section>
+                        <section id="food-panel" class="order-panel" role="tabpanel" aria-labelledby="food-tab" hidden>
+                            <div class="menu-heading">
+                                <button class="category group-back"
+                                    type="button"
+                                    data-open-groups="food"
+                                    aria-label="Zurück zu Speisengruppen"
+                                    aria-controls="food-groups">‹</button>
+                                <h3 id="food-group-name">Vorspeisen <small lang="zh-Hans">前菜</small></h3>
+                            </div>
+                            <div class="tasten group-grid" id="food-groups" aria-label="Speisengruppen" hidden></div>
+                            <div class="tasten" id="food-items"></div>
+                        </section>
+                    </div>
+                </div>
+                <div class="order-content bon" id="ordered-view" data-language="de" role="tabpanel" aria-labelledby="ordered-tab" hidden>
+                    <div id="order-lines"></div>
+                    <div id="ordered-buffets"></div>
+                </div>
+                <div class="undo-bar" id="undo-bar" hidden>
+                    <div id="undo-message" role="status" aria-live="polite"></div>
+                    <button class="category" type="button" id="undo-removal" data-undo-removal><span lang="de">Rückgängig</span> <small lang="zh-Hans">撤销</small></button>
+                </div>
+                <div class="aktionen" id="invoice-action" hidden>
+                    <button type="button" class="btn s move-table" id="move-table" data-move-start><span lang="de">Schieben</span><span lang="zh-Hans">换桌</span></button>
+                    <a class="btn p" href="#billing" data-whole-bill><span lang="de">Rechnung</span><span lang="zh-Hans">结账</span></a>
+                    <div class="order-language" role="group" aria-label="Sprache der Bestellliste · 已点语言">
+                        <button type="button" data-order-language="zh" aria-label="Sprache wechseln: 中文">DE</button>
+                    </div>
+                </div>
+            </div>
+            <div class="frage">
+                <p><b>Der kurze Weg:</b> Getränk → Variante → Bestellung. Der Entwurf schickt neue Positionen beim Rückweg zu „Tische“ ab. Ein ausdrücklich beschrifteter „Bonieren“-Knopf ist wieder zur Diskussion gestellt.</p>
+                <p><b>Korrigieren:</b> Neue Mengen direkt am Artikel verringern; bei Artikeln mit Auswahl erst im Pop-up an der konkreten Größe oder Sorte. Keine Nullanzeige und kein Rückgängig in „Bestellen“. In „Bestellt“ stehen Menge und Minus neben dem vollständigen Namen; „Rückgängig“ stellt entfernte Artikel oder Buffetpersonen wieder her. Plus und Minus gibt es beim Erfassen des Buffets.</p>
+                <details>
+                    <summary>Gruppierung nach eurer Speisekarte</summary>
+                    <p>Die Kaltgetränke sind direkt in Limonaden und Fruchtsäfte aufgeteilt. Flaschen stehen bei ihrer Sorte: Cola, Cola Zero, Fanta und Sprite haben „Flasche“ neben den Größen; Cola Light wird nur als Flasche angeboten. Apfel-, Orangen-, Aloe-Vera- und Lycheesaft stehen bei den Säften, Red Bull bei den Limonaden. Danach folgen Wasser, Bier, offene Weine, warme Getränke und Spirituosen.</p>
+                    <p>Speisengruppen: Vorspeisen, Salate, Sushi, Maki, Meeresfrüchte, Gemüse, Huhn, Rind, Schwein, Ente, Reis &amp; Nudeln, Nachspeisen. Die Artikel stammen aus der Speisekarte 2026; die Gruppierung ist für die Bedienung angepasst. Sesamhuhn, Thai-Curry stehen bei Huhn, Fleischtaschen bei Schwein, Acht Schätze bei Rind. Gebratener Reis, gebratene Nudeln, Extra Reis, Knoblauchsoße stehen bei Reis &amp; Nudeln, die Banane bei Nachspeisen.</p>
+                </details>
+                <details>
+                    <summary>Zeit und Buffet-Tarif</summary>
+                    <p>Diese Ansicht zeigt Sonntagmittag als festes Beispiel. Später liefert der zentrale Kassen-PC Datum und Uhrzeit in Europe/Vienna, mit Zeitabgleich durch das Betriebssystem. Wochentag und lokal hinterlegte offizielle Feiertage bestimmen den vorgeschlagenen Tarif. Kein Internetabruf bei jeder Bestellung.</p>
+                    <p>Feiertags-Dienstag ist geöffnet; sonntags und feiertags gelten auch mittags die Abendpreise für Erwachsene und Kinder. Unter 3 Jahren gratis. Josefstag und Tag der Volksabstimmung sind als zusätzliche Tarif-Feiertage noch offen.</p>
+                    <p>Vorschlag wegen der späten Buffet-Erfassung: den Tarif beim ersten Bestellen am Tisch vormerken. Beim späteren Kassieren nicht allein nach der dann aktuellen Uhrzeit wechseln. Andere Tarife bleiben unten ausdrücklich auswählbar und haben eigene Zähler.</p>
+                </details>
+                <p><b>TOUCHIT geprüft:</b> Im alten Handy-Code ruft „Zurück“ den Tischplan-Abschluss mit den Bonfunktionen auf. WokFlow verbindet diesen vom Nutzer gewünschten Rückweg mit einem eigenen Reiter für die Bestellliste; Code und alte Tastenanordnung werden nicht übernommen.</p>
+            </div>
+        </div>
+
+        <h2 id="split-choice">3. Getrennt kassieren (Handy)</h2>
+        <p class="hinweis">Nur beim Aufteilen nötig: auswählen, welche Artikel und Mengen eine Person bezahlt. Danach bleibt der Rest auf dem Tisch. Die Auswahl enthält genau die noch unbezahlten Artikel des geöffneten Tisches.</p>
+        <div class="reihe" data-screen="split-choice">
+            <div class="phone payment-scope" id="split-phone">
+                <div class="top">
+                    <strong><span data-active-table data-payment-table><span lang="de">Tisch 14</span><span lang="zh-Hans">14号桌</span></span></strong>
+                    <a class="k" href="#billing" data-whole-bill><span lang="de">Zurück</span><span lang="zh-Hans">返回</span></a>
+                </div>
+                <div class="buffet-counters" id="split-lines"></div>
+                <div class="split-footer">
+                    <div class="split-total">
+                        <span><span lang="de">Summe</span><span lang="zh-Hans">合计</span></span>
+                        <strong id="split-total">0.00&nbsp;€</strong>
+                    </div>
+                    <div class="aktionen">
+                        <button
+                            type="button" class="btn p" id="checkout-selection" disabled><span lang="de">Auswahl kassieren</span><span lang="zh-Hans">结账</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="frage">
+                <p><b>Einfach nach Artikeln:</b> Für eine Person beispielsweise einmal Buffet und einmal Cola auswählen, „Auswahl kassieren“ tippen und diese Teilrechnung bezahlen. Danach sind nur die noch offenen Mengen auswählbar; sie bleiben am Tisch.</p>
+                <p>Der häufige Fall bleibt kurz: „Rechnung“ öffnet sofort die ganze Rechnung. „Getrennt kassieren“ liegt dort als eigene Auswahl. Kein Aufteilen nach frei eingetipptem Geldbetrag.</p>
+                <p>Nach jeder Teilzahlung soll automatisch eine Rechnung gedruckt werden. Gibt es einen Rest, geht es wieder zur Auswahl; nach der letzten Zahlung zum Tischplan. Der Entwurf zieht nur die bezahlten Mengen vom geöffneten Tisch ab. Die übrigen Artikel bleiben erhalten; es wird nichts wirklich gedruckt oder bezahlt.</p>
+            </div>
+        </div>
+
+        <h2 id="billing">4. Rechnung und Bezahlen (Handy)</h2>
+        <p class="hinweis">„Bar“ öffnet den Barabschluss. Zuerst den Zahlbetrag übernehmen oder nach Gastwunsch ändern, danach „Gegeben“ eintragen: Das Rückgeld wird sofort berechnet. „Abschließen“ geht auch ohne Rückgeldberechnung. Auf der Rechnung bleibt der ursprüngliche Betrag, Bar-Trinkgeld wird nicht gespeichert. „Karte“ zeigt den geplanten Nexi-Ablauf.</p>
+        <div class="reihe" data-screen="billing">
+            <div class="phone wrap payment-scope" id="billing-phone">
+                <div class="top">
+                    <strong><span data-active-table data-payment-table><span lang="de">Tisch 14</span><span lang="zh-Hans">14号桌</span></span></strong>
+                    <div class="billing-header-actions">
+                        <a class="k" id="payment-back" href="#order"><span lang="de">Zurück</span><span lang="zh-Hans">返回</span></a>
+                    </div>
+                </div>
+                <div class="betrag">
+                    <div class="amount-caption" data-voucher-caption hidden>
+                        <span lang="de">Restbetrag</span>
+                        <span lang="zh-Hans">待付金额</span>
+                    </div>
+                    <div class="b" data-invoice-total>66.70&nbsp;€</div>
+                </div>
+                <div class="invoice-lines" id="invoice-lines"></div>
+                <div class="billing-footer">
+                    <div class="voucher-summary" data-voucher-summary hidden>
+                        <div class="voucher-line">
+                            <span><span lang="de">Gutschein</span><span lang="zh-Hans">礼券</span></span>
+                            <strong data-voucher-deduction></strong>
+                        </div>
+                        <div class="voucher-line voucher-balance" data-voucher-balance hidden>
+                            <span><span lang="de">Gutscheinrest</span><span lang="zh-Hans">礼券余额</span></span>
+                            <strong data-voucher-remaining></strong>
+                        </div>
+                    </div>
+                    <div class="billing-secondary">
+                        <button
+                            type="button" class="btn s" id="voucher-open"
+                            aria-haspopup="dialog"><span lang="de">Gutschein</span><span lang="zh-Hans">礼券</span></button>
+                        <a class="btn s" id="split-entry" href="#split-choice"><span lang="de">Getrennt</span><span lang="zh-Hans">分开</span></a>
+                    </div>
+                    <div class="billing-primary">
+                        <button
+                            type="button" class="btn p" id="cash-open"
+                            aria-haspopup="dialog"><span lang="de">Bar</span><span lang="zh-Hans">现金</span></button>
+                        <button class="btn s" type="button" id="card-start"><span lang="de">Karte</span><span lang="zh-Hans">刷卡</span></button>
+                        <button class="btn p"
+                            type="button" id="voucher-finish" hidden><span lang="de">Abschließen</span><span lang="zh-Hans">完成</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="phone wrap payment-scope" id="card-payment">
+                <div class="top">
+                    <strong><span data-active-table data-payment-table><span lang="de">Tisch 14</span><span lang="zh-Hans">14号桌</span></span></strong>
+                    <a class="k" href="#billing"><span lang="de">Zurück</span><span lang="zh-Hans">返回</span></a>
+                </div>
+                <div class="betrag">
+                    <div class="amount-caption" data-voucher-caption hidden>
+                        <span lang="de">Restbetrag</span>
+                        <span lang="zh-Hans">待付金额</span>
+                    </div>
+                    <div class="b" data-invoice-total>66.70&nbsp;€</div>
+                </div>
+                <div class="voucher-summary" data-voucher-summary hidden>
+                    <div class="voucher-line">
+                        <span><span lang="de">Gutschein</span><span lang="zh-Hans">礼券</span></span>
+                        <strong data-voucher-deduction></strong>
+                    </div>
+                </div>
+                <div class="payment-result">
+                    <h3><span class="check" aria-hidden="true">✓</span><span lang="de">Karte bezahlt</span><span lang="zh-Hans">刷卡已付</span></h3>
+                    <div class="zeile">
+                        <span><span lang="de">Mit Karte bezahlt</span><span lang="zh-Hans">刷卡金额</span></span>
+                        <span id="card-preview-total">70.00&nbsp;€</span>
+                    </div>
+                    <div class="zeile">
+                        <span><span lang="de">Davon Trinkgeld</span><span lang="zh-Hans">其中小费</span></span>
+                        <span id="card-preview-tip">3.30&nbsp;€</span>
+                    </div>
+                </div>
+                <div class="aktionen">
+                    <button type="button" class="btn p" data-finish-bill="card"><span lang="de">Fertig</span><span lang="zh-Hans">完成</span></button>
+                </div>
+            </div>
+            <div class="frage">
+                <p><b>Gewünschter Ablauf:</b> WokFlow schickt 66.70&nbsp;€ an das Nexi-Terminal oder die Nexi-App auf dem Handy. Trinkgeld wird dort gewählt. Die bestätigte Zahlung kommt zurück; WokFlow übernimmt Betrag und Trinkgeld automatisch. Der Kellner tippt diese Werte nicht ab.</p>
+                <p>Die echte Anbindung ist noch offen: Nexi muss bestätigen, welche Schnittstelle für euer Terminal beziehungsweise die Handy-App verfügbar ist und welche Zahlungs- und Trinkgelddaten sie zurückgibt.</p>
+                <details>
+                    <summary>Wenn eine Zahlung noch nicht geklärt ist</summary>
+                    <p>Während die Zahlung läuft: „Warte auf Nexi“. Fehlt die Rückmeldung: „Zahlung prüfen“. Bis das Ergebnis geklärt ist, den Tisch nicht als bezahlt schließen und die Zahlung nicht automatisch als Bar behandeln oder erneut auslösen.</p>
+                </details>
+                <p>„Gutschein“ öffnet ein Betragsmenü: Betrag eingeben, „Anrechnen“, Rest über Bar/Karte bezahlen. Bei vollständiger Deckung direkt „Abschließen“. Ein Gutscheinrest bleibt Guthaben, kein Bargeld. Die Vorschau rechnet nur mit dem eingegebenen Wert; Gutscheinnummern, Anbieter, Prüfung, dauerhaftes Restguthaben gehören zur späteren Anbindung. Das Kartenbeispiel zeigt ein beispielhaftes Trinkgeld von 3.30&nbsp;€; keine echte Nexi-Verbindung.</p>
+            </div>
+        </div>
+
+        <h2 id="today">5. Heute (Handy)</h2>
+        <p class="hinweis">Neue Abschlüsse aus der Vorschau erscheinen oben. Die Zahlart ist am Handy nur eine Anzeige; Korrekturberechtigung und Chef-Ablauf sind noch offen.</p>
+        <div class="reihe" data-screen="today">
+            <div class="phone wrap">
+                <div class="top">
+                    <span>Heute <small lang="zh-Hans">今日</small></span>
+                    <a class="k" href="#tables">Tische <span lang="zh-Hans">桌位</span></a>
+                </div>
+                <div class="liste" id="today-list"></div>
+            </div>
+            <div class="frage">
+                <p>Eine Zahlart lässt sich im Handyentwurf nicht versehentlich umschalten. Ob spätere Korrekturen ausschließlich der Chef ausführen darf, bleibt offen; jede Änderung muss nachvollziehbar sein.</p>
+                <p>Der Tagesabschluss gehört ausschließlich zur Chef-Ansicht. Die Vorschau besitzt noch keine echte Anmeldung oder Rechteprüfung im Backend.</p>
+            </div>
+        </div>
+
+        <h2 id="closing">6. Tagesabschluss (Chef-PC)</h2>
+        <p class="hinweis">Ein Knopf, eine Seite. Beim Abschließen werden die Nexi-Daten nochmals aktualisiert und Kartenzahlungen den Rechnungen zugeordnet. Der übrige Betrag bleibt Bar, Gutscheine separat. Danach: vollständiger Abschlussbon, PDF und Daten für den automatischen Monatsversand. Hier ist der gewünschte Ablauf mit Beispieldaten zu sehen.</p>
+        <div class="reihe" data-screen="closing">
+            <div class="pc wrap">
+                <div class="top">
+                    <span>Tagesabschluss · Sonntag, 13.09.2026</span>
+                    <a class="k" href="#tables">Tische <span lang="zh-Hans">桌位</span></a>
+                </div>
+                <div class="pcin">
+                    <div>
+                        <div class="kpi">
+                            <div>
+                                <span>Umsatz</span>
+                                <b>2412.80&nbsp;€</b>
+                            </div>
+                            <div>
+                                <span>Kartenumsatz</span>
+                                <b>1234.70&nbsp;€</b>
+                            </div>
+                            <div>
+                                <span>Bar</span>
+                                <b>1178.10&nbsp;€</b>
+                            </div>
+                        </div>
+                        <div class="block">
+                            <div class="reconciliation">
+                                <h4>Nexi</h4>
+                                <span class="state"><span class="check" aria-hidden="true">✓</span>Stimmt überein</span>
+                            </div>
+                            <p>Wird beim Abschließen nochmals aktualisiert.</p>
+                            <details>
+                                <summary>Abgleich ansehen</summary>
+                                <div class="zeile">
+                                    <span>Kartenumsatz</span>
+                                    <span>1234.70&nbsp;€</span>
+                                </div>
+                                <div class="zeile">
+                                    <span>+ Karten-Trinkgeld</span>
+                                    <span>31.50&nbsp;€</span>
+                                </div>
+                                <div class="zeile">
+                                    <span>Erwarteter Zahlbetrag</span>
+                                    <span>1266.20&nbsp;€</span>
+                                </div>
+                                <div class="zeile">
+                                    <span>Von Nexi gemeldet</span>
+                                    <span>1266.20&nbsp;€</span>
+                                </div>
+                                <div class="zeile">
+                                    <span>Differenz</span>
+                                    <span>0.00&nbsp;€</span>
+                                </div>
+                            </details>
+                        </div>
+                        <div class="block">
+                            <h4>Barausgaben heute</h4>
+                            <div class="zeile">
+                                <span>Metro, Getränke</span>
+                                <span>86.40&nbsp;€</span>
+                            </div>
+                            <div class="zeile">
+                                <span>Post</span>
+                                <span>4.20&nbsp;€</span>
+                            </div>
+                            <div class="zeile">
+                                <span>+ Ausgabe eintragen</span>
+                                <span></span>
+                            </div>
+                            <div class="zeile">
+                                <span>Karten-Trinkgeld ausgezahlt</span>
+                                <span>31.50&nbsp;€</span>
+                            </div>
+                            <div class="zeile gross">
+                                <span>Zur Bank</span>
+                                <span>1056.00&nbsp;€</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="block first">
+                            <h4>Warengruppen</h4>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Buffet</td>
+                                        <td>10 %</td>
+                                        <td>1846.00&nbsp;€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Speisekarte</td>
+                                        <td>10 %</td>
+                                        <td>107.50&nbsp;€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kaltgetränke</td>
+                                        <td>20 %</td>
+                                        <td>217.60&nbsp;€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wasser</td>
+                                        <td>20 %</td>
+                                        <td>59.70&nbsp;€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bier</td>
+                                        <td>20 %</td>
+                                        <td>53.30&nbsp;€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Warme Getränke</td>
+                                        <td>20 %</td>
+                                        <td>108.70&nbsp;€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gutschein verkauft</td>
+                                        <td>0 %</td>
+                                        <td>20.00&nbsp;€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <b>Gesamt</b>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <b>2412.80&nbsp;€</b>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="block">
+                            <h4>Prüfung</h4>
+                            <p><span class="check" aria-hidden="true">✓</span>Alle Tische abgerechnet</p>
+                            <div class="zeile">
+                                <span>Stornos heute</span>
+                                <span>2 (7.40&nbsp;€)</span>
+                            </div>
+                            <div class="zeile">
+                                <span>Letzte Sicherung</span>
+                                <span>heute 21:30 ✓</span>
+                            </div>
+                        </div>
+                        <div class="pcbtn">
+                            <div class="btn p">Tag abschließen</div>
+                        </div>
+                        <p class="closing-output">Bon mit Warengruppen drucken · PDF ablegen<br>Monatsauswertung automatisch an den Steuerberater</p>
+                    </div>
+                </div>
+            </div>
+            <div class="frage">
+                <p><b>Abschluss mit aktuellem Stand:</b> Nexi-Daten nochmals einlesen, bestätigte Kartenzahlungen den Rechnungen zuordnen, dann die Barsumme aus dem Rest bestimmen. Gutscheine bleiben separat. Die direkte Verbindung soll diese Zuordnung später schon beim Bezahlen erledigen; der Abschluss prüft sie nochmals. Keine normale Eingabe zum Abtippen von Nexi-Beträgen.</p>
+                <p>Technisch zu klären: Liefert Nexi abrufbare Transaktionsdaten samt eindeutiger Zuordnung zu WokFlow-Rechnungen? Eine Tagessumme oder gleiche Beträge allein reichen dafür nicht. Den gleichen Zeitraum und alle verwendeten Geräte berücksichtigen, Trinkgeld getrennt vom Umsatz führen. Wiederholtes Einlesen darf dieselbe Zahlung nicht doppelt buchen.</p>
+                <p>Bei unvollständigen Nexi-Daten oder ungeklärter Zuordnung: „Zahlungen prüfen“. Erst nach vollständigem Abgleich dürfen die verbleibenden Beträge als Bar gelten. Ohne erfolgreiche Rückmeldung kein „Stimmt überein“.</p>
+                <p>Offene Tische und ungeklärte Zahlungen müssen vor dem Abschluss sichtbar sein. Der Beispieltag hier ist vollständig abgerechnet. Drucken, PDF-Ablage, Sicherung und Monatsversand sind Backend-Arbeit; Verschlüsselung und Versanddetails bleiben offen.</p>
+            </div>
+        </div>
+
+        <dialog class="variant-dialog" id="variant-dialog" aria-labelledby="variant-title">
+            <div class="dialog-heading">
+                <h3 id="variant-title">Cola <span lang="zh-Hans">可乐</span></h3>
+                <button class="category dialog-close" type="button" data-close-variant aria-label="Auswahl schließen · 关闭">×</button>
+            </div>
+            <div class="cola-flavors" id="cola-flavors" role="group" aria-label="Cola-Sorte" hidden></div>
+            <div id="variant-options"></div>
+            <button class="extra-option" id="lemon-option"
+                type="button"
+                data-add-lemon disabled
+                aria-label="Zitrone zum zuletzt gebuchten Glas hinzufügen · 为刚点的一杯加柠檬">+ Zitrone <span lang="zh-Hans">柠檬</span></button>
+            <span class="sr-only" id="lemon-status" role="status" aria-live="polite"></span>
+            <div class="undo-bar" id="variant-undo" hidden>
+                <div id="variant-undo-message" role="status" aria-live="polite"></div>
+                <button class="category" type="button" data-undo-removal>Rückgängig <small lang="zh-Hans">撤销</small></button>
+            </div>
+        </dialog>
+
+        <dialog class="variant-dialog cash-dialog payment-scope" id="cash-dialog" aria-labelledby="cash-title">
+            <div class="dialog-heading">
+                <div class="cash-heading-content">
+                    <h3 id="cash-title"><span lang="de">Rückgeld</span><span lang="zh-Hans">找零</span></h3>
+                    <strong class="cash-bill" id="cash-bill-total" aria-label="Rechnungsbetrag · 账单金额"></strong>
+                </div>
+                <button class="dialog-close" type="button" id="cash-close" aria-label="Rechner schließen · 关闭">×</button>
+            </div>
+            <label class="cash-field"><span><span lang="de">Zahlbetrag</span><span lang="zh-Hans">支付金额</span></span><span class="cash-value"><input id="cash-target"
+                type="text"
+                inputmode="none"
+                maxlength="8"
+                autocomplete="off"
+                aria-label="Gewünschter Zahlbetrag · 支付金额"
+                aria-describedby="cash-error" autofocus><span>€</span></span></label>
+            <button class="cash-next"
+                type="button" id="cash-accept"
+                aria-controls="cash-given-field"
+                aria-expanded="false"><span lang="de">Übernehmen</span><span lang="zh-Hans">确认</span></button>
+            <label class="cash-field" id="cash-given-field" hidden><span><span lang="de">Gegeben</span><span lang="zh-Hans">实收</span></span><span class="cash-value"><input id="cash-given"
+                type="text"
+                inputmode="none"
+                maxlength="8"
+                autocomplete="off"
+                placeholder="0.00"
+                aria-label="Gegeben · 实收金额"
+                aria-describedby="cash-error"><span>€</span></span></label>
+            <div class="cash-result" id="cash-result" role="status" aria-live="polite" aria-atomic="true" hidden>
+                <span id="cash-result-label"><span lang="de">Rückgeld</span><span lang="zh-Hans">找零</span></span>
+                <output id="cash-change" for="cash-given cash-target">—</output>
+            </div>
+            <p class="cash-error" id="cash-error" role="alert" hidden></p>
+            <div class="cash-keypad" role="group" aria-label="Zahlentasten · 数字键盘"></div>
+            <div class="aktionen cash-actions">
+                <button type="button" class="btn p" id="cash-finish" disabled><span lang="de">Abschließen</span><span lang="zh-Hans">完成</span></button>
+            </div>
+        </dialog>
+
+        <dialog class="variant-dialog cash-dialog voucher-dialog payment-scope" id="voucher-dialog" aria-labelledby="voucher-title">
+            <div class="dialog-heading">
+                <div class="cash-heading-content">
+                    <h3 id="voucher-title"><span lang="de">Gutschein</span><span lang="zh-Hans">礼券</span></h3>
+                    <strong class="cash-bill" id="voucher-bill-total" aria-label="Rechnungsbetrag · 账单金额"></strong>
+                </div>
+                <button class="dialog-close" type="button" id="voucher-close" aria-label="Schließen · 关闭">×</button>
+            </div>
+            <label class="cash-field"><span><span lang="de">Betrag</span><span lang="zh-Hans">金额</span></span><span class="cash-value"><input id="voucher-amount"
+                type="text"
+                inputmode="none"
+                maxlength="8"
+                autocomplete="off"
+                placeholder="0.00"
+                aria-label="Gutscheinbetrag · 礼券金额"
+                aria-describedby="voucher-error" autofocus><span>€</span></span></label>
+            <div class="cash-result" role="status" aria-live="polite" aria-atomic="true">
+                <span><span lang="de">Noch zu zahlen</span><span lang="zh-Hans">还需支付</span></span>
+                <output id="voucher-due" for="voucher-amount">—</output>
+            </div>
+            <div class="voucher-line voucher-balance" id="voucher-rest" hidden>
+                <span><span lang="de">Gutscheinrest</span><span lang="zh-Hans">礼券余额</span></span>
+                <strong id="voucher-rest-amount"></strong>
+            </div>
+            <p class="cash-error" id="voucher-error" role="alert" hidden><span lang="de">Betrag prüfen</span><span lang="zh-Hans">检查金额</span></p>
+            <div class="cash-keypad" role="group" aria-label="Zahlentasten · 数字键盘"></div>
+            <div class="aktionen cash-actions">
+                <button type="button" class="btn p" id="voucher-apply" disabled><span lang="de">Anrechnen</span><span lang="zh-Hans">抵扣</span></button>
+            </div>
+            <button class="voucher-remove" type="button" id="voucher-remove" hidden><span lang="de">Entfernen</span><span lang="zh-Hans">移除</span></button>
+        </dialog>
+
+        <dialog class="variant-dialog move-dialog" id="move-dialog" aria-labelledby="move-question">
+            <p class="move-question" id="move-question"></p>
+            <div class="aktionen">
+                <button type="button" class="btn s" data-move-decline>Abbrechen<small lang="zh-Hans">取消</small></button>
+                <button type="button" class="btn p" id="move-confirm" data-move-confirm></button>
+            </div>
+        </dialog>
+
+        <template id="move-bars">
+            <div class="move-bar" data-move-bar hidden>
+                <div data-move-message role="status" aria-live="polite"></div>
+                <button class="category" type="button" data-move-cancel>Abbrechen <small lang="zh-Hans">取消</small></button>
+            </div>
+        </template>
+
+        <template id="indoor-map">
+            <div class="tische main-tables">
+                <span class="map-divider" style="grid-area:3 / 1 / 4 / 4" aria-hidden="true"></span>
+                <span class="map-divider" style="grid-area:3 / 5 / 4 / 7" aria-hidden="true"></span>
+                <span class="map-divider" style="grid-area:4 / 1 / 5 / 4" aria-hidden="true"></span>
+                <span class="map-divider" style="grid-area:4 / 5 / 5 / 7" aria-hidden="true"></span>
+                <div class="front-tables">
+                    <button type="button" class="t b large" data-table="1" style="grid-area:1 / 1" aria-label="Tisch 1, belegt, öffnen">1</button>
+                    <button type="button" class="t large" data-table="2" style="grid-area:1 / 2" aria-label="Tisch 2, frei, öffnen">2</button>
+                    <button type="button" class="t large" data-table="3" style="grid-area:1 / 3" aria-label="Tisch 3, frei, öffnen">3</button>
+                    <button type="button" class="t b large" data-table="4" style="grid-area:1 / 4" aria-label="Tisch 4, belegt, öffnen">4</button>
+                    <button type="button" class="t large" data-table="5" style="grid-area:1 / 5" aria-label="Tisch 5, frei, öffnen">5</button>
+                    <button type="button" class="t b" data-table="6" style="grid-area:1 / 6" aria-label="Tisch 6, belegt, öffnen">6</button>
+                    <button type="button" class="t" data-table="11" style="grid-area:2 / 1" aria-label="Tisch 11, frei, öffnen">11</button>
+                    <button type="button" class="t" data-table="10" style="grid-area:2 / 2" aria-label="Tisch 10, frei, öffnen">10</button>
+                    <button type="button" class="t" data-table="9" style="grid-area:2 / 3" aria-label="Tisch 9, frei, öffnen">9</button>
+                    <button type="button" class="t" data-table="8" style="grid-area:2 / 5" aria-label="Tisch 8, frei, öffnen">8</button>
+                    <button type="button" class="t" data-table="7" style="grid-area:2 / 6" aria-label="Tisch 7, frei, öffnen">7</button>
+                </div>
+                <button type="button" class="t large" data-table="12" style="grid-area:3 / 1" aria-label="Tisch 12, frei, öffnen">12</button>
+                <button type="button" class="t large" data-table="13" style="grid-area:3 / 2" aria-label="Tisch 13, frei, öffnen">13</button>
+                <button type="button" class="t b large" data-table="14" style="grid-area:3 / 3" aria-label="Tisch 14, belegt, öffnen">14</button>
+                <button type="button" class="t large" data-table="15" style="grid-area:3 / 5" aria-label="Tisch 15, frei, öffnen">15</button>
+                <button type="button" class="t large" data-table="16" style="grid-area:3 / 6" aria-label="Tisch 16, frei, öffnen">16</button>
+                <div class="map-aisle" style="grid-area:2 / 4 / 4 / 5" role="img" aria-label="Gang"></div>
+                <button type="button" class="t" data-table="21" style="grid-area:4 / 1" aria-label="Tisch 21, frei, öffnen">21</button>
+                <button type="button" class="t" data-table="22" style="grid-area:4 / 2" aria-label="Tisch 22, frei, öffnen">22</button>
+                <button type="button" class="t takeaway" data-table="M" style="grid-area:5 / 2 / 6 / 5" aria-label="Mitnehmen, frei, öffnen">Mitnehmen</button>
+                <img class="map-logo" src="../icons/asiawok/logo.svg" alt="Asia Wok" draggable="false">
+                <div class="table-pair" role="group" aria-label="Tische 19, 18" style="grid-area:4 / 5 / 6 / 6">
+                    <button type="button" class="t" data-table="19" aria-label="Tisch 19, frei, öffnen">19</button>
+                    <button type="button" class="t" data-table="18" aria-label="Tisch 18, frei, öffnen">18</button>
+                </div>
+                <button type="button" class="t" data-table="17" style="grid-area:4 / 6" aria-label="Tisch 17, frei, öffnen">17</button>
+                <div class="table-pair" role="group" aria-label="Tische 24, 23" style="grid-area:5 / 1 / 7 / 2">
+                    <button type="button" class="t" data-table="24" aria-label="Tisch 24, frei, öffnen">24</button>
+                    <button type="button" class="t" data-table="23" aria-label="Tisch 23, frei, öffnen">23</button>
+                </div>
+                <button type="button" class="t small" data-table="20" style="grid-area:6 / 2;align-self:end" aria-label="Tisch 20, frei, öffnen">20</button>
+            </div>
+        </template>
+
+        <template id="garden-map">
+            <section class="room-section" aria-label="Raum">
+                <h3 class="map-section-title">Raum</h3>
+                <div class="tische room-tables">
+                    <button type="button" class="t" data-table="33" aria-label="Tisch 33, frei, öffnen">33</button>
+                    <button type="button" class="t" data-table="34" aria-label="Tisch 34, frei, öffnen">34</button>
+                    <button type="button" class="t" data-table="30" aria-label="Tisch 30, frei, öffnen">30</button>
+                    <button type="button" class="t" data-table="32" aria-label="Tisch 32, frei, öffnen">32</button>
+                    <button type="button" class="t" data-table="31" aria-label="Tisch 31, frei, öffnen">31</button>
+                    <button type="button" class="t" data-table="35" aria-label="Tisch 35, frei, öffnen">35</button>
+                </div>
+            </section>
+            <section class="garden-section" aria-label="Garten">
+                <h3 class="map-section-title">Garten</h3>
+                <div class="tische garden-tables">
+                    <button type="button" class="t" data-table="G12" style="grid-area:1 / 1" aria-label="Tisch G12, frei, öffnen">G12</button>
+                    <button type="button" class="t" data-table="G11" style="grid-area:1 / 2" aria-label="Tisch G11, frei, öffnen">G11</button>
+                    <button type="button" class="t" data-table="G1" style="grid-area:1 / 4" aria-label="Tisch G1, frei, öffnen">G1</button>
+                    <button type="button" class="t b" data-table="G2" style="grid-area:1 / 5" aria-label="Tisch G2, belegt, öffnen">G2</button>
+                    <button type="button" class="t" data-table="G3" style="grid-area:1 / 6" aria-label="Tisch G3, frei, öffnen">G3</button>
+                    <button type="button" class="t" data-table="G4" style="grid-area:1 / 7" aria-label="Tisch G4, frei, öffnen">G4</button>
+                    <button type="button" class="t" data-table="G15" style="grid-area:2 / 1" aria-label="Tisch G15, frei, öffnen">G15</button>
+                    <button type="button" class="t" data-table="G16" style="grid-area:2 / 2" aria-label="Tisch G16, frei, öffnen">G16</button>
+                    <button type="button" class="t" data-table="G9" style="grid-area:2 / 5" aria-label="Tisch G9, frei, öffnen">G9</button>
+                    <button type="button" class="t" data-table="G8" style="grid-area:2 / 6" aria-label="Tisch G8, frei, öffnen">G8</button>
+                    <div class="map-aisle" style="grid-area:1 / 3 / 3 / 4" role="img" aria-label="Gang zum Haupteingang"></div>
+                </div>
+            </section>
+        </template>
+
+        <template id="amount-keypad">
+            <button type="button" data-amount-key="1">1</button>
+            <button type="button" data-amount-key="2">2</button>
+            <button type="button" data-amount-key="3">3</button>
+            <button type="button" data-amount-key="4">4</button>
+            <button type="button" data-amount-key="5">5</button>
+            <button type="button" data-amount-key="6">6</button>
+            <button type="button" data-amount-key="7">7</button>
+            <button type="button" data-amount-key="8">8</button>
+            <button type="button" data-amount-key="9">9</button>
+            <button type="button" data-amount-key="." aria-label="Dezimalpunkt · 小数点">.</button>
+            <button type="button" data-amount-key="0">0</button>
+            <button type="button" data-amount-key="backspace" aria-label="Letzte Ziffer löschen · 退格">⌫</button>
+        </template>
+
+        <script src="preview-menu.js?v=20260915-4"></script>
+
+        <script src="bildschirme.js"></script>
+    </body>
+</html>
