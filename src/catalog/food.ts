@@ -15,6 +15,7 @@ import type { Article, Variant } from "./articles.ts";
  *
  * @param cents1 - Price of 6 pieces
  * @param cents2 - Price of 12 pieces
+ * @returns Created sushi-maki variants
  */
 export function variantPieces(cents1: number, cents2: number): Variant[] {
     return [

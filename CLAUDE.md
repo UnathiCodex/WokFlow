@@ -29,6 +29,10 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
   - Git: siehe „Aktueller Stand“.
 - Höchstens drei bis vier Sätze, ein Gedanke, höchstens eine Frage; mehr nur auf Wunsch. Keine unerklärten
   Fachwörter.
+- **Ein Wort, eine Bedeutung (16.09.2026):** „order“ hieß im ersten Bau der offene Vorgang, im Prototyp die Position;
+  der Nutzer verstand den Code deshalb nicht. „table“ ist im Code der Tisch; Datenbanktabellen im Chat immer „database
+  table“ nennen, bei Verwechslung auf Deutsch trennen, Tisch gegen Tabelle (er hielt `createOrdersTable` für einen
+  Tisch und benannte die Funktion danach in `orderbookCreate` um).
 - **Eine Frage oder ein Wunsch ist kein Auftrag (Nutzer, 16.09.2026):** In Dateien nur auf ausdrückliche Anweisung
   schreiben („patch“, „mach das“, „rename …“). Fragt der Nutzer, wo etwas ist oder woher etwas kommt, oder sagt er,
   wie er etwas haben will („I want to do it above …“), nur antworten und den Code im Chat zeigen; er baut solche
@@ -53,28 +57,36 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
 
 - So wenig Code, Dateien, Einstellungen und Bibliotheken wie nötig. Keine Vorratslösungen oder
   auskommentierten Reste. Bei einem Konflikt gewinnt Lesbarkeit, sonst Kürze.
-- Gemeinsam in kleinen Blöcken, oft nur eine Zeile je Schritt, weil der Nutzer jede Zeile verstehen will
-  (16.09.2026): erst erklären, dann schreiben, besprechen, erst nach Absprache weiter. Größere Änderungen zuerst
-  als Code im Chat zeigen (Nutzer: „Show me the code here first, if I understand it, then you patch it“). Lern- und
-  Beispielcode nur im Chat, keine Beispieldateien oder Beispielordner (14.09.2026).
+- **Ganze Module statt Zeile für Zeile (Entscheidung des Nutzers, 16.09.2026 abends, ersetzt die Regel „eine Zeile
+  je Schritt“):** Claude baut ein Modul komplett samt Tests, der Nutzer liest es danach und fragt, was er nicht
+  erklären kann (Warum-Liste). Ablauf, Schutz des Bestehenden, Tiefe der Fragen unter „Nächster Chat: Modul `tables`“.
+  Weiter gültig: Änderungen an bestehenden Dateien zuerst als Vorher/Nachher im Chat zeigen (Nutzer: „Show me the
+  code here first, if I understand it, then you patch it“). Lern- und Beispielcode nur im Chat, keine Beispieldateien
+  oder Beispielordner (14.09.2026).
 - Befehle wie `npm install`, `npm start`, Tests und Serverstart zuerst erklären und dem Nutzer geben;
   nur auf ausdrücklichen Auftrag ausführen. Er möchte diese Schritte selbst lernen. Zur eigenen Kontrolle nach
   Änderungen liefen am 16.09.2026 ohne Einwand eine Typprüfung und ein Ladeversuch, beide im Ordner `WokFlow`:
-  `node_modules/.bin/tsc.cmd --noEmit --allowImportingTsExtensions --module nodenext --target esnext --types node src/catalog/menu.ts src/orders/order-item.ts src/server/index.ts`
+  `node_modules/.bin/tsc.cmd --noEmit --allowImportingTsExtensions --module nodenext --target esnext --types node src/server/index.ts test/orders.test.ts`
   (die Optionen braucht es ohne `tsconfig.json`, seit TypeScript 6 ist `types` standardmäßig leer) und
   `node -e 'import("./src/catalog/menu.ts").then(m => console.log(Object.keys(m.menu)))'`.
 - **Node 26 führt `.ts` direkt aus (Type Stripping):** kein Kompilieren, aber ein laufender Server liest Code nur
   beim Start. Deshalb Typen immer mit `import type` importieren, sonst bricht Node beim Start ab („does not provide
   an export named …“, zweimal passiert). Kein `enum` und kein `namespace` („not supported in strip-only mode“),
   stattdessen Union-Typen wie `"pure" | "water"`.
-- Englisch: Namen von Variablen, Funktionen, Dateien, dazu JSDoc. Deutsch: sichtbare Texte. Artikelnamen immer
+- Englisch: Namen von Variablen, Funktionen, Dateien, feste Werte im Code (Nutzer,
+  16.09.2026), dazu JSDoc. Deutsch: sichtbare Texte. Artikelnamen immer
   deutsch und chinesisch, keine englischen Artikelübersetzungen. `name.de` und `name.zh` sind die einzige Quelle für
   Taste, „Bestellt“, Rechnung, Druck; nichts aus Bezeichnern ableiten.
 - **Namensstil des Nutzers (16.09.2026):** camelCase, das Gemeinsame zuerst, dann das Unterscheidende, etwa
   `buffetSmall`, `buffetBig`, `variantsBottle`, `variantPieces`. Gruppenschlüssel in `menu.ts` sind die Listennamen
   (`soups`, `warmDrinks`). Er benennt oft selbst um (`variantsFull`, `menu.ts`); nicht zurückbenennen.
+  Funktionen und Typen ebenso, Substantiv zuerst, dann Verb oder Merkmal (Nutzer, 16.09.2026, ausdrücklich zum
+  Ausprobieren, Rückbau auf Wunsch): `orderbookCreate`, `ordersSend`, `orderRemove`, `ordersRead`, `tableClose`,
+  `databaseOpen`, im Test `databaseFresh`, Typ `OrderNew`. Unüblich in TypeScript, schadet aber nicht; Namen aus
+  Bibliotheken bleiben, wie sie sind (`createServer` und `readFileSync`).
 - Ordner nach Aufgaben, Dateien nach Inhalt, keine Sammeldateien wie `types.ts` oder `types/` (15.09.2026):
-  `src/catalog/` Artikelbestand, `src/orders/` Bestellungen, `src/server/` Server. Typen stehen bei ihren Daten.
+  `src/catalog/` Artikelbestand, `src/tables/` Tische und ihre Bestellungen (bis 16.09.2026 `src/orders/`),
+  `src/server/` Server. Typen stehen bei ihren Daten.
 - Typen ausdrücklich an Konstanten, Parametern und Rückgabewerten, zum Lernen erwünscht; `type` statt `interface`.
   Doppelte Anführungszeichen und vier Leerzeichen Einrückung. Kurze verschachtelte Objekttypen in einer Zeile,
   etwa `name: { de: string; zh: string; } | null;`.
@@ -110,7 +122,7 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
   - Module: je Modul eine Stichpunktzeile direkt unter der Beschreibung, ohne Überschrift `### Modules` (Nutzer,
     16.09.2026, in `menu.ts` und `server/index.ts` selbst entfernt; `buffet.ts`, `food.ts`, `drinks.ts` ebenso).
     Das Modul in Backticks ohne Webadresse, dahinter, was das Modul macht, nicht was die importierten Namen machen.
-  - Ausnahme `articles.ts` und `order-item.ts` mit wenigen importierten Namen: Dort bleibt `### Modules`, darunter je
+  - Ausnahme `articles.ts` und andere Dateien mit wenigen importierten Namen: Dort bleibt `### Modules`, darunter je
     Name `` - {@link Name}: `` mit Erklärung, was er ist und wofür die Datei ihn braucht; diese Erklärungen nie
     weglassen.
   - Module und Properties stehen immer als Stichpunkt, auch einzeln; jede andere einzelne Angabe wird eine normale
@@ -228,7 +240,8 @@ nachgezogen.
 3. **Absenden am Rückweg:** Die umrandete Tischnummer führt zum Tischplan zurück und schickt in der
    Demo neue Positionen ab; Escape ebenfalls. Ein ausdrücklich beschrifteter „Bonieren“-Knopf war
    zuvor diskutiert worden, die aktuelle Kopfzeile nutzt auf Nutzerwunsch die Tischnummer.
-   Getränke- und À-la-carte-Bons am Zentraldrucker, bereits Gesendetes nicht erneut drucken.
+   Getränke und À-la-carte auf einem gemeinsamen Bon am Zentraldrucker, keine getrennten Bons (Nutzer, 16.09.2026);
+   Buffet ohne Bon. Bereits Gesendetes nicht erneut drucken.
    Im Backend erst nach bestätigter Übernahme erfolgreich zurückkehren; Fehler erkennbar lassen.
 4. Korrektur am offenen Tisch: Minus an der Getränk-/Speisenzeile; **versehentliche Entfernung
    rückgängig machen können**. Neuer Entwurf: Name des entfernten Artikels plus „Rückgängig“, ohne
@@ -372,11 +385,139 @@ brauchen. Nicht entschieden.
   Feiertage Josefstag und Volksabstimmung, Schrift.
 - Coding-Session (Katalog, beendet 16.09.2026): Artikelkatalog in `WokFlow/src/catalog/` steht. Offen: Anbindung an
   Server, Bestellungen, Bildschirm (siehe „Artikel und Gruppen“).
-- Server-Session (seit 16.09.2026, parallel zur Coding-Session): als Nächstes Daten in SQLite speichern, mit
-  `node:sqlite`, das Node mitbringt. Noch nicht begonnen; berührt die Artikelarbeit nicht.
+- Modul-Chats (ab 17.09.2026, ersetzen Coding- und Server-Session): je Chat ein ganzes Modul, Ablauf und Regeln
+  unter „Nächster Chat: Modul `tables`“. Modul `tables`: Bestellungen je Tisch in SQLite mit `node:sqlite`, das Node mitbringt.
 - Nutzer mit der Chefin: Zwischenrechnung, offene Kredite, Personalbuchung, Rechnungskopie, Rechnung mit
   Kundenadresse (siehe „TOUCHIT-Abgleich“ unter „Entscheidungen“).
 - Technik: Weg zu den Nexi-Daten, Cloud-Anbieter, VESA-Halterung, Ersatzdrucker, SQLite-Treiber.
+
+## Nächster Chat: Modul `tables` (Übergabe vom 16.09.2026, abends)
+
+Entscheidung des Nutzers am 16.09.2026 nach langer Diskussion (Chat „Skill oder Produkt“): **Ab jetzt baut Claude
+ganze Module, nicht mehr Zeile für Zeile.** Gründe kurz: Vier Tage ergaben rund 500 Zeilen; im Tempo „eine Zeile je
+Schritt“ wird WokFlow nicht bis Mai 2027 fertig. Schreiben aus dem Leeren übt der Nutzer an der Uni (Java,
+Prüfungen). Aus dem Projekt nimmt er das Bild im Kopf (Struktur), das Urteil über Code, das Debuggen, ein fertiges
+Produkt. Studienlage (Anthropic 2026, Bastani 2025): Wer KI schreiben lässt und danach fragt „warum so“, lernt fast so
+viel wie von Hand; wer nur Code abholt, lernt wenig. Der Nutzer will Ultracode nutzen; das ist seine Wahl.
+
+### Arbeitsweise je Modul
+
+1. Ein Modul je frischem Chat. Ein Modul ist ein Feature, das an einem Abend allein testbar ist. Module heißen
+   nach ihrer Aufgabe, nie nach einer Nummer, etwa Modul `tables` (Nutzer, 16.09.2026).
+2. Zuerst die Spezifikation: rund zehn Zeilen, was rein, was raus, was nie passieren darf. Claude schlägt sie vor,
+   der Nutzer korrigiert; erst nach seinem Ja wird gebaut.
+3. Dann der Plan: welche Dateien neu entstehen, welche bestehenden Dateien sich ändern, und dort jede Änderung als
+   Vorher/Nachher Zeile für Zeile. Erst nach dem Ja bauen.
+4. Claude schreibt das ganze Modul samt Tests (`node:test`, keine neue Bibliothek), führt Typprüfung und Tests aus,
+   zeigt das Ergebnis, gibt den Startbefehl.
+5. Der Nutzer startet es selbst und versucht, es kaputt zu machen.
+6. Fehler: der Nutzer sucht zuerst selbst, dann fragt er. Debuggen war in der Anthropic-Studie die größte Lücke.
+7. Warum-Liste: Der Nutzer liest jede neue Datei einmal und markiert jede Zeile, die er nicht erklären kann. Das
+   Modul ist erst fertig, wenn die Liste leer ist. Tiefe siehe unten.
+8. Eine Aufräumrunde am Ende, gemeinsam, einmal. Nicht vorher; Aufräumen vor dem Funktionieren ist Perfektionismus.
+9. Keine Pflicht-Übungsfunktion je Modul: Schreiben aus dem Leeren übt die Uni. Bleiben: Debuggen zuerst und
+   Warum-Liste.
+10. Kosten: frischer Chat je Modul, weil jede Nachricht den ganzen bisherigen Chat mitsendet. Mit Ultracode baut ein
+    Agent das Modul, weitere Agenten höchstens prüfen; nie mehrere Agenten gleichzeitig an bestehenden Dateien.
+
+### Wie tief das Warum geht
+
+- Stufe 1, jeder unbekannte Name, ein Satz: was er tut, warum er hier steht. Beispiel `readdirSync`: liest die Namen
+  in einem Ordner, wartet, bis es fertig ist, gibt eine Liste zurück.
+- Stufe 2, jede neue Idee, so tief wie nötig: `async`/`await`, Transaktion, Callback, Module und Imports, Typen.
+  Fertig, wenn der Nutzer sie erklären und vorhersagen kann, was bei einer Änderung passiert. Das ganze Projekt hat
+  vielleicht 15 solche Ideen. Zu jeder den Java-Gegenpart nennen: Der Nutzer kennt Java bis Generics, `ArrayList`,
+  Streams und `map` und will dieselbe Tiefe in TypeScript (16.09.2026); `T[]` wie `ArrayList<T>`, `array.map` wie
+  `stream().map`, `| null` wie `Optional`, Pfeilfunktion wie Lambda.
+- Stufe 3, nicht im Modul-Chat: wie Node etwas innen umsetzt, alle Optionen einer Bibliothek, Bibliotheksquelltext.
+  Im Projekt versteht man Bibliotheken über ihre Schnittstelle und ihre eine Idee (Dinero: Geld als ganze Cent plus
+  Währung). Der Nutzer ist in Java weit fortgeschritten, bis in den Bibliothekscode (`Stream`), und weiß, dass Stufe 2
+  diese Tiefe in TypeScript nicht liefert (16.09.2026). Java-Tiefe in TypeScript ist ein eigenes Vorhaben mit
+  eigener Zeit (Node- und TypeScript-Quelltext, Buch, Übungen), nicht entschieden, nicht Aufgabe der Modul-Chats.
+- Stopp-Regel: Ändert die Antwort nichts daran, wie WokFlow-Code gelesen oder geschrieben wird, aufhören.
+
+### Schutz des Bestehenden (Nutzer, 16.09.2026: „don't destroy something which I coded already“)
+
+- Unangetastet, außer das Modul braucht es und der Nutzer hat die gezeigte Änderung bejaht: `src/catalog/*`,
+  `src/server/index.ts`, `src/server/database.ts`, `tmp/*`, `package.json`, `.editorconfig`, `commands.md`,
+  `icons/`, `fonts/`.
+- Neue Module in neuen Dateien, Ordner nach Aufgaben (`src/tables/`), keine Sammeldateien.
+- Stil der bestehenden Dateien nicht glätten, Namen nicht ändern. Alle Regeln unter „Coden“ gelten für erzeugte
+  Dateien genauso: Dateikopf, JSDoc, `type` statt `interface`, `import type`, Komma nach dem letzten Eintrag, vier
+  Leerzeichen, Namensstil des Nutzers.
+- Jede Änderung an einer bestehenden Datei: erst die Liste „ändert sich / bleibt“, dann Vorher/Nachher, dann Ja.
+- Chat-Stil bleibt wie unter „Zusammenarbeit“: Englisch, kurz, keine unerklärten Fachwörter, eine Frage je Antwort.
+
+### Stand der Dateien (geprüft 16.09.2026 abends)
+
+- Modul `tables` gebaut (16.09.2026 abends): `src/tables/orders.ts` und `test/orders.test.ts`, 13 Tests grün,
+  Typprüfung ohne Fehler, noch nicht committet. `src/orders/` gibt es nicht mehr. Kommentarkorrekturen des Nutzers
+  bisher: Modulzeile zu `menu.ts` nur „Groups the restaurant articles.“, bei `price` kein „in euro cents“, Regionen um
+  die Typen, um `orderbookCreate`, um die Helfer entfernt, nur `Ordering` (vorher `Bookings`) blieb; JSDoc von
+  `orderbookCreate` und `transaction` selbst umgeschrieben, `catch (error: unknown)` ausdrücklich typisiert. Der Nutzer korrigiert weiter; seine Korrekturen danach als Regeln unter „Coden“ festhalten.
+- `src/server/database.ts` (neu): `databaseOpen()` öffnet `WokFlow/wokflow.db` mit `node:sqlite`, Pfad über
+  `import.meta.dirname`. `src/server/index.ts` ruft sie beim Start auf. Beides noch nicht committet.
+- `wokflow.db` liegt leer (0 Byte) im Projektordner und steht **nicht** in `.gitignore` (dort nur `.idea` und
+  `node_modules`). Beim nächsten `git add .` ginge die Datenbank zu GitHub. Erster Vorschlag im Modul-Chat:
+  `wokflow.db` in `.gitignore`, nach Ja des Nutzers.
+- Git: 7 Commits, letzter „Add CLAUDE.md“ (`6f93476`). Ob alles gepusht ist, nicht geprüft.
+
+### Modulreihenfolge (Vorschlag, der Nutzer ordnet um)
+
+1. `tables`: Bestellungen je Tisch in SQLite. Reine Logik und Speicherung, keine HTTP-Anbindung, kein Bildschirm.
+   Gebaut 16.09.2026.
+2. Server-Schnittstelle: Katalog und Bestellungen als JSON über `node:http`, damit der Bildschirm sie holen kann.
+3. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`. Vorher entscheiden, wie die
+   Seite ausgeliefert wird (siehe „Aktueller Stand“: nicht vom eigenen Server, bei Bedarf Vite).
+4. Danach nach dem Manifest: Rechnung, Zahlung, Druck, RKSV, Tagesabschluss.
+
+### Modul `tables`, Spezifikation (gebaut 16.09.2026 abends)
+
+- Ein Tisch (Kennung als Text: `"14"`, `"G3"`, `"M"`) hat beliebig viele Bestellungen. Eine Bestellung ist eine Zeile
+  der Datenbanktabelle `orders`: Tisch, deutscher Artikelname, Variantenname oder null, Menge, Preis in Cent und
+  Steuersatz zum Zeitpunkt der Buchung, `closed` (Zeitpunkt des Abschlusses, Name vom Nutzer statt `closed_at`). Offen
+  ist sie, solange `closed` leer ist; ein Tisch ohne offene Bestellungen ist frei. Katalogänderungen ändern gebuchte
+  Bestellungen nicht (Regel unter „Artikel und Gruppen“).
+- Namen nach der Alltagssprache (Nutzer, 16.09.2026): Der erste Bau hatte `orders` als offenen Vorgang je Tisch und
+  `lines` als Positionen, dazu `neu`/`gesendet` aus dem deutschen Entwurf. Der Nutzer fand das gegen Sprache und
+  Prototyp (dort heißen die Positionen `orders`). Seitdem Modul und Ordner `tables`, jede Position eine Bestellung,
+  kein eigener Datensatz für den offenen Tisch.
+- **Kein Status, gespeichert wird erst beim Senden (Nutzer, 16.09.2026):** Die Datenbank kennt nur Gesendetes. Noch
+  nicht gesendete Bestellungen hält und korrigiert das Handy (Bildschirm-Modul) und schickt sie beim Rückweg zum
+  Tischplan alle auf einmal. Stürzt das Handy vorher ab, sind sie weg und werden neu boniert; laut Nutzer selten und
+  vertretbar. Jedes Senden legt neue Bestellungen an, auch für eine Variante, die der Tisch schon hat: zwei gesendete
+  Cola plus eine weitere ergeben zwei Bestellungen, gedruckt wird nur die neue. Vorher gab es `new`/`sent` und
+  `addOrder` je Portion.
+- Funktionen in `src/tables/orders.ts`: `ordersSend(database, table, orders)` speichert alle oder keine
+  (`OrderNew`: Kategorie, Artikel, Variante, Menge), `orderRemove` (neueste Bestellung der Variante zuerst),
+  `ordersRead`, `tableClose` (setzt `closed`, Bestellungen bleiben gespeichert), `orderbookCreate` beim Serverstart
+  (Name vom Nutzer, vorher `createOrdersTable`). Die Zahlung selbst kommt später.
+- Änderungen mit mehreren Anweisungen laufen als SQLite-Transaktion (Regel 1 der zehn Regeln).
+- Zitrone und Buffetpersonen sind Bestellungen wie jede andere; ihre Sonderregeln kommen mit dem Bildschirm.
+- Tests: `test/orders.test.ts`, `node:test` gegen eine Datenbank im Arbeitsspeicher, Start mit `node --test` im
+  Ordner `WokFlow`; kein Skript in `package.json`.
+- Nicht in Modul `tables`: HTTP, Bildschirm, Zahlung, Rechnung, RKSV, Druck, Tischplan.
+- Offen (16.09.2026): Der JSDoc von `orderbookCreate` nennt die Datenbanktabelle `orderbook`, das SQL legt noch
+  `orders` an. Nachgefragt, ob die Tabelle `orderbook` heißen soll.
+- Erklären mit Beispiel: Die erste Erklärung zum Status mit Kellnern und Tippen verstand der Nutzer nicht, erst eine
+  kleine Gegenüberstellung mit Cola und Red Bull („heutiger Code“ gegen „anderer Weg“). Bei der Transaktion kam
+  Abstraktes („SQLite weiß nicht, welche Anweisungen zusammengehören“) ebenfalls nicht an. Verstanden hat er: die echte
+  SQL-Folge `BEGIN`, zwei `INSERT`, `COMMIT` für 2 Cola und 1 Red Bull; einen Versuch im Arbeitsspeicher, nach dem die
+  Transaktion nach einem fehlgeschlagenen `INSERT` offen bleibt; `ROLLBACK` bis zum letzten `BEGIN`, frühere Sendungen
+  bleiben. `transaction` vor `ordersSend` und `orderRemove` zu behandeln, verwirrte ihn: erst die Funktionen, die einen
+  Helfer benutzen, dann den Helfer (Nutzer, 16.09.2026).
+- `transaction` ohne Generic (Nutzer, 16.09.2026): `work: () => void`, weil kein Aufrufer einen Wert zurückbekommt;
+  `<T>` erst wieder, wenn eine Transaktion etwas zurückgeben muss. `catch (error: unknown)` hat der Nutzer selbst
+  typisiert.
+
+### Was der neue Chat zuerst tut
+
+1. Diese Datei lesen, zuletzt diesen Abschnitt.
+2. Modul `tables` ist gebaut und geprüft. Offen: Der Nutzer startet und testet selbst, dann die Warum-Liste, dann
+   seine Kommentarkorrekturen in `orders.ts` als Regeln unter „Coden“ festhalten.
+3. Danach „Aktueller Stand“ nachtragen und diesen Abschnitt auf das nächste Modul umschreiben. Für jedes Modul:
+   Spezifikation zeigen, Ja abwarten, Plan mit Vorher/Nachher zeigen, Ja abwarten, bauen, prüfen, Ergebnis zeigen,
+   Startbefehl geben.
 
 ## Aktueller Stand
 
@@ -387,9 +528,12 @@ Stand 16.09.2026; Planung im Manifest, neuer Code nur in `WokFlow/`.
   überein (Skriptvergleich ohne Abweichung) und mit der Speisekarte 2026. Aufbau, Regeln, offene Punkte unter
   „Artikel und Gruppen“. Noch nicht an Server, Bestellungen, Bildschirm angebunden. Laut Nutzer ist die Arbeit am
   Menü damit abgeschlossen; die nächste Aufgabe beginnt in einem neuen Chat.
-- `src/orders/order-item.ts`: `OrderItem` mit Artikel, gewählter Variante, Anzahl; nur der Typ, keine Bestelllogik
-  oder Speicherung.
+- `src/tables/orders.ts` (Modul `tables`, 16.09.2026 abends): Bestellungen der Tische in der Datenbanktabelle
+  `orders`, Tests in `test/orders.test.ts`. Noch nicht an Server-Schnittstelle oder Bildschirm angebunden. Das frühere
+  `src/orders/order-item.ts` ist gelöscht (Commit „Delete intermediate orders“); ältere Absätze nennen es noch.
 - `src/server/index.ts`: Mini-HTTP-Server auf Port 3000, antwortet mit einer HTML-Seite mit der Taste „Cola 可乐“.
+  Öffnet beim Start `wokflow.db` (`databaseOpen`) und legt die Datenbanktabelle `orders` an, falls sie fehlt
+  (`orderbookCreate`).
   Setzt UTF-8 über `setHeader`, sendet mit `end`; `Writable` ist nur für den Doku-Link importiert. Start mit
   `npm start` (`node src/server/index.ts`, ohne `--watch`, nach Codeänderungen neu starten). Bei `EADDRINUSE` alten
   Server mit Strg+C beenden. Relative Pfade zählen ab dem Ordner, in dem node startet: IntelliJs Run-Knopf an
@@ -1273,8 +1417,8 @@ Stand 16.09.2026, mit dem Nutzer gebaut und umgesetzt in `WokFlow/src/catalog/`.
     vom Nutzer geschrieben, in `food.ts`; `variantsFull`, `variantsBottle`, `variantsJuices`, `variantsWines` in
     `drinks.ts`. `lemon` steht am Ende von `drinks.ts`.
   - `menu.ts` (bis 16.09.2026 `catalog.ts` mit Typ `Catalog` und Konstante `catalog`; Nutzer: der Ordner bleibt
-    `catalog`): `Category` mit `tax` und `groups: { [name: string]: Article[] }`, `Menu` mit `buffet`, `food`,
-    `drinks`, die Konstante `menu`, dazu `reducedTax`. **Die Gruppen im Katalog sind die logischen Listen**, jede
+    `catalog`): `Category` mit `tax`, `print`, `groups: { [name: string]: Article[] }`, `Menu` mit `buffet`, `food`,
+    `drinks`, die Konstante `menu`, dazu `taxExceptions`. **Die Gruppen im Katalog sind die logischen Listen**, jede
     eine einfache Liste in Kurzschreibweise (`soups`, `salads`, `snacks`; Nutzer, 16.09.2026: keine „Artikelmatrix“
     `Article[][]`). Die Gruppen einer Hauptkategorie stehen nebeneinander in einer Zeile wie bei den Imports, die
     Klammern auf eigenen Zeilen, Komma nach dem letzten Namen (Nutzer, 16.09.2026); ob Strg+Alt+L die Zeile so lässt,
@@ -1315,9 +1459,15 @@ Stand 16.09.2026, mit dem Nutzer gebaut und umgesetzt in `WokFlow/src/catalog/`.
 - **Zitrone (16.09.2026):** ein Zusatz, keine Variante; eigener Artikel `lemon` (Zitrone 柠檬, 0.20 €) in keiner
   Gruppe, damit er nicht allein bestellbar ist. Soda hat deshalb keine eigenen Zitronen-Varianten mehr, sie
   kosteten genau 0.20 € mehr. Wie eine Bestellzeile die Zitrone festhält, ist Bestelllogik und kommt später.
+- **Druck an der Hauptkategorie (Nutzer, 16.09.2026):** `print` neben `tax`, Getränke und Speisen `true`, Buffet
+  `false`. Gemeint ist der Bestellbon; die Rechnung zeigt alles.
 - **Steuer nur an der Hauptkategorie:** Buffet 10 %, Speisen 10 %, Getränke 20 %. Abweichende Artikel stehen einmal
-  in `reducedTax` in `menu.ts`, als deutsche Namen (`["Leitungswasser"]`). Beim Rechnen später: Name in der Liste
-  10 %, sonst der Satz der Hauptkategorie. Verworfen: `tax?` am Artikel (eigene Property für eine Ausnahme),
+  mit eigenem Satz in `taxExceptions` in `menu.ts`, nach deutschem Namen (`{ Leitungswasser: 10 }`). Den Satz
+  liefert `taxOf(category, article)` in `menu.ts` mit `taxExceptions[name] ?? category.tax` (erklärt wie
+  `getOrDefault` in Java); `ordersSend` fragt nur `taxOf` und weiß nichts von Ausnahmen, `taxExceptions` ist nicht
+  exportiert (Nutzer, 16.09.2026: Nachschlagen gehört ins Menü). `reducedTax` mit dem Satz der Speisen ist entfallen.
+  Schlüssel bleibt der deutsche Name als Text: Eine Konstante `tapWater` als Verknüpfung mit dem Artikel lehnte der
+  Nutzer ab (keine Variable je Artikel); wird Leitungswasser umbenannt, `taxExceptions` mitändern. Verworfen: `tax?` am Artikel (eigene Property für eine Ausnahme),
   Pflicht-`tax` an jedem Artikel (Wiederholung); keine Option ist perfekt. Der Name bleibt `tax`, nicht `vatRate`.
   Berechnetes Leitungswasser 10 % (Mineralwasser 20 %); Kaffee und Tee einschließlich Cappuccino und
   Latte Macchiato 20 %. Quelle am 15.09.2026 geprüft:

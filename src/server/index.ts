@@ -5,11 +5,21 @@
  * Start with `npm start`.
  *
  * - `node:http`: Creates HTTP servers and sends HTTP requests.
+ * - `node:sqlite`: Opens and works with SQLite databases.
  * - `node:stream`: Reads, writes, transforms data piece by piece.
+ * - `./database.ts`: Manages the local SQLite database connection.
+ * - `../tables/orders.ts`: Stores the orders of the tables.
  */
 
 import { createServer, IncomingMessage, ServerResponse, Server } from "node:http";
+import { DatabaseSync } from "node:sqlite";
 import { Writable } from "node:stream";
+import { databaseOpen } from "./database.ts";
+import { orderbookCreate } from "../tables/orders.ts";
+
+
+const database: DatabaseSync = databaseOpen();
+orderbookCreate(database);
 
 /**
  * - {@link createServer}: Returns a new server.

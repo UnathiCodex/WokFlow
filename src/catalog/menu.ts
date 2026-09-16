@@ -28,10 +28,12 @@ import type { Article } from "./articles.ts";
  * One main category with its default tax rate and article groups.
  *
  * - `tax`: Default tax rate in percent.
+ * - `print`: Whether orders of this category are printed on the order ticket.
  * - `groups`: Groups of articles in this category.
  */
 export type Category = {
     tax: number;
+    print: boolean;
     groups: { [name: string]: Article[] };
 };
 
@@ -50,18 +52,21 @@ export type Menu = {
 export const menu: Menu = {
     buffet: {
         tax: 10,
+        print: false,
         groups: {
             buffets,
         },
     },
     food: {
         tax: 10,
+        print: true,
         groups: {
             soups, salads, snacks, sushi, maki, seafood, vegetables, chicken, duck, beef, pork, rice, noodles,
         },
     },
     drinks: {
         tax: 20,
+        print: true,
         groups: {
             lemonades, juices, water, beer, wines, warmDrinks, spirits,
         },
@@ -69,6 +74,19 @@ export const menu: Menu = {
 };
 
 /**
- * Names of drinks taxed like food.
+ * Tax rates in % of articles taxed differently from their main category.
  */
-export const reducedTax: string[] = ["Leitungswasser"];
+const taxExceptions: { [article: string]: number } = {
+    Leitungswasser: 10,
+};
+
+/**
+ * Tax rate of an article in percent.
+ *
+ * @param category - Main category of the article
+ * @param article - Article to look up
+ * @returns Tax rate according to the category, otherwise tax rate from {@link taxExceptions}.
+ */
+export function taxOf(category: Category, article: Article): number {
+    return taxExceptions[article.name.de] ?? category.tax;
+}

@@ -49,6 +49,7 @@ export type Variant = {
  * @param de - German name
  * @param zh - Chinese name
  * @param variants - Servings or choices with prices, or only the price in euro cents without choice
+ * @returns Created article
  */
 export function article(de: string, zh: string, variants: Variant[] | number): Article {
     if (Array.isArray(variants))
@@ -63,6 +64,7 @@ export function article(de: string, zh: string, variants: Variant[] | number): A
  * @param de - German name
  * @param zh - Chinese name
  * @param cents - Price in euro cents
+ * @returns Created variant
  */
 export function variant(de: string, zh: string, cents: number): Variant {
     return { name: { de, zh }, price: dinero({ amount: cents, currency: EUR }) };
