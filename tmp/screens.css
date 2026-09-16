@@ -920,30 +920,31 @@ a.taste:hover,a.btn:hover {
     background: var(--soft);
 }
 
+/* Buffet name, time and age groups share one size; the 8 px gap leaves room for "Feiertagsbuffet 11:30–21:30" at 360 px. */
 .period-banner {
     margin: 10px var(--catalog-inset) 0;
     padding: 14px 16px;
     border: 1px solid var(--line);
     border-radius: 10px;
     background: var(--soft);
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
 }
 
 .period-banner [lang] {
     display: block;
-    font-size: 17px;
+    font-size: 18px;
     color: var(--muted);
     font-weight: 400;
 }
 
 .period-banner time {
     flex: none;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 400;
     white-space: nowrap;
     color: var(--muted);
@@ -1104,9 +1105,10 @@ a.taste:hover,a.btn:hover {
     border-bottom: 0;
 }
 
-/* Buffet counters are the main input of this screen: large German, Chinese on its own line, large counts. */
+/* Buffet counters are the main input of this screen: German as large as the buffet name, Chinese on its own line, large counts. Labels sit 8 px in, between the buffet box edge (too far left) and the text inside the box (too far in). */
 .counter-label {
-    font-size: 24px;
+    padding-left: 8px;
+    font-size: 22px;
     font-weight: 500;
     line-height: 1.25;
 }
@@ -1140,7 +1142,6 @@ a.taste:hover,a.btn:hover {
     flex: none;
     width: 8px;
     height: 8px;
-    margin-left: 2px;
     border-right: 2px solid var(--muted);
     border-bottom: 2px solid var(--muted);
     transform: translateY(-2px) rotate(45deg);
@@ -1162,7 +1163,7 @@ a.taste:hover,a.btn:hover {
     justify-content: space-between;
     gap: 8px;
     min-height: 48px;
-    padding: 8px 14px;
+    padding: 8px 16px;
     border: 1px solid var(--line);
     border-radius: 10px;
     background: var(--surface);
