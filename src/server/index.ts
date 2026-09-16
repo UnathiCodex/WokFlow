@@ -2,12 +2,10 @@
  * ## WokFlow server
  *
  * Waits at `localhost:3000` and answers the browser with a web page.
+ * Start with `npm start`.
  *
- * - Start with `npm start`.
- *
- * ### Modules
- * - {@link createServer}: Creates HTTP servers and sends HTTP requests.
- * - {@link Writable}: Reads, writes, transforms data piece by piece.
+ * - `node:http`: Creates HTTP servers and sends HTTP requests.
+ * - `node:stream`: Reads, writes, transforms data piece by piece.
  */
 
 import { createServer, IncomingMessage, ServerResponse, Server } from "node:http";

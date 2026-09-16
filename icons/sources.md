@@ -30,15 +30,16 @@ Icons keep the full SVG canvas. Size, alignment are controlled in CSS.
 | [beef.svg](wokflow/beef.svg) | [1f42e.svg](emojitwo/svg/1f42e.svg) | None |
 | [beer.svg](wokflow/beer.svg) | [1f37a.svg](emojitwo/svg/1f37a.svg) | Outlines |
 | [chicken.svg](wokflow/chicken.svg) | [1f414.svg](emojitwo/svg/1f414.svg) | Body, neck, tail outlined |
-| [desserts.svg](wokflow/desserts.svg) | [1f34c.svg](emojitwo/svg/1f34c.svg) | Light details outlined |
 | [duck.svg](wokflow/duck.svg) | [1f986.svg](emojitwo/svg/1f986.svg) | Water removed |
 | [hot-drinks.svg](wokflow/hot-drinks.svg) | [2615.svg](emojitwo/svg/2615.svg) | Cup outline |
 | [juice.svg](wokflow/juice.svg) | [1f95b.svg](emojitwo/svg/1f95b.svg), [1f34e.svg](emojitwo/svg/1f34e.svg) | Glass recolored, apple added |
 | [maki.svg](wokflow/maki.svg) | [1f363.svg](emojitwo/svg/1f363.svg) | Rolls isolated, nori recolored |
 | [pork.svg](wokflow/pork.svg) | [1f437.svg](emojitwo/svg/1f437.svg) | None |
+| [rice.svg](wokflow/rice.svg) | [1f35a.svg](emojitwo/svg/1f35a.svg) | None |
 | [rice-noodles.svg](wokflow/rice-noodles.svg) | [1f35c.svg](emojitwo/svg/1f35c.svg) | Bowl outline |
 | [salad.svg](wokflow/salad.svg) | [1f957.svg](emojitwo/svg/1f957.svg) | Bowl outline |
 | [seafood.svg](wokflow/seafood.svg) | [1f364.svg](emojitwo/svg/1f364.svg) | None |
+| [snacks.svg](wokflow/snacks.svg) | [1f956.svg](emojitwo/svg/1f956.svg) | None |
 | [soft-drinks.svg](wokflow/soft-drinks.svg) | [1f95b.svg](emojitwo/svg/1f95b.svg), [1f379.svg](emojitwo/svg/1f379.svg) | Glass recolored, straw added |
 | [spirits.svg](wokflow/spirits.svg) | [1f37e.svg](emojitwo/svg/1f37e.svg) | Cork, spray, loose foil removed |
 | [starters.svg](wokflow/starters.svg) | [1f372.svg](emojitwo/svg/1f372.svg) | None |

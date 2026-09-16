@@ -1,7 +1,7 @@
 /**
  * ## Preview menu
  * Restaurant menu labels and variants for the current screen prototype.
- * Menu labels and cent prices from the restaurant's 2026 PDF.
+ * One name per article, the same as in src/catalog, for button, order list and bill; cent prices from the restaurant's 2026 PDF.
  * Prices are only displayed during checkout; no server, printer or payment connection.
  */
 
@@ -30,7 +30,7 @@ const menus = {
 
         ["Wasser", [
             ["Mineralwasser", "矿泉水", "mineral"],
-            ["Soda", "苏打水", "soda"],
+            ["Soda", "苏打水", "twoSizes"],
             ["Leitungswasser", "自来水", "twoSizes"]
         ]],
 
@@ -38,25 +38,25 @@ const menus = {
             ["Villacher", "生啤酒", "beer"],
             ["Radler", "啤酒汽水", "beer"],
             ["Hefetrüb", "小麦啤酒", "largeBeer"],
-            ["Alkoholfreies Bier", "无酒精啤酒", "largeBeer"],
+            ["Alkoholfrei", "无醇啤酒", "largeBeer"],
             ["Tsingtao", "青岛啤酒", "smallBottle"]
         ]],
 
         ["Weine", [
             ["Weißwein", "白葡萄酒", "wine"],
             ["Rotwein", "红葡萄酒", "wine"],
-            ["Aperol Spritz", "阿佩罗气泡酒"],
-            ["Hugo", "接骨木气泡酒"],
-            ["Prosecco", "普罗塞克气泡酒", "prosecco"]
+            ["Aperol Spritz", "阿佩罗"],
+            ["Hugo", "接骨木酒"],
+            ["Prosecco", "普罗塞克"]
         ]],
 
         ["Warmes", [
             ["Tee", "茶", "tea"],
             ["Kaffee", "咖啡", "coffee"],
-            ["Verlängerter", "淡美式咖啡"],
-            ["Melange", "维也纳奶泡咖啡"],
+            ["Verlängerter", "美式咖啡"],
+            ["Melange", "奶泡咖啡"],
             ["Cappuccino", "卡布奇诺"],
-            ["Latte Macchiato", "拿铁玛奇朵"]
+            ["Latte Macchiato", "拿铁"]
         ]],
 
         ["Spirituosen", [
@@ -65,7 +65,7 @@ const menus = {
             ["Wodka", "伏特加"],
             ["Bacardi", "百加得"],
             ["Underberg", "草本苦酒"],
-            ["Jägermeister", "野格利口酒"],
+            ["Jägermeister", "野格"],
             ["Reisschnaps", "米酒"],
             ["Bambusschnaps", "竹叶青"],
             ["Wurzelschnaps", "草根酒"],
@@ -76,20 +76,20 @@ const menus = {
     ],
 
     food: [
-        ["Vorspeisen", [
+        ["Suppen & Salate", [
             ["Pikante Suppe", "酸辣汤"],
             ["Miso Suppe", "味噌汤"],
-            ["Frühlingsrollen", "春卷"],
-            ["Hummerchips", "虾片"],
-            ["Gebackener Tintenfisch", "炸鱿鱼"],
-            ["Gebackene Garnelen", "炸虾"]
-        ]],
-
-        ["Salate", [
             ["Sojasprossen Salat", "豆芽沙拉"],
             ["Gemischter Salat", "什锦沙拉"],
             ["Grüner Salat", "绿叶沙拉"],
             ["Pikanter Salat", "辣味沙拉"]
+        ]],
+
+        ["Snacks", [
+            ["Frühlingsrollen", "春卷"],
+            ["Hummerchips", "虾片"],
+            ["Gebackene Banane", "炸香蕉"],
+            ["Knoblauchsauce", "蒜蓉酱"]
         ]],
 
         ["Sushi", [
@@ -109,113 +109,53 @@ const menus = {
         ]],
 
         ["Meeresfrüchte", [
-            ["Meeresfrüchte mit Gemüse", "海鲜炒蔬菜"],
-            ["Gegrillte Riesengarnelen", "铁板大虾"],
-            ["Gegrillter Fisch mit Gemüse", "铁板鱼配蔬菜"]
+            ["Meeresfrüchte", "海鲜炒蔬菜"],
+            ["Gegrillte Garnelen", "铁板虾"],
+            ["Gegrillter Fisch", "铁板鱼配蔬菜"],
+            ["Gebackener Tintenfisch", "炸鱿鱼"],
+            ["Gebackene Garnelen", "炸虾"]
         ]],
 
         ["Gemüse", [
-            ["Buddhistische Fastenspeise", "罗汉斋"],
+            ["Buddhistische Speise", "罗汉斋"],
             ["Tofu mit Gemüse", "蔬菜豆腐"]
         ]],
 
-        ["Huhn", [
-            ["Hühnerfleisch mit Gemüse", "什锦蔬菜鸡"],
-            ["Hühnerfleisch süß-sauer", "糖醋鸡"],
-            ["Sichuan Hühnerfleisch", "川味鸡"],
-            ["Knuspriges Hühnerfleisch", "香酥鸡"],
-            ["Hühnerfleisch mit Bambus und Pilzen", "竹笋蘑菇鸡"],
-            ["Gong Bao Hühnerfleisch", "宫保鸡丁"],
-            ["Sesam Hühnerfleisch", "芝麻鸡"],
-            ["Thai Red Curry Chicken", "泰式红咖喱鸡"]
-        ]],
-
-        ["Rind", [
-            ["Rindfleisch mit Gemüse", "什锦蔬菜牛肉"],
-            ["La-Za Rindfleisch", "辣子牛肉"],
-            ["Rindfleisch mit Zwiebeln und Paprika", "洋葱青椒牛肉"],
-            ["Acht Schätze", "八宝"]
-        ]],
-
-        ["Schwein", [
-            ["Gan-Bian Schweinefleisch", "干煸猪肉"],
-            ["Fleischtaschen", "饺子"]
-        ]],
-
-        ["Ente", [
+        ["Huhn & Ente", [
+            ["Huhn mit Gemüse", "什锦蔬菜鸡"],
+            ["Huhn süß-sauer", "糖醋鸡"],
+            ["Sichuan Huhn", "川味鸡"],
+            ["Knuspriges Huhn", "香酥鸡"],
+            ["Huhn mit Bambus", "竹笋鸡"],
+            ["Gong Bao Huhn", "宫保鸡丁"],
+            ["Sesam Huhn", "芝麻鸡"],
+            ["Thai Curry Chicken", "泰式咖喱鸡"],
             ["Knusprige Ente", "香酥鸭"]
         ]],
 
-        ["Reis & Nudeln", [
-            ["Gebratener Reis mit Ei und Gemüse", "蛋炒饭"],
-            ["Gebratener Reis mit Hühnerfleisch", "鸡肉炒饭"],
-            ["Gebratener Reis mit Garnelen", "虾仁炒饭"],
-            ["Gebratene Nudeln mit Gemüse", "蔬菜炒面"],
-            ["Gebratene Nudeln mit Hühnerfleisch", "鸡肉炒面"],
-            ["Gebratener Reis", "炒饭"],
-            ["Gebratene Nudeln", "炒面"],
-            ["Extra Portion Reis", "加饭"],
-            ["Extra Sauce Knoblauch", "加蒜蓉酱"]
+        ["Rind & Schwein", [
+            ["Rind mit Gemüse", "什锦蔬菜牛肉"],
+            ["La-Za Rind", "辣子牛肉"],
+            ["Rind mit Zwiebeln", "洋葱牛肉"],
+            ["Acht Schätze", "八宝"],
+            ["Gan-Bian Schwein", "干煸猪肉"],
+            ["Fleischtaschen", "饺子"]
         ]],
 
-        ["Nachspeisen", [
-            ["Gebackene Banane", "炸香蕉"]
+        ["Reis", [
+            ["Reis mit Ei", "蛋炒饭"],
+            ["Reis mit Huhn", "鸡肉炒饭"],
+            ["Reis mit Garnelen", "虾仁炒饭"],
+            ["Gebratener Reis", "炒饭"],
+            ["Extra Portion Reis", "加饭"]
+        ]],
+
+        ["Nudeln", [
+            ["Nudeln mit Gemüse", "蔬菜炒面"],
+            ["Nudeln mit Huhn", "鸡肉炒面"],
+            ["Gebratene Nudeln", "炒面"]
         ]]
     ]
-};
-
-/** Short service labels for article buttons; orders keep the complete menu name. */
-const articleLabels = {
-    "Gebackener Tintenfisch": "Tintenfisch",
-    "Gebackene Garnelen": "Garnelen",
-    "Sojasprossen Salat": "Sojasprossen",
-    "Gemischter Salat": "Gemischt",
-    "Grüner Salat": "Grün",
-    "Pikanter Salat": "Pikant",
-    "Extra Portion Reis": "Extra Reis",
-    "Extra Sauce Knoblauch": "Knoblauchsoße",
-    "Thai Red Curry Chicken": "Thai Curry",
-    "Sesam Hühnerfleisch": "Sesam-Huhn",
-    "Gegrillter Fisch mit Gemüse": "Fisch & Gemüse",
-    "Meeresfrüchte mit Gemüse": "Meeresfrüchte",
-    "Gegrillte Riesengarnelen": "Riesengarnelen",
-    "Buddhistische Fastenspeise": "Fastenspeise",
-    "Tofu mit Gemüse": "Tofu & Gemüse",
-    "Hühnerfleisch mit Gemüse": "Gemüse",
-    "Hühnerfleisch süß-sauer": "Süß-sauer",
-    "Sichuan Hühnerfleisch": "Sichuan",
-    "Knuspriges Hühnerfleisch": "Knusprig",
-    "Hühnerfleisch mit Bambus und Pilzen": "Bambus & Pilze",
-    "Gong Bao Hühnerfleisch": "Gong Bao",
-    "Rindfleisch mit Gemüse": "Gemüse",
-    "La-Za Rindfleisch": "La-Za",
-    "Rindfleisch mit Zwiebeln und Paprika": "Zwiebel & Paprika",
-    "Gan-Bian Schweinefleisch": "Gan-Bian",
-    "Knusprige Ente": "Knusprig",
-    "Gebratener Reis mit Ei und Gemüse": "Reis mit Ei und Gemüse",
-    "Gebratener Reis mit Hühnerfleisch": "Reis mit Hühnerfleisch",
-    "Gebratener Reis mit Garnelen": "Reis mit Garnelen",
-    "Gebratene Nudeln mit Gemüse": "Nudeln mit Gemüse",
-    "Gebratene Nudeln mit Hühnerfleisch": "Nudeln mit Hühnerfleisch",
-    "Alkoholfreies Bier": "Alkoholfrei",
-    "Johannisbeere": "Johannis\u00adbeere",
-    "Leitungswasser": "Leitungs\u00adwasser"
-};
-
-/** Chinese button labels omit context already supplied by the salad category and shorten long drink names to one line. */
-const articleChineseLabels = {
-    "Sojasprossen Salat": "豆芽",
-    "Gemischter Salat": "什锦",
-    "Grüner Salat": "绿叶",
-    "Pikanter Salat": "辣味",
-    "Verlängerter": "美式咖啡",
-    "Melange": "奶泡咖啡",
-    "Latte Macchiato": "拿铁",
-    "Aperol Spritz": "阿佩罗",
-    "Hugo": "接骨木酒",
-    "Prosecco": "普罗塞克",
-    "Alkoholfreies Bier": "无醇啤酒",
-    "Jägermeister": "野格"
 };
 
 /** Set contents from menu page 5; quantities appear once for both languages. */
@@ -235,9 +175,7 @@ const variants = {
     twoSizes: [["0.25"], ["0.5"]],
     bottle: [["Flasche", "0.35", "瓶装"]],
     smallBottle: [["0.33"]],
-    prosecco: [["0.2"]],
     mineral: [["prickelnd", "", "有气"], ["still", "", "无气"]],
-    soda: [["0.25"], ["0.5"], ["0.25", "+ Zitrone", "加柠檬"], ["0.5", "+ Zitrone", "加柠檬"]],
     beer: [["0.3"], ["0.5"]],
     largeBeer: [["0.5"]],
     wine: [["1/8"], ["1/4"], ["1/4", "+ Soda", "加苏打水"], ["1/2", "+ Soda", "加苏打水"]],
@@ -257,18 +195,16 @@ const groupChinese = {
     "Weine": "酒",
     "Warmes": "热饮",
     "Spirituosen": "烈酒",
-    "Vorspeisen": "前菜",
-    "Salate": "沙拉",
+    "Suppen & Salate": "汤和沙拉",
+    "Snacks": "小吃",
     "Sushi": "寿司",
     "Maki": "寿司卷",
     "Meeresfrüchte": "海鲜",
     "Gemüse": "蔬菜",
-    "Huhn": "鸡肉",
-    "Rind": "牛肉",
-    "Schwein": "猪肉",
-    "Ente": "鸭肉",
-    "Reis & Nudeln": "米饭和面",
-    "Nachspeisen": "甜点"
+    "Huhn & Ente": "鸡肉和鸭肉",
+    "Rind & Schwein": "牛肉和猪肉",
+    "Reis": "米饭",
+    "Nudeln": "面条"
 };
 
 /** Local category illustrations; sources and licenses are in icons/sources.md. */
@@ -280,19 +216,20 @@ const groupIcons = {
     "Weine": "wine",
     "Warmes": "hot-drinks",
     "Spirituosen": "spirits",
-    "Vorspeisen": "starters",
-    "Salate": "salad",
+    "Suppen & Salate": "starters",
+    "Snacks": "snacks",
     "Sushi": "sushi",
     "Maki": "maki",
     "Meeresfrüchte": "seafood",
     "Gemüse": "vegetables",
-    "Huhn": "chicken",
-    "Rind": "beef",
-    "Schwein": "pork",
-    "Ente": "duck",
-    "Reis & Nudeln": "rice-noodles",
-    "Nachspeisen": "desserts"
+    "Huhn & Ente": "chicken",
+    "Rind & Schwein": "beef",
+    "Reis": "rice",
+    "Nudeln": "rice-noodles"
 };
+
+/** Merged food groups draw a thin line before the first dish of their second part. */
+const groupDividers = ["Sojasprossen Salat", "Knusprige Ente", "Gan-Bian Schwein"];
 
 /** Cola is one catalog tile; each flavor keeps its actual menu variants. */
 const colaFlavors = [["Cola", "可乐", "softBottle"], ["Cola Zero", "零度可乐", "softBottle"], ["Cola Light", "健怡可乐", "bottle"]];
@@ -304,12 +241,10 @@ const variantPrices = {
     juice: [350, 360, 390, 390, 430],
     bottle: 410,
     mineral: 330,
-    soda: [270, 350, 290, 370],
     beer: [410, 500],
     largeBeer: 500,
     smallBottle: 450,
     wine: [380, 550, 400, 650],
-    prosecco: 600,
     tea: 370,
     coffee: [300, 410],
     campari: 400
@@ -319,10 +254,12 @@ const variantPrices = {
 const itemPrices = {
     "Aloe Vera": [370, 510],
     "Lycheesaft": [360, 460],
+    "Soda": [270, 350],
     "Leitungswasser": [70, 130],
     "Red Bull": 400,
     "Aperol Spritz": 560,
     "Hugo": 560,
+    "Prosecco": 600,
     "Verlängerter": 330,
     "Melange": 330,
     "Cappuccino": 400,
@@ -351,7 +288,7 @@ const itemPrices = {
     "Gebratener Reis": 550,
     "Gebratene Nudeln": 550,
     "Extra Portion Reis": 250,
-    "Extra Sauce Knoblauch": 250,
+    "Knoblauchsauce": 250,
     "Gebackene Banane": 310,
     "Sushi-Set klein": 1290,
     "Sushi-Set mittel": 1490,
@@ -363,31 +300,31 @@ const itemPrices = {
     "Avocado Maki": [690, 990],
     "Futo Maki": 1050,
     "Maki im Set": 1450,
-    "Thai Red Curry Chicken": 1490,
+    "Thai Curry Chicken": 1490,
     "Fleischtaschen": 1490,
     "Acht Schätze": 1490,
-    "Sesam Hühnerfleisch": 1490,
-    "Gegrillter Fisch mit Gemüse": 1590,
-    "Meeresfrüchte mit Gemüse": 1590,
-    "Gegrillte Riesengarnelen": 1990,
-    "Buddhistische Fastenspeise": 1190,
+    "Sesam Huhn": 1490,
+    "Gegrillter Fisch": 1590,
+    "Meeresfrüchte": 1590,
+    "Gegrillte Garnelen": 1990,
+    "Buddhistische Speise": 1190,
     "Tofu mit Gemüse": 1190,
-    "Hühnerfleisch mit Gemüse": 1490,
-    "Hühnerfleisch süß-sauer": 1490,
-    "Sichuan Hühnerfleisch": 1490,
-    "Knuspriges Hühnerfleisch": 1490,
-    "Hühnerfleisch mit Bambus und Pilzen": 1490,
-    "Gong Bao Hühnerfleisch": 1490,
-    "Rindfleisch mit Gemüse": 1490,
-    "La-Za Rindfleisch": 1490,
-    "Rindfleisch mit Zwiebeln und Paprika": 1490,
-    "Gan-Bian Schweinefleisch": 1490,
+    "Huhn mit Gemüse": 1490,
+    "Huhn süß-sauer": 1490,
+    "Sichuan Huhn": 1490,
+    "Knuspriges Huhn": 1490,
+    "Huhn mit Bambus": 1490,
+    "Gong Bao Huhn": 1490,
+    "Rind mit Gemüse": 1490,
+    "La-Za Rind": 1490,
+    "Rind mit Zwiebeln": 1490,
+    "Gan-Bian Schwein": 1490,
     "Knusprige Ente": 1690,
-    "Gebratener Reis mit Ei und Gemüse": 1090,
-    "Gebratener Reis mit Hühnerfleisch": 1190,
-    "Gebratener Reis mit Garnelen": 1290,
-    "Gebratene Nudeln mit Gemüse": 1090,
-    "Gebratene Nudeln mit Hühnerfleisch": 1190
+    "Reis mit Ei": 1090,
+    "Reis mit Huhn": 1190,
+    "Reis mit Garnelen": 1290,
+    "Nudeln mit Gemüse": 1090,
+    "Nudeln mit Huhn": 1190
 };
 
 /** Buffet cent prices use the confirmed adult and child tariffs. */

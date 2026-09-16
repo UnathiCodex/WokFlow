@@ -1,0 +1,26 @@
+# Stops editors from searching parent folders for more .editorconfig files.
+root = true
+
+# Rules for all TypeScript files in this folder and its subfolders.
+[*.ts]
+
+# Indents with spaces, not tabs.
+indent_style = space
+
+# Uses four spaces per indentation level.
+indent_size = 4
+
+# IntelliJ only: keeps spaces inside object braces, like { de: "Cola" }.
+ij_typescript_spaces_within_object_literal_braces = true
+
+# IntelliJ only: keeps spaces inside object type braces, like { de: string; }.
+ij_typescript_spaces_within_object_type_braces = true
+
+# IntelliJ only: keeps spaces inside import braces, like import { dinero }.
+ij_typescript_spaces_within_imports = true
+
+# IntelliJ only: keeps up to two empty lines in a row.
+ij_typescript_keep_blank_lines_in_code = 2
+
+# IntelliJ only: adds a comma after the last item of lists that span several lines.
+ij_typescript_enforce_trailing_comma = whenmultiline

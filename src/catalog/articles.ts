@@ -1,8 +1,8 @@
 /**
  * ## Articles
  *
- * - Defines article names, variants, tax exceptions.
- * - Stores variant prices as Dinero amounts, including tax.
+ * Defines the article type with its variants and
+ * stores variant prices as Dinero amounts.
  *
  * ### Modules
  * - {@link dinero}: Function used to create a money object.
@@ -13,23 +13,24 @@
 import { dinero, EUR } from "dinero.js";
 import type { Dinero } from "dinero.js";
 
+
+//#region Typedefinitions
+
 /**
  * One sellable item from the restaurant menu.
  *
  * - `name`: German and Chinese names used by staff.
  * - `variants`: Available servings or choices, each with its own price.
- * - `tax`: Tax rate override in percent; omitted to use the category rate.
  */
 export type Article = {
     name: { de: string; zh: string; };
     variants: Variant[];
-    tax?: number;
 };
 
 /**
  * One selectable serving or choice of an article.
  *
- * - `name`: German and Chinese labels, null for a single unnamed variant.
+ * - `name`: German and Chinese labels, null when there is no choice.
  * - `price`: Gross price as a Dinero amount in euros.
  */
 export type Variant = {
@@ -37,37 +38,34 @@ export type Variant = {
     price: Dinero<number, "EUR">;
 };
 
-export const lunchAdult: Article = {
-    name: { de: "Mittagsbuffet Erwachsene", zh: "成人午餐自助餐" },
-    variants: [
-        { name: null, price: dinero({ amount: 1590, currency: EUR }) },
-    ],
-};
+//#endregion Typedefinitions
 
-export const spicySoup: Article = {
-    name: { de: "Pikante Suppe", zh: "酸辣汤" },
-    variants: [
-        { name: null, price: dinero({ amount: 350, currency: EUR }) },
-    ],
-};
 
-export const cola: Article = {
-    name: { de: "Cola", zh: "可乐" },
-    variants: [
-        { name: { de: "0.5", zh: "0.5" }, price: dinero({ amount: 450, currency: EUR }) },
-    ],
-};
+//#region Typefactories
 
-export const tea: Article = {
-    name: { de: "Tee", zh: "茶" },
-    variants: [
-        { name: { de: "Grün", zh: "绿茶" }, price: dinero({ amount: 370, currency: EUR }) },
-    ],
-};
+/**
+ * Creates an article from its names and variants.
+ *
+ * @param de - German name
+ * @param zh - Chinese name
+ * @param variants - Servings or choices with prices, or only the price in euro cents without choice
+ */
+export function article(de: string, zh: string, variants: Variant[] | number): Article {
+    if (Array.isArray(variants))
+        return { name: { de, zh }, variants };
+    const variantSingle: Variant = { name: null, price: dinero({ amount: variants, currency: EUR }) }
+    return { name: { de, zh }, variants: [variantSingle] };
+}
 
-export const coffee: Article = {
-    name: { de: "Kaffee", zh: "咖啡" },
-    variants: [
-        { name: { de: "Klein", zh: "小" }, price: dinero({ amount: 300, currency: EUR }) },
-    ],
-};
+/**
+ * Creates a variant from its names and price.
+ *
+ * @param de - German name
+ * @param zh - Chinese name
+ * @param cents - Price in euro cents
+ */
+export function variant(de: string, zh: string, cents: number): Variant {
+    return { name: { de, zh }, price: dinero({ amount: cents, currency: EUR }) };
+}
+
+//#endregion Typefactories

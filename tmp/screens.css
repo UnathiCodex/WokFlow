@@ -652,6 +652,11 @@ details+details {
     gap: 4px 10px;
 }
 
+/* Dish names sit between drinks (18 px) and 19 px, so "Gebackener Tintenfisch 炸鱿鱼" fits one line at 360 px. */
+#food-items .taste .de {
+    font-size: 18.5px;
+}
+
 #food-items .portion {
     font-size: 15px;
     line-height: 1.3;
@@ -664,6 +669,13 @@ details+details {
 
 #food-items .taste.has-options {
     padding-right: 70px;
+}
+
+/* Merged groups separate their two parts, such as soups and salads, with a thin line. */
+#food-items .group-divider {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--line);
 }
 
 #food-items .taste.has-options::after {
@@ -711,13 +723,11 @@ details+details {
     min-width: 36px;
     height: 36px;
     padding: 0 4px;
-    border: 1px solid var(--accent);
     border-radius: 8px;
     background: var(--accent-soft);
 }
 
 .article-tile>.item-count:disabled:not(.is-summary)>span,.variant-option>.item-count:disabled>span {
-    border-color: var(--line);
     background: var(--soft);
     color: var(--muted);
 }
@@ -736,8 +746,17 @@ details+details {
 .article-tile>.item-count.is-summary>span {
     min-width: 26px;
     height: 26px;
-    border-color: transparent;
     border-radius: 7px;
+}
+
+/* Counts on dish and drink buttons stay compact; the 48 px touch area keeps its size. */
+.article-tile>.item-count:not(.is-summary) {
+    font-size: 18px;
+}
+
+.article-tile>.item-count:not(.is-summary)>span {
+    min-width: 30px;
+    height: 30px;
 }
 
 #food-items .article-tile>.item-count {
@@ -747,7 +766,7 @@ details+details {
 
 #drinks-items .article-tile>.taste {
     min-height: 78px;
-    padding: 12px 12px 8px;
+    padding: 12px 10px 8px;
     justify-content: center;
 }
 
@@ -755,8 +774,14 @@ details+details {
     max-width: calc(100% - 44px);
 }
 
-#drinks-items .taste .de,#drinks-groups .taste .de {
+/* Drink and food groups share one size, so group names don't jump when switching between Getränke and Speisen. */
+.group-grid .taste .de {
     font-size: 20px;
+}
+
+/* 18 px keeps even Ginsengschnaps and Latte Macchiato on one line at 360 px. */
+#drinks-items .taste .de {
+    font-size: 18px;
 }
 
 #drinks-items .taste .zh {
@@ -775,7 +800,8 @@ details+details {
 
 #drinks-items .article-tile>.item-count {
     top: auto;
-    bottom: 1px;
+    right: -2px;
+    bottom: -2px;
 }
 
 #drinks-items .article-tile>.item-count.is-summary {
@@ -873,10 +899,6 @@ details+details {
 
 .group-icon[src*="/duck.svg"] {
     --icon-y: .4px;
-}
-
-.group-icon[src*="/desserts.svg"] {
-    --icon-size: 27px;
 }
 
 .group-grid .taste::after {
@@ -1048,10 +1070,10 @@ a.taste:hover,a.btn:hover {
 
 .counter-row {
     display: grid;
-    grid-template-columns: minmax(0,1fr) 44px 30px 44px;
+    grid-template-columns: minmax(0,1fr) 56px 48px 56px;
     gap: 8px;
     align-items: center;
-    padding: 12px 0;
+    padding: 14px 0;
     border-bottom: 1px solid var(--line);
 }
 
@@ -1062,32 +1084,44 @@ a.taste:hover,a.btn:hover {
 }
 
 .counter-row .step-button {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    height: 56px;
+}
+
+/* Buffet plus and minus get longer, stronger strokes to match the bigger buttons. */
+#buffet-counters .step-button::before,#buffet-counters .step-button[data-change="1"]::after {
+    width: 20px;
+    height: 3px;
+    border-radius: 1.5px;
+}
+
+#buffet-counters .step-button[data-change="1"]::after {
+    width: 3px;
+    height: 20px;
 }
 
 .counter-row:last-child {
     border-bottom: 0;
 }
 
+/* Buffet counters are the main input of this screen: large German, Chinese on its own line, large counts. */
 .counter-label {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.25;
 }
 
 .counter-label small {
-    display: inline;
-    font-size: 16px;
+    display: block;
+    font-size: 18px;
     color: var(--muted);
     font-weight: 400;
-    margin-left: 6px;
 }
 
 .counter-row output {
     text-align: center;
-    font-size: 25px;
-    font-weight: 500;
+    font-size: 34px;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
 
@@ -2641,19 +2675,23 @@ body[data-checkout-language="zh"] :is(.payment-scope,#invoice-action,#undo-bar) 
 .move-bar [data-move-message] {
     flex: 1;
     min-width: 0;
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.35;
 }
 
 .move-bar small {
-    font-size: 15px;
+    font-size: 17px;
     color: var(--muted);
 }
 
+.move-bar .category {
+    font-size: 17px;
+}
+
 .tische .t.moving {
-    border: 2px dashed var(--accent);
-    background: var(--surface);
-    color: var(--muted);
+    border: 3px dashed var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
 }
 
 .move-dialog .move-question {
@@ -2678,19 +2716,43 @@ body[data-checkout-language="zh"] :is(.payment-scope,#invoice-action,#undo-bar) 
     gap: 2px;
 }
 
-/* Below the order list: a small fixed-width move button, the wide invoice button in the middle, a square language button. */
+/* Below the order list: a square move arrow, the wide invoice button in the middle, a square language button. */
 #invoice-action {
     display: grid;
-    grid-template-columns: 104px minmax(0,1fr) 56px;
+    grid-template-columns: 56px minmax(0,1fr) 56px;
 }
 
 #invoice-action .btn {
     min-height: 56px;
     padding: 10px 4px;
+    font-size: 20px;
 }
 
+/* The move arrow is drawn with lines like plus and minus: Hyperreadable has no arrow, and the fallback arrow sat too high and differs per phone. */
 #invoice-action .move-table {
-    font-size: 17px;
+    position: relative;
+    font-size: 0;
+}
+
+#invoice-action .move-table::before,#invoice-action .move-table::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+#invoice-action .move-table::before {
+    width: 23px;
+    border-top: 3px solid currentColor;
+    transform: translate(-13px,-50%);
+}
+
+#invoice-action .move-table::after {
+    width: 11px;
+    height: 11px;
+    border-top: 3px solid currentColor;
+    border-right: 3px solid currentColor;
+    transform: translate(-50%,-50%) translateX(3.1px) rotate(45deg);
 }
 
 #invoice-action .order-language button {
@@ -2729,7 +2791,7 @@ body {
 }
 
 /* Accent surfaces are tinted only, like the tonal buttons: no outline. */
-.btn.p,.tische .t.b,.order-tabs .g.on,.period-options button[aria-pressed="true"],.cola-flavors button[aria-pressed="true"],#split-lines .counter-row.has-selection {
+.btn.p,.tische .t.b:not(.moving),.order-tabs .g.on,.period-options button[aria-pressed="true"],.cola-flavors button[aria-pressed="true"],#split-lines .counter-row.has-selection {
     border-color: transparent;
     box-shadow: none;
 }

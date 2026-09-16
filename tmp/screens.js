@@ -168,7 +168,7 @@ const showGroups = (kind, open) => {
     byId("catalog-scroll").scrollTop = 0;
 };
 
-/** Render group rows and bilingual article tiles without fixing their text height. */
+/** Render group rows and bilingual article tiles without fixing their text height; merged groups get a thin line between their parts. */
 const renderMenu = (kind, group = 0) => {
     selectedGroups[kind] = group;
     byId(kind + "-groups").innerHTML = menus[kind].map(([name], index) => `
@@ -176,7 +176,7 @@ const renderMenu = (kind, group = 0) => {
             type="button"
             data-menu="${kind}"
             data-group="${index}"><span class="de">${name}</span><span class="zh" lang="zh-Hans">${groupChinese[name]}</span><img class="group-icon"
-            src="../icons/wokflow/${groupIcons[name]}.svg?v=13"
+            src="../icons/wokflow/${groupIcons[name]}.svg?v=17"
             alt=""
             width="32"
             height="32"></button>
@@ -186,13 +186,15 @@ const renderMenu = (kind, group = 0) => {
         const portion = articlePortions[name];
         const isSushiSet = portion?.includes("Sushi");
         const portionLabel = isSushiSet ? portion.replace("Sushi", "Sushi <span lang=\"zh-Hans\">寿司</span>").replace("Maki", "Maki <span lang=\"zh-Hans\">卷</span>") : "(" + portion + ")";
+        const divider = groupDividers.includes(name) ? "<hr class=\"group-divider\">" : "";
         return `
+            ${divider}
             <div class="article-tile">
                 <button class="taste${hasOptions ? " has-options" : ""}"
                     type="button"${hasOptions ? " aria-haspopup=\"dialog\"" : ""}
                     data-item-kind="${kind}"
                     data-item-group="${group}"
-                    data-item="${index}"><span class="de">${articleLabels[name] || name}</span><span class="zh" lang="zh-Hans">${articleChineseLabels[name] || chinese}</span>${portion ? `<small class="portion${isSushiSet ? " set-portion" : ""}">${portionLabel}</small>` : ""}</button>
+                    data-item="${index}"><span class="de">${name}</span><span class="zh" lang="zh-Hans">${chinese}</span>${portion ? `<small class="portion${isSushiSet ? " set-portion" : ""}">${portionLabel}</small>` : ""}</button>
                 <button class="item-count${hasOptions ? " is-summary" : ""}"
                     type="button"
                     data-reduce-kind="${kind}"
@@ -321,15 +323,10 @@ const chineseOrderLabel = line => {
 /** Short buffet names for the order list; adult labels remain at the ordering counters. */
 const buffetOrderLabel = (period, person, language) => buffetPeriods[period][language] + (person ? " (" + buffetPeople[person][0] + ")" : "");
 
-/** Keep service names concise and identifiable; recorded article names stay complete. */
+/** Shorten lemon and bottle additions in the order list and bill; the article name itself stays the same everywhere. */
 const serviceLabel = name => name
     .replaceAll("+ Zitrone", "+ Zit")
-    .replace(/Flasche (\d+(?:\.\d+)?)/g, "$1 Fl.")
-    .replaceAll("Hühnerfleisch", "Huhn")
-    .replaceAll("Rindfleisch", "Rind")
-    .replaceAll("Schweinefleisch", "Schwein")
-    .replace("Gebratener Reis mit", "Reis mit")
-    .replace("Gebratene Nudeln mit", "Nudeln mit");
+    .replace(/Flasche (\d+(?:\.\d+)?)/g, "$1 Fl.");
 
 /** Fit each visible order label to its own available width without truncating the text. */
 const fitOrderLabels = () => {
@@ -472,7 +469,6 @@ const canAddLemon = () => Boolean(
     lastVariantBooking
     && lastVariantBooking.table === activeTable
     && selectedKind === "drinks"
-    && selectedItem[2] !== "soda"
     && lastVariantBooking.item[0] === selectedItem[0]
     && lastVariantBooking.line.quantity > lastVariantBooking.line.sent
     && pendingAdds().at(-1) === lastVariantBooking.line
@@ -528,7 +524,7 @@ const renderVariants = (resetLastBooking = true) => {
             ${row.buttons.join("")}
         </div>
     `).join("");
-    byId("lemon-option").hidden = selectedKind !== "drinks" || selectedItem[2] === "soda";
+    byId("lemon-option").hidden = selectedKind !== "drinks";
     byId("lemon-option").disabled = !canAddLemon();
     byId("lemon-status").textContent = "";
     renderUndo();
