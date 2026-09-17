@@ -38,3 +38,13 @@ npm install dinero.js@2.0.2
 # Run the start script from package.json, starts the server
 npm start
 ```
+
+### Run with npm
+
+```bash
+# Start the server at localhost:3000, runs node src/server/index.ts from package.json
+npm start
+
+# Run all tests from the WokFlow folder, --test: finds test files
+node --test
+```

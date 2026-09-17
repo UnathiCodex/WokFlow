@@ -7,25 +7,27 @@
  * - `./buffet.ts`: Defines the buffet articles.
  * - `./food.ts`: Defines the food articles.
  * - `./drinks.ts`: Defines the drink articles.
+ * - `dinero.js`: Handles money amounts with currency.
  */
 
-import {
-    buffets
-} from "./buffet.ts";
+import { toSnapshot } from "dinero.js";
+import * as articlesBuffet from "./buffet.ts";
+import * as articlesFood from "./food.ts";
+import * as articlesDrink from "./drinks.ts";
+import type { Article, Variant } from "./articles.ts";
 
-import {
-    soups, salads, snacks, sushi, maki, seafood, vegetables, chicken, duck, beef, pork, rice, noodles,
-} from "./food.ts";
 
-import {
-    lemonades, juices, water, beer, wines, warmDrinks, spirits
-} from "./drinks.ts";
-
-import type { Article } from "./articles.ts";
-
+//#region Menu
 
 /**
- * One main category with its default tax rate and article groups.
+ * Groups of {@link Article}s of one main {@link Category}.
+ */
+export type Groups = {
+    [name: string]: Article[]
+};
+
+/**
+ * One main category with its default tax rate and article {@link Groups}.
  *
  * - `tax`: Default tax rate in percent.
  * - `print`: Whether orders of this category are printed on the order ticket.
@@ -34,7 +36,7 @@ import type { Article } from "./articles.ts";
 export type Category = {
     tax: number;
     print: boolean;
-    groups: { [name: string]: Article[] };
+    groups: Groups;
 };
 
 /**
@@ -47,46 +49,105 @@ export type Menu = {
 };
 
 /**
- * Menu groups with the default tax rate for each main category.
+ * {@link Menu} groups with the default tax rate for each main {@link Category}.
+ * The group `extras` holds additions like the lemon, which the screen does not show as a group.
  */
 export const menu: Menu = {
     buffet: {
         tax: 10,
         print: false,
         groups: {
-            buffets,
+            buffets: articlesBuffet.buffets,
         },
     },
     food: {
         tax: 10,
         print: true,
         groups: {
-            soups, salads, snacks, sushi, maki, seafood, vegetables, chicken, duck, beef, pork, rice, noodles,
+            soups: articlesFood.soups,
+            salads: articlesFood.salads,
+            snacks: articlesFood.snacks,
+            sushi: articlesFood.sushi,
+            maki: articlesFood.maki,
+            seafood: articlesFood.seafood,
+            vegetables: articlesFood.vegetables,
+            chicken: articlesFood.chicken,
+            duck: articlesFood.duck,
+            beef: articlesFood.beef,
+            pork: articlesFood.pork,
+            rice: articlesFood.rice,
+            noodles: articlesFood.noodles,
         },
     },
     drinks: {
         tax: 20,
         print: true,
         groups: {
-            lemonades, juices, water, beer, wines, warmDrinks, spirits,
+            lemonades: articlesDrink.lemonades,
+            juices: articlesDrink.juices,
+            water: articlesDrink.water,
+            beer: articlesDrink.beer,
+            wines: articlesDrink.wines,
+            warmDrinks: articlesDrink.warmDrinks,
+            spirits: articlesDrink.spirits,
+            extras: [articlesDrink.lemon],
         },
     },
 };
 
+//#endregion Menu
+
+
+//#region Lookup
+
 /**
- * Tax rates in % of articles taxed differently from their main category.
+ * One variant of the {@link menu} with everything an order needs.
+ *
+ * - `articleId`: German article name.
+ * - `variantId`: German variant name (nullable).
+ * - `price`: Gross price of one portion.
+ * - `tax`: Tax rate in percent.
  */
-const taxExceptions: { [article: string]: number } = {
-    Leitungswasser: 10,
+export type MenuEntry = {
+    articleId: string;
+    variantId: string | null;
+    price: number;
+    tax: number;
 };
 
 /**
- * Tax rate of an article in percent.
- *
- * @param category - Main category of the article
- * @param article - Article to look up
- * @returns Tax rate according to the category, otherwise tax rate from {@link taxExceptions}.
+ * Every variant of the {@link Menu} as {@link MenuEntry} in one flat list.
+ * Built once when this menu file loads.
  */
-export function taxOf(category: Category, article: Article): number {
-    return taxExceptions[article.name.de] ?? category.tax;
+const entries: MenuEntry[] =
+    Object.values(menu).flatMap((category: Category): MenuEntry[] => {
+        return Object.values(category.groups).flat().flatMap((article: Article): MenuEntry[] => {
+            return article.variants.map((variant: Variant): MenuEntry => {
+                return {
+                    articleId: article.name.de,
+                    variantId: variant.name?.de ?? null,
+                    price: toSnapshot(variant.price).amount,
+                    tax: article.name.de === "Leitungswasser" ? 10 : category.tax,
+                };
+            });
+        });
+    });
+
+/**
+ * The {@link MenuEntry} of a variant.
+ * Throws when the menu has no such article or variant.
+ *
+ * @param articleId - German article name
+ * @param variantId - German variant name (nullable)
+ * @returns Entry with price and tax rate
+ */
+export function entryOf(articleId: string, variantId: string | null): MenuEntry {
+    const entry: MenuEntry | undefined = entries.find((e: MenuEntry): boolean =>
+        e.articleId === articleId && e.variantId === variantId,
+    );
+    if (entry === undefined)
+        throw new Error(`The menu has no ${articleId} ${variantId}`);
+    return entry;
 }
+
+//#endregion Lookup

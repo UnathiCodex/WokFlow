@@ -14,6 +14,24 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
   Index-Signatur `{ [name: string]: Group }` wie `Map<String, Group>`. **Nie mit einem Begriff erklären oder
   vergleichen, den er noch nicht kennt** (Nutzer verärgert, 16.09.2026: `Record` und `interface` kamen unerklärt
   als Vergleich); Neues zuerst selbst erklären, am einfachsten Beispiel.
+- **Bibliotheksfunktionen am echten Aufruf erklären, nie mit der rohen Signatur aus `.d.ts` beginnen (17.09.2026):**
+  Die Signatur von `test` mit `TestFn`, `TestContext`, `done`, `Promise` auf einmal war dem Nutzer zu viel („This is
+  nothing but for a beginner“). Zweiter Anlauf: der erste echte Test, dazu eine vereinfachte Nachbildung im Stil von
+  `transaction` (Funktion bekommt eine Funktion und ruft sie in `try` auf). Die echte Signatur danach Stück für Stück,
+  als Zeilen mit Kommentar je Teil. Eine vereinfachte Nachbildung sofort neben die echte Signatur stellen und jede
+  Abweichung nennen (`?`, Parametername, Rückgabetyp), sonst hält der Nutzer sie später für die echte (17.09.2026:
+  „some shit signature which didn't have the question mark“). Gibt es Überladungen, zuerst alle zeigen und sagen,
+  welche der eigene Aufruf nutzt.
+- **Schwieriges von Grund auf aufbauen, mit winzigen Beispielen (Nutzer, 17.09.2026: „this explanation was good. So
+  save it“):** Kommt eine Erklärung nicht an, nicht weiter mit Worten, Signaturen oder Java-Vergleichen nachlegen,
+  sondern ganz unten neu anfangen und Schritt für Schritt hochbauen, je Antwort ein Schritt. Jedes Beispiel wenige
+  Zeilen, Namen aus WokFlow (`"Cola"`), Ergebnis als Kommentar hinter jeder Zeile (`// Article: Cola`), Fehlertexte
+  wörtlich wie in IntelliJ und vorher mit `tsc` und `node` in einer Kopie im Scratchpad geprüft. Vorbild, warum eine
+  Test-Lambda weniger Parameter haben darf als `TestFn` anbietet: (1) reines JavaScript, `show(article)` mit einem,
+  zwei, null Argumenten, zu viele werden ignoriert, fehlende sind `undefined`; (2) dieselbe Funktion in TypeScript,
+  selbst aufgerufen muss die Anzahl stimmen, außer bei `?`; (3) `run(work)` ruft `work("Cola")`, übergebene Lambda
+  mit gleich vielen, weniger, mehr Parametern: weniger passt, mehr ist ein Fehler. Vorher gescheitert: Worte über
+  Aufrufer und Richtung, die `forEach`-Signatur mit vier Parametern, der Satz „JavaScript erlaubt beides“.
 - **Schon erklärt, darauf aufbauen, nicht alles neu erklären:**
   - Node und Server (zwei Server-Chats, beendet): Node als Laufzeit, npm und devDependencies, Module und Imports,
     HTTP-Kopf und Inhalt, `setHeader`/`end`/`write`, Ports und localhost, UTF-8, Vererbung, IntelliJs getrennte
@@ -26,9 +44,32 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
     (optional, im Code gesetzt), Komma nach dem letzten Eintrag, Shadowing, JSDoc-Tags, `//#region`, Array statt
     „Liste“ (`Article[]`), Dinero-Optionen `amount`/`currency`/`scale`, Typdateien per Strg+Klick,
     Parameterhilfe Strg+P.
+  - Tests mit `node:test` (Modul-Chat `tables`, 17.09.2026): `test(name, lambda)` statt `@Test`, fehlschlagen heißt
+    werfen; `?` am Parameter heißt beim eigenen Aufruf weglassbar; `TestFn` ist ein `type` für eine Funktionsform wie
+    `work: () => void` in `transaction`, keine Klasse; `t: TestContext` ist das Objekt, das Node je Test übergibt, wie
+    `order` bei `forEach`, `t.name` ist der Text aus dem ersten Argument; übergebene Lambdas dürfen weniger Parameter
+    haben, nicht mehr (in Java nicht erlaubt); der Rückgabetyp muss passen (`void` oder `Promise<void>`); `undefined`
+    gegen `null`; die vier Überladungen von `test`; `done` (Node wartet auf `done()`, `done(error)` lässt fehlschlagen,
+    `setTimeout` als Grund); Funktionen sind in TypeScript Werte, in Java Objekte eines Interfaces; `interface` und
+    `type` verschwinden beim Ausführen, keine Klasse, kein `new`; `any` gegen `unknown`, `strict` verbietet nur
+    ungeschriebenes `any`; Lambda-Parameter bekommen ihren Typ vom Zieltyp (wie `forEach` in Java); `deepEqual` mit und
+    ohne `/strict` (Text gegen Zahl, `NaN`); `new DatabaseSync(":memory:")`; `import * as`; `databaseTest`
+    (`:memory:` baut die Datenbank im Arbeitsspeicher, jeder Aufruf eine neue leere, deshalb sieht kein Test die Zeilen
+    eines anderen); `run` gegen `get` und `all` (`run` heißt „ausführen, keine Zeilen zurück, nur der Bericht
+    `{ changes, lastInsertRowid }`“, nicht „ändert die Datenbank“; `tableClose` liest daraus `changes`); in SQLite ist
+    jede einzelne Anweisung schon eine Transaktion, deshalb braucht `tableClose` keine. Noch offen: `Promise`,
+    `throws`, `node --test`, `ordersRead`.
   - Git: siehe „Aktueller Stand“.
 - Höchstens drei bis vier Sätze, ein Gedanke, höchstens eine Frage; mehr nur auf Wunsch. Keine unerklärten
   Fachwörter.
+- **Viel kürzer, in Schritten (Nutzer, 17.09.2026: „Your explanation is still too long“):** Eine Erklärung ist eine
+  Folge kleiner Schritte, je Antwort genau einer: ein winziges Beispiel, ein bis zwei Sätze, dann „Questions?“ und
+  warten. Nie mehrere Teile eines Ausdrucks in einer Antwort erklären. Verstoß: `flatMap` mit Codeblock, vier
+  Stichpunkten zu `Object.values`, `flat`, `flatMap`, `...` und einem Java-Absatz auf einmal. Richtig: Schritt 1 nur
+  `flat` an zwei Arrays, Schritt 2 `flatMap`, Schritt 3 `Object.values`, Schritt 4 alles zusammen.
+- **„Überall“ heißt im ganzen Projekt (Nutzer, 17.09.2026):** Bei „everywhere“ alle Dateien unter `src/` und `test/`
+  durchsuchen, nicht nur die Datei, um die es gerade ging. Fehler: Kommentar zu `variantId` nur in `orders.ts` und
+  `orders.test.ts` geändert, `menu.ts` ausgelassen.
 - **Ein Wort, eine Bedeutung (16.09.2026):** „order“ hieß im ersten Bau der offene Vorgang, im Prototyp die Position;
   der Nutzer verstand den Code deshalb nicht. „table“ ist im Code der Tisch; Datenbanktabellen im Chat immer „database
   table“ nennen, bei Verwechslung auf Deutsch trennen, Tisch gegen Tabelle (er hielt `createOrdersTable` für einen
@@ -82,8 +123,16 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
   (`soups`, `warmDrinks`). Er benennt oft selbst um (`variantsFull`, `menu.ts`); nicht zurückbenennen.
   Funktionen und Typen ebenso, Substantiv zuerst, dann Verb oder Merkmal (Nutzer, 16.09.2026, ausdrücklich zum
   Ausprobieren, Rückbau auf Wunsch): `orderbookCreate`, `ordersSend`, `orderRemove`, `ordersRead`, `tableClose`,
-  `databaseOpen`, im Test `databaseFresh`, Typ `OrderNew`. Unüblich in TypeScript, schadet aber nicht; Namen aus
+  `databaseOpen`, im Test `databaseTest` (vom Nutzer am 17.09.2026 aus `databaseFresh` umbenannt), `menuFind`,
+  `orderChosen`, `orderSaved`, Typ `OrderNew`. Unüblich in TypeScript, schadet aber nicht; Namen aus
   Bibliotheken bleiben, wie sie sind (`createServer` und `readFileSync`).
+- **Objekt oder Kennung (Nutzer, 17.09.2026, in `orders`):** Ist das Objekt gemeint, heißt es `article` bzw.
+  `variant`; ist der deutsche Name als Kennung gemeint, `articleId` bzw. `variantId`. In der Datenbanktabelle
+  `article_id` und `variant_id` wie `table_id`; `ordersRead` benennt sie mit `AS articleId` und `AS variantId` um.
+- **camelCase in TypeScript, Unterstrich nur in der Datenbank (Nutzer, 17.09.2026: „you should be consistent“):** im
+  Code `tableId`, nie `table_id`; Spalten in SQL `table_id`, weil SQLite Groß- und Kleinschreibung in Namen
+  ignoriert (`tableId` und `tableid` sind dieselbe Spalte, geprüft). In `orders.ts` umgestellt; `api.ts` hat noch
+  `table_id` als Variable.
 - Ordner nach Aufgaben, Dateien nach Inhalt, keine Sammeldateien wie `types.ts` oder `types/` (15.09.2026):
   `src/catalog/` Artikelbestand, `src/tables/` Tische und ihre Bestellungen (bis 16.09.2026 `src/orders/`),
   `src/server/` Server. Typen stehen bei ihren Daten.
@@ -92,11 +141,26 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
   etwa `name: { de: string; zh: string; } | null;`.
 - **Formatierung über `WokFlow/.editorconfig`** (16.09.2026, jede Einstellung mit englischem `#`-Kommentar, Namen
   in IntelliJ 2026.1 geprüft): vier Leerzeichen, Leerzeichen innerhalb `{ }` bei Objekten, Objekttypen, Imports,
-  bis zu zwei Leerzeilen, Komma nach dem letzten Eintrag mehrzeiliger Listen. Anlass: IntelliJs Formatierer
+  bis zu zwei Leerzeilen, Komma nach dem letzten Eintrag mehrzeiliger Listen. `max_line_length = 120` am 17.09.2026
+  kurz eingetragen und auf Wunsch des Nutzers wieder entfernt. Anlass: IntelliJs Formatierer
   (Strg+Alt+L) entfernte Leerzeichen und Leerzeilen. Fehlt noch etwas, dort ergänzen, nicht in `.idea`.
 - **Komma nach dem letzten Eintrag (16.09.2026):** bei Listen über mehrere Zeilen ja (Arrays, Objekte, Imports,
   Argumente, Parameter), bei einzeiligen nein, nie nach `...rest`; in `.editorconfig` als
   `ij_typescript_enforce_trailing_comma = whenmultiline`.
+- **Aufbau eines Tests (Nutzer, 17.09.2026, selbst am ersten Test vorgemacht):** `test(` allein, darunter der Name in
+  eigener Zeile, darunter die Lambda, dann `);`. Kurze Lambda in einer Zeile mit Klammern,
+  `(): void => { deepEqual(…); }`; längere mit Klammern über mehrere Zeilen. Nach der Lambda kein Komma, wie im
+  Beispiel des Nutzers, obwohl die Komma-Regel oben eins verlangt und Strg+Alt+L es einfügen würde; offen, was gilt.
+  **Der Name eines Tests beginnt mit einem Großbuchstaben, ohne Punkt am Ende (Nutzer, 17.09.2026: „the name of a test
+  should start big“):** `"Sending saves all orders or none"`. Umgesetzt in `orders.test.ts` und `menu.test.ts`;
+  `api.test.ts` (anderer Chat) hat noch kleine Anfangsbuchstaben.
+- **Imports (Nutzer, 17.09.2026, für die Lesbarkeit):** Ab vier Namen aus einer eigenen Projektdatei und ab sechs
+  Namen aus einem externen Modul (Node oder Bibliothek) `import * as name from …` statt einzelner Namen.
+  Die Grenzen gelten je Quelldatei; Name wie die Datei, etwa `orders.ordersSend`. Drei Namen aus einer eigenen
+  Datei bleiben einzeln importiert, weil sie noch gut lesbar sind.
+  Reguläre Imports stehen vor `import type`. Genau eine Leerzeile zwischen den Gruppen, wenn die Datei mindestens
+  drei reguläre Import-Anweisungen und mindestens zwei `import type`-Anweisungen enthält; sonst stehen die Gruppen
+  direkt untereinander. Ein einzelnes `import type` bekommt also keine trennende Leerzeile.
 - **Aufbau in `src/catalog/`:** nach den Imports und um Regionen zwei Leerzeilen, sonst eine. Regionen als
   `//#region Name` … `//#endregion Name`, ohne Leerzeichen nach `//` (sonst faltet IntelliJ nicht), verschachtelbar;
   nur wo eine Datei mehrere Teile hat (`Typedefinitions` und `Typefactories` in `articles.ts`, `Variants` in
@@ -115,6 +179,37 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
   - Links nur als `{@link Name}`, ohne `|` und Linktext. Benutzte Bibliotheksfunktionen bei Bedarf so erklären,
     Methoden über ihre deklarierende Klasse (`{@link Writable#end}` mit Import aus `node:stream`); dafür nötige
     Imports sind erlaubt. IntelliJ prüft Kommentar-Links selbst und braucht dafür `@types/node`.
+  - **Verlinkbares immer verlinken (Nutzer, 17.09.2026: „if something is linkable, link it“, „take it
+    seriously“):** Nennt ein Kommentar einen Typ, eine Funktion oder eine Konstante, die in der Datei erreichbar ist,
+    steht dort `{@link Name}`, je Kommentar beim ersten Nennen; über Stern-Import mit Namensraum
+    (`{@link orders.Order}`, `{@link articlesDrink.lemon}`). Mehrzahl als `{@link Order}s`, außer die Mehrzahl ändert
+    das Wort (`categories`), dann ohne Link. Modulzeilen im Dateikopf und Datenbanknamen wie `orderbook` bleiben in
+    Backticks. Am 17.09.2026 in `articles.ts`, `food.ts`, `menu.ts`, `orders.ts`, `database.ts`, `setup.ts`
+    nachgezogen; die api-Dateien nicht.
+  - **Form der Sätze (Nutzer, 18.09.2026, in `ordersRead` von Hand korrigiert: „there were a little bit flaws in the
+    comments. Learn from it“):**
+    - Jeder Satz endet mit einem Punkt, auch der letzte eines Blocks. Wer einen JSDoc anfasst, prüft alle seine
+      Zeilen, nicht nur die neue (Fehler: „… as SQLite returns bare rows“ blieb ohne Punkt stehen).
+    - Keine langen Kommentarzeilen, **Richtwert rund 75 Zeichen** (abgelesen an seinen Korrekturen; seine längste
+      Zeile danach hat 73 Zeichen). Ein längerer Satz bricht an einer Sinngrenze um, nach einem Komma, vor „so“, vor
+      „and“, vor „with“, und läuft in der nächsten Zeile weiter; jeder Satz beginnt in einer neuen Zeile. Fehler von
+      Claude: eine Zeile mit 121 Zeichen in `ordersRead`, vom Nutzer gebrochen zu „Sorts the {@link Order}s by their
+      oldest open portion,“ und „so a variant keeps its place while portions are sent or removed.“; danach hat er auch
+      den Dateikopf von `orders.ts` von Hand umgebrochen, etwa „A portion is open until its table is closed“ und
+      „and then stays stored for the records.“, auch eine ältere Zeile mit 107 Zeichen. Die Regel gilt also für jede
+      Kommentarzeile, nicht nur für neue. Vorbild ist sein JSDoc von `orderOf`. Vor dem Abgeben prüfen:
+      `awk 'length($0) > 80 && /^\s*\*/'` über die geänderten Dateien.
+    - Ein Wort, eine Bedeutung gilt auch im Kommentar: Eine Zeile der Datenbanktabelle ist eine „portion“, ein
+      `Order` ist eine Variante mit ihrer Menge. Nie „order“ für beides in einem Satz (sein Entwurf „Orders are
+      sorted by their first order“ wurde deshalb umformuliert).
+    - Ein Kommentar verspricht nur, was der Code heute tut. Der Satz zur Reihenfolge nannte erst nur das Senden und
+      bekam „or removed“ erst, als `ORDER BY id DESC` im `DELETE` stand.
+- **Kommentare in `commands.md` (Nutzer, 17.09.2026, von Hand gekürzt: „your commentary is shitty. Please learn from
+  your mistakes“):** eine englische Zeile über jedem Befehl, ohne Punkt: was der Befehl tut, danach mit Komma die
+  Optionen als `-x: Bedeutung`, etwa `# Run all tests from the WokFlow folder, --test: finds test files`. Keine
+  Beispiele (Claude hatte „like test/orders.test.ts“ angehängt, die JSDoc-Regel ohne Beispiele gilt auch hier), keine
+  Bedienhinweise (Claude hatte „stop with Ctrl+C“ angehängt). Vor dem Schreiben die Nachbarzeilen der Datei als Muster
+  lesen und die Regeln hier prüfen, nicht aus dem Gedächtnis ergänzen.
 - **Dateikopf im Stil des Nutzers (16.09.2026, mehrfach von Hand korrigiert):**
   - `## Titel`, darunter eine Beschreibung als Fließtext, keine Stichpunkte; sagt der Titel alles, keine
     Beschreibung (`## Drinks`). Keine Zusätze in Klammern, keine Ebenenzahlen. Dateien ohne Imports beginnen
@@ -122,6 +217,9 @@ verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
   - Module: je Modul eine Stichpunktzeile direkt unter der Beschreibung, ohne Überschrift `### Modules` (Nutzer,
     16.09.2026, in `menu.ts` und `server/index.ts` selbst entfernt; `buffet.ts`, `food.ts`, `drinks.ts` ebenso).
     Das Modul in Backticks ohne Webadresse, dahinter, was das Modul macht, nicht was die importierten Namen machen.
+  - Testdateien (Nutzer, 17.09.2026, in `test/orders.test.ts` selbst entfernt, „I don't think we have to list every
+    module inside it“): keine Zeilen für die eigenen Dateien unter `../src/`, die Node-Module bleiben. In `orders.ts`
+    stehen die Zeilen zu `../catalog/…` weiter.
   - Ausnahme `articles.ts` und andere Dateien mit wenigen importierten Namen: Dort bleibt `### Modules`, darunter je
     Name `` - {@link Name}: `` mit Erklärung, was er ist und wofür die Datei ihn braucht; diese Erklärungen nie
     weglassen.
@@ -451,16 +549,93 @@ viel wie von Hand; wer nur Code abholt, lernt wenig. Der Nutzer will Ultracode n
 ### Stand der Dateien (geprüft 16.09.2026 abends)
 
 - Modul `tables` gebaut (16.09.2026 abends): `src/tables/orders.ts` und `test/orders.test.ts`, 13 Tests grün,
-  Typprüfung ohne Fehler, noch nicht committet. `src/orders/` gibt es nicht mehr. Kommentarkorrekturen des Nutzers
+  Typprüfung ohne Fehler, committet in `6138b9a`. `src/orders/` gibt es nicht mehr. Kommentarkorrekturen des Nutzers
   bisher: Modulzeile zu `menu.ts` nur „Groups the restaurant articles.“, bei `price` kein „in euro cents“, Regionen um
   die Typen, um `orderbookCreate`, um die Helfer entfernt, nur `Ordering` (vorher `Bookings`) blieb; JSDoc von
   `orderbookCreate` und `transaction` selbst umgeschrieben, `catch (error: unknown)` ausdrücklich typisiert. Der Nutzer korrigiert weiter; seine Korrekturen danach als Regeln unter „Coden“ festhalten.
+- **Bestellungen nur mit Namen (Entscheidung des Nutzers, 17.09.2026, noch nicht committet):** `OrderNew` ist nur
+  noch `Omit<Order, "price" | "tax">`, also `{ articleId, variantId, quantity }`, wie das Handy es schickt (Nutzer:
+  `Omit` statt zweiter Feldliste; ein einziger Typ mit `price?` und `tax?` verworfen, weil dann jede Stelle, die
+  gespeicherte Bestellungen liest, auf `undefined` prüfen müsste). Im `//#region Ordering` von `orders.ts` macht
+  `orderOf(orderNew)` (Name vom Nutzer gewählt, wie `taxOf`) daraus ein `Order`: holt einmal `entryOf` und setzt
+  Preis und Steuersatz, wirft bei unbekanntem Namen.
+  `ordersSend(database, tableId, orders: Order[])` speichert nur noch (Variante C, vom Nutzer gewählt: jede Funktion
+  eine Aufgabe); der Aufrufer schreibt `ordersSend(database, tableId, sent.map(orderOf))`. Die Kategorie schickt das Handy
+  bewusst nicht mit: Sie bestimmt den Steuersatz, das Menü weiß sie schon.
+- **Der Suchteil von `menu.ts`, Endstand 17.09.2026 abends** (davor durchprobiert und wieder verworfen, weil dem
+  Nutzer alles zu kompliziert war: `menuSerach` mit zwei `find`, `Map` mit Textschlüssel `"Cola|0.5"`, `Map` in `Map`
+  mit `variantsOf` und Paaren, sofort aufgerufene Lambda, Zweitdurchlauf für die Steuerausnahme, `priceOf` und
+  `taxOf` als eigene Funktionen): `//#region Lookup` enthält den exportierten Typ
+  `MenuEntry = { articleId, variantId, price, tax }`, also nur, was eine Bestellung braucht, dazu die flache Liste
+  `const entries: MenuEntry[]` mit einer Zeile je Variante (zwei `flatMap` und ein `map` über Kategorien, Gruppen,
+  Varianten), und `export function entryOf(articleId, variantId)` mit einem `find` über beide Namen, das bei
+  unbekanntem Namen wirft. Preis kommt einmal beim Bauen aus `toSnapshot(variant.price).amount`, der Steuersatz aus
+  `article.name.de === "Leitungswasser" ? 10 : category.tax`. Die Zitrone steht in der Gruppe
+  `extras: [articlesDrink.lemon]` unter Getränke, die der Bildschirm nicht zeigt; `api.ts` gibt sie im Menü mit aus.
+  Tests prüfen `entryOf(…).price` für jede Variante des Menüs gegen deren Preis und `entryOf(…).tax` für Cola,
+  Pikante Suppe, Leitungswasser; 12 Tests grün. Typ `Groups` vor `Category`.
+- **`test/orders.test.ts` und `test/menu.test.ts`, Stand 18.09.2026 (am 17.09. auf Auftrag des Nutzers gekürzt,
+  „patch the whole file as you see fit“, am 18.09. auf „eine Zeile je Portion“ umgestellt):** 8 Tests, Typprüfung
+  ohne Fehler, alle grün. Vier Tests für `orders.ts` in `orders.test.ts`: (1) „A table goes from its first orders to
+  closing“, ein Ablauf statt vieler Einzeltests: `[colaBig1, colaSmall1, redBull1]` senden, später `[colaBig2]`,
+  zweiter Tisch `G3`, lesen ergibt `[colaBig3, colaSmall1, redBull1]`, `ordersRemove` mit `[colaBig2, redBull1]` lässt
+  `[colaBig1, colaSmall1]`, schließen, `G3` unberührt. (2) „Sending saves all orders or none“ mit `redBull0` (Menge 0). (3) „Removing takes all portions or none“: die
+  zweite Angabe verlangt mehr Cola, als der Tisch hat, danach ist auch der Red Bull noch da. (4) „A free table has
+  nothing to remove or to close“: erst senden und schließen, dann müssen `ordersRemove` und `tableClose` werfen, damit
+  auch geprüft ist, dass geschlossene Portionen nicht mehr zählen. Der Nutzer fand den Ablauftest deutlich besser
+  („much better to go through all the send“). **Namen der Testbestellungen vom Nutzer: Artikel, bei Cola die Größe,
+  dann immer die Menge als Ziffer: `colaSmall1`, `colaBig1`, `colaBig2`, `colaBig3`, `redBull0`, `redBull1`** (er hat
+  `cola1`/`cola2` selbst eingebaut und `redBull` später selbst in `redBull1` umbenannt; keine Namen wie `colaLater`
+  oder `colaTwo`, keine Konstante ohne Ziffer). Alle sechs Konstanten stehen auf Dateiebene direkt unter seinem
+  `beforeEach`-Block, auch `redBull0` (vom Nutzer dorthin verschoben: „keep my patch with the global Red Bull 0 and
+  global Red Bull 1“), gebaut mit `orderOf`, keine festen Preise oder Steuersätze; `ordersRemove` bekommt
+  dieselben Konstanten, weil ein `Order` auch als `OrderNew` passt. `DatabaseSync` ist dort `import type`, weil nur
+  der Typ gebraucht wird (`setup.ts` braucht die Klasse für `new`). Die vier Menü-Tests (`entryOf`: Preis je Variante,
+  Steuersatz der Kategorie, Leitungswasser, unbekannte Namen) stehen seit dem Ja des Nutzers unverändert im neuen
+  `test/menu.test.ts` (Dateikopf „Checks the prices and tax rates that {@link entryOf} finds in the {@link menu}.“);
+  `orders.test.ts` importiert deshalb weder `dinero.js` noch `menu.ts`. Geprüft mit absichtlich kaputten Kopien
+  von `orders.ts` im Scratchpad (zehn Fehler, etwa `= ?` statt `IS ?`, `COMMIT` statt `ROLLBACK`, Entfernen ohne
+  Prüfung von `changes`, Senden legt nur eine Zeile an, Lesen zählt nicht, Schließen schließt alle Tische): jeder
+  lässt mindestens einen passenden Test fehlschlagen. Offen: die Dateien gemeinsam durchgehen (Warum-Liste).
+  Frage des Nutzers nach einem globalen Setup für die Datenbank: `node:test` hat `before` und `beforeEach` wie
+  `@BeforeAll` und `@BeforeEach`. **Entscheidung des Nutzers (17.09.2026, selbst eingebaut, gegen Claudes Empfehlung
+  „Zeile je Test behalten“, nicht zurückbauen):** auf Dateiebene `let database: DatabaseSync;` und
+  `beforeEach((): void => { database = databaseTest(); });`, um den Block je zwei Leerzeilen. Nie eine Datenbank über
+  Tests teilen (im Scratchpad geprüft: mit geteilter Datenbank liefen die Tests nur durch, weil der erste Tisch 14
+  am Ende schließt).
+  `test/setup.ts` enthält nur `databaseTest` (Wunsch des Nutzers: eine Datei für alles, was nur Tests brauchen);
+  `node --test` führt sie als eigene, bestandene Datei mit, das stört den Nutzer nicht, deshalb kein Muster wie
+  `"test/*.test.ts"`. Imports: `import * as orders`, aus `menu.ts` einzeln `{ menu, entryOf }` (Nutzer: `menu.menu`
+  ist hässlich, bei wenigen Namen einzeln).
+- `src/server/api.ts` und `test/api.test.ts` (nicht von diesem Chat, zuletzt 17.09.2026 17:52 geändert) sind nicht
+  angepasst: `api.ts` Zeile 137 übergibt noch `OrderNew[]` an `ordersSend` (muss `.map(orderOf)`), Zeile 248 baut
+  noch das alte `OrderNew` mit Kategorie, Artikel, Variante; `api.test.ts` schrieb zuletzt noch direkt in die Spalte
+  `article`. Eine Test-Lambda mit `(t, done)` ohne Aufruf von
+  `done()` hängt ohne Zeitlimit ewig (geprüft).
+  **18.09.2026, auf „fix“ des Nutzers, zwei Zeilen in `api.ts` angepasst, damit es wieder lädt:** Import
+  `ordersRemove` statt `orderRemove`, im `DELETE`-Zweig `ordersRemove(database, table_id, [{ articleId:
+  choice.article, variantId: choice.variant, quantity: 1 }])`. Weil `src/server/index.ts` `api.ts` importiert, wäre
+  `npm start` sonst mit „does not provide an export named 'orderRemove'“ abgebrochen. Unverändert kaputt, wie schon
+  vorher: Senden über die API (`POST`), die Typprüfung von `src/server/index.ts` meldet dazu zwei Fehler (`api.ts`
+  Zeile 137 und 248); `api.test.ts` 8 von 20 grün, gleich wie vor dem Umbau. Das gehört zum Modul
+  Server-Schnittstelle.
+  **Die echte `wokflow.db` hat seit 18.09.2026 die neue Datenbanktabelle ohne `quantity`:** Die alte (0 Zeilen,
+  geprüft) hätte `CREATE TABLE IF NOT EXISTS` nicht geändert. Löschen der Datei scheiterte mit „Device or resource
+  busy“, weil IntelliJ sie als Datenquelle im Datenbank-Fenster offen hält; stattdessen mit `node:sqlite` die leere
+  Tabelle per `DROP TABLE orders` entfernt und mit `orderbookCreate` neu angelegt. **IntelliJs SQL-Prüfung liest die
+  Spalten aus dieser Datenquelle:** Nach einer Änderung der Datenbanktabelle meldet sie im Code veraltete Fehler
+  (beim Nutzer: „Following columns have no computed/default value and must be listed explicitly: quantity“ am
+  `INSERT`), bis die Datenquelle im Datenbank-Fenster neu eingelesen wird (Refresh). Künftig bei jeder Änderung an
+  `orderbookCreate` daran denken: echte Datei anpassen und den Nutzer ans Neueinlesen erinnern.
 - `src/server/database.ts` (neu): `databaseOpen()` öffnet `WokFlow/wokflow.db` mit `node:sqlite`, Pfad über
-  `import.meta.dirname`. `src/server/index.ts` ruft sie beim Start auf. Beides noch nicht committet.
-- `wokflow.db` liegt leer (0 Byte) im Projektordner und steht **nicht** in `.gitignore` (dort nur `.idea` und
-  `node_modules`). Beim nächsten `git add .` ginge die Datenbank zu GitHub. Erster Vorschlag im Modul-Chat:
-  `wokflow.db` in `.gitignore`, nach Ja des Nutzers.
-- Git: 7 Commits, letzter „Add CLAUDE.md“ (`6f93476`). Ob alles gepusht ist, nicht geprüft.
+  `import.meta.dirname`. `src/server/index.ts` ruft sie beim Start auf, danach `orderbookCreate`. Beides committet
+  in `6138b9a`.
+- `wokflow.db` ist leer (0 Byte), seit `6138b9a` committet und steht **nicht** in `.gitignore` (dort nur `.idea` und
+  `node_modules`). Legt `npm start` die Datenbanktabelle an, ändert sich die Datei, und `git add .` nimmt sie mit.
+  Vorschlag, nach Ja des Nutzers: `wokflow.db` in `.gitignore` plus `git rm --cached wokflow.db` (Git verfolgt sie
+  nicht mehr, die Datei bleibt liegen); `.gitignore` allein reicht bei einer schon verfolgten Datei nicht.
+- Git (geprüft 17.09.2026): 8 Commits, letzter „Easier as i thought to learn ts with orders.ts“ (`6138b9a`), laut
+  `git status -sb` gleich mit `origin/main`, also gepusht. Nicht committet: der Dateikopf von `test/orders.test.ts`.
 
 ### Modulreihenfolge (Vorschlag, der Nutzer ordnet um)
 
@@ -473,11 +648,33 @@ viel wie von Hand; wer nur Code abholt, lernt wenig. Der Nutzer will Ultracode n
 
 ### Modul `tables`, Spezifikation (gebaut 16.09.2026 abends)
 
-- Ein Tisch (Kennung als Text: `"14"`, `"G3"`, `"M"`) hat beliebig viele Bestellungen. Eine Bestellung ist eine Zeile
-  der Datenbanktabelle `orders`: Tisch, deutscher Artikelname, Variantenname oder null, Menge, Preis in Cent und
-  Steuersatz zum Zeitpunkt der Buchung, `closed` (Zeitpunkt des Abschlusses, Name vom Nutzer statt `closed_at`). Offen
-  ist sie, solange `closed` leer ist; ein Tisch ohne offene Bestellungen ist frei. Katalogänderungen ändern gebuchte
-  Bestellungen nicht (Regel unter „Artikel und Gruppen“).
+- Ein Tisch (Kennung als Text: `"14"`, `"G3"`, `"M"`) hat beliebig viele Bestellungen. **Seit 18.09.2026 ist jede
+  Zeile der Datenbanktabelle `orders` eine einzelne Portion (Idee und Entscheidung des Nutzers, „patch it this
+  way“), eine Spalte `quantity` gibt es nicht mehr:** Tisch, deutscher Artikelname, Variantenname oder null, Preis in
+  Cent und Steuersatz zum Zeitpunkt der Buchung, `closed` (Zeitpunkt des Abschlusses, Name vom Nutzer statt
+  `closed_at`). Offen ist eine Portion, solange `closed` leer ist; ein Tisch ohne offene Portionen ist frei. Die Menge
+  wird gezählt, nie gespeichert: Das Handy schickt weiter `quantity`, `ordersSend` legt so viele Zeilen an,
+  `ordersRead` zählt je Variante mit `COUNT(*)`; der Typ `Order` mit `quantity` bleibt für alle Aufrufer gleich.
+  Grund des Nutzers: Mit Mengen je Zeile müsste das Entfernen mehrerer Portionen erst eine Bestellung leeren und dann
+  die vorige verringern. Weitere Gründe: Entfernen wird eine Anweisung ohne „verringern oder löschen“; getrennt
+  kassieren heißt später n Zeilen als bezahlt markieren statt eine Zeile teilen. Preis: mehr Zeilen (Schätzung rund
+  tausend am Tag, für SQLite belanglos). Katalogänderungen ändern gebuchte Bestellungen nicht (Regel unter „Artikel
+  und Gruppen“).
+  Vom Nutzer am 18.09.2026 nachgefragt, Empfehlung von Claude dagegen: **eine Zeile je Tisch und Variante, deren Menge
+  hoch- und runtergezählt wird.** Löst das Problem mit der „vorigen Bestellung“ auch, macht aber jede Operation zu
+  einem Entweder-oder: Senden heißt einfügen oder erhöhen, Entfernen heißt verringern oder bei null löschen, getrennt
+  kassieren heißt später eine Zeile teilen. Dazu eine Falle: Die nötige Eindeutigkeit je Tisch und Variante greift
+  in SQLite nicht bei Variante `null`, weil `NULL`-Werte in einem eindeutigen Index als verschieden gelten. Mit einer
+  Zeile je Portion haben alle Operationen dieselbe Form: n Zeilen einer Variante wählen, dann einfügen, löschen,
+  später als bezahlt markieren.
+  **`Number.isInteger` in `ordersSend` (Frage des Nutzers, 18.09.2026: unnötig, weil `quantity: number` schon
+  getypt ist?):** `number` ist wie Javas `double`, TypeScript hat kein `int`; `const quantity: number = 1.5` ist
+  erlaubt. Mit 1.5 legt die Schleife 2 Zeilen an, mit 0 oder -1 keine, jeweils ohne Fehler. Die Prüfung ersetzt das
+  frühere `CHECK (quantity > 0)` der Datenbank; Empfehlung von Claude: behalten. Der Nutzer hielt das für einen Scherz
+  („that cant be real“): kein Typ für ganze Zahlen außer `bigint` (`2n`, lässt sich nicht mit `number` mischen,
+  `JSON.stringify` wirft „Do not know how to serialize a BigInt“). Beleg: TypeScript-Handbuch, „Everyday Types“;
+  Beispiel zum Selbstprüfen `node -e "console.log(7 / 2)"` gibt 3.5, Java 3. Ganze Zahlen sind in `number` bis
+  9007199254740991 exakt, deshalb sind Cent und Mengen sicher.
 - Namen nach der Alltagssprache (Nutzer, 16.09.2026): Der erste Bau hatte `orders` als offenen Vorgang je Tisch und
   `lines` als Positionen, dazu `neu`/`gesendet` aus dem deutschen Entwurf. Der Nutzer fand das gegen Sprache und
   Prototyp (dort heißen die Positionen `orders`). Seitdem Modul und Ordner `tables`, jede Position eine Bestellung,
@@ -485,17 +682,102 @@ viel wie von Hand; wer nur Code abholt, lernt wenig. Der Nutzer will Ultracode n
 - **Kein Status, gespeichert wird erst beim Senden (Nutzer, 16.09.2026):** Die Datenbank kennt nur Gesendetes. Noch
   nicht gesendete Bestellungen hält und korrigiert das Handy (Bildschirm-Modul) und schickt sie beim Rückweg zum
   Tischplan alle auf einmal. Stürzt das Handy vorher ab, sind sie weg und werden neu boniert; laut Nutzer selten und
-  vertretbar. Jedes Senden legt neue Bestellungen an, auch für eine Variante, die der Tisch schon hat: zwei gesendete
-  Cola plus eine weitere ergeben zwei Bestellungen, gedruckt wird nur die neue. Vorher gab es `new`/`sent` und
-  `addOrder` je Portion.
-- Funktionen in `src/tables/orders.ts`: `ordersSend(database, table, orders)` speichert alle oder keine
-  (`OrderNew`: Kategorie, Artikel, Variante, Menge), `orderRemove` (neueste Bestellung der Variante zuerst),
-  `ordersRead`, `tableClose` (setzt `closed`, Bestellungen bleiben gespeichert), `orderbookCreate` beim Serverstart
-  (Name vom Nutzer, vorher `createOrdersTable`). Die Zahlung selbst kommt später.
+  vertretbar. Jedes Senden legt neue Zeilen an, eine je Portion; zwei gesendete Cola plus eine weitere lesen sich
+  seit 18.09.2026 als „Cola 3“, getrennte Bestellungen je Sendung gibt es nicht mehr (Nutzer: „no newest order even
+  needed“). **Der Bon druckt weiter Mengen (Nutzer, 18.09.2026: „print should still print the qty“):** Gedruckt wird
+  aus der Sendung, die `quantity` trägt, nicht aus der Datenbank; die Rechnung bekommt ihre Mengen aus `ordersRead`.
+  Auch Entfernungen schon gesendeter Portionen sammelt das Handy und schickt sie erst beim Rückweg zum Tischplan
+  (Nutzer, 18.09.2026); „Rückgängig“ passiert vorher am Handy, der Server braucht dafür nichts. Vorher gab es
+  `new`/`sent` und `addOrder` je Portion.
+- Funktionen in `src/tables/orders.ts` (Stand 18.09.2026): `orderOf(orderNew)` holt Preis und Steuersatz aus dem Menü;
+  `ordersSend(database, tableId, orderlist: Order[])` speichert alle oder keine, je Portion eine Zeile, und wirft bei
+  einer Menge, die keine ganze Zahl ab 1 ist (ersetzt `CHECK (quantity > 0)`); `ordersRemove(database, tableId,
+  orderlist: OrderNew[])` nimmt je Angabe so viele offene Portionen weg, alle oder keine, mit
+  `DELETE FROM orders WHERE id IN (SELECT id … ORDER BY id DESC LIMIT ?)` (neueste Portionen zuerst, siehe
+  „Reihenfolge ist zugesagt“) und wirft,
+  wenn `changes` nicht der Menge entspricht (ersetzt `orderRemove` für eine einzelne Portion; Nutzer: Entfernen soll
+  wie Senden eine Liste bekommen); `ordersRead` zählt die offenen Portionen je Variante
+  (`COUNT(*) AS quantity … GROUP BY article_id, variant_id, price, tax ORDER BY MIN(id)`, `COUNT` kommt als `number`);
+  `tableClose` (setzt `closed`, Portionen bleiben gespeichert); `orderbookCreate` beim Serverstart (Name vom Nutzer,
+  vorher `createOrdersTable`). **Vom Nutzer am 18.09.2026 selbst zurückgebaut, nicht wieder einführen:** keine
+  benannte `StatementSync`-Konstante; `ordersSend` und `ordersRemove` schreiben `database.prepare(…).run(…)` direkt in
+  der Schleife, wie `tableClose`. Schleife von ihm `portion = 1; portion <= order.quantity`. **Fehlertexte von ihm,
+  einheitlich ohne Tischkennung (Nutzer, 18.09.2026: „one time you put in the table ID, one time not … very
+  shitty“):** „… needs a valid quantity of at least 1“, „Not enough ${order.articleId} to remove
+  ${order.quantity}“, „No open orders“. Regel daraus: Ein Fehlertext nennt, was der Aufrufer nicht weiß (Artikel,
+  Menge), nicht was er selbst übergeben hat (`tableId`); `api.ts` protokolliert Zeit und Adresse mit dem Tisch dazu.
+  Fehlertexte in einer Datei immer gleich aufbauen. **Tests prüfen keine Fehlertexte mehr (Entscheidung des Nutzers,
+  18.09.2026: „the wording can change so better to just see if something is thrown“):** `throws(lambda)` ohne
+  zweites Argument. Das Risiko, dass aus einem anderen Grund geworfen wird, deckt der Ablauftest, der dieselben
+  Funktionen ohne Fehler durchläuft (mit elf absichtlich kaputten Kopien geprüft, auch ein Tippfehler im `DELETE`).
+  Erklärt: `/…/` baut ein Suchmuster, `"…"` einen Text; ein Text als zweites Argument von `throws` vergleicht nichts,
+  er ist nur die Meldung beim Fehlschlag (gleicher Text wie der Fehler: `ERR_AMBIGUOUS_ARGUMENT`).
+  **Cola klein und groß im Ablauftest (Wunsch des Nutzers, 18.09.2026):** Konstanten `colaSmall1` (0.25), `colaBig1`,
+  `colaBig2`, `colaBig3` (0.5). Fängt ein Entfernen, das die Variante ignoriert. Ein Lesen ohne `variant_id` im
+  `GROUP BY` fängt es nicht, weil klein und groß verschiedene Preise haben und deshalb ohnehin getrennt bleiben; dafür
+  bräuchte es zwei Varianten mit gleichem Preis. 8 Tests grün, Typprüfung ohne Fehler.
+  **Reihenfolge ist zugesagt (Entscheidung des Nutzers, 18.09.2026, „Yeah, patch it“):** `ordersRead` sortiert nach
+  der ältesten offenen Portion jeder Variante (`ORDER BY MIN(id)`), und das `DELETE` in `ordersRemove` nimmt mit
+  `ORDER BY id DESC` die neuesten Portionen zuerst, damit eine Variante ihren Platz behält, solange es sie gibt; am
+  Bildschirm „Bestellt“ springt dann keine Zeile. Anlass: Ohne `ORDER BY` löschte SQLite die ältesten Zeilen, und
+  „Cola 0.5“ rutschte nach dem Entfernen unter „Cola 0.25“ (geprüft mit Zeilennummern: 1 groß, 2 klein, 3 und 4 groß;
+  ohne `ORDER BY` bleiben 2 und 4, mit `ORDER BY id DESC` bleiben 1 und 2). Der Ablauftest sendet deshalb die große
+  Cola zuerst (Wunsch des Nutzers) und schlägt fehl, wenn die Zeile im `DELETE` fehlt (geprüft). Die Frage des Nutzers
+  „no newest order even needed“ ist damit überholt: nicht als Begriff einer „neuesten Bestellung“, aber als Wahl der
+  Zeilen beim Löschen. Seine Idee, die Datenbanktabelle „generell mit der höchsten Kennung oben“ zu halten, geht
+  nicht: Eine Datenbanktabelle hat kein Oben und Unten, SQLite hält die Zeilen intern immer nach `id`; ohne
+  `ORDER BY` ist keine Reihenfolge zugesagt (Vergleich, der passte: Durchlaufen einer `HashMap`). Regel: `ORDER BY`
+  genau dort, wo die Reihenfolge zählt. Kostet nichts: `EXPLAIN QUERY PLAN` zeigt mit und ohne `ORDER BY id DESC`
+  dieselbe Suche im Index `tables_open`, ohne Sortierschritt.
+  Den unbenutzten Import `StatementSync` hat der Nutzer selbst entfernt. Stand 18.09.2026 abends: `orders.ts`,
+  `orders.test.ts`, `menu.test.ts` ohne Typfehler, 8 Tests grün, keine Kommentarzeile über 80 Zeichen; im ganzen Ordner
+  17 von 29 grün, die 12 roten alle in `api.test.ts` (Senden über die API, Modul Server-Schnittstelle). Nichts davon
+  ist committet, Git macht der Nutzer selbst. Erklärt am 18.09.2026: `StatementSync` mit `run`/`get`/`all`, SQL-`AS` gegen TypeScript-`as`, `IS` gegen
+  `=` (Mischung bleibt, Nutzer: „nevermind“), `!==` gegen `!=`. Noch zu erklären: `COUNT`/`GROUP BY`, `LIMIT ?`,
+  `IN (SELECT …)`. Offen: Der Name `OrderNew` passt für
+  Entfernungen schlecht (JSDoc ergänzt, Name nicht geändert); ob Hinzufügen und Entfernen einer Sendung eine
+  gemeinsame Transaktion bekommen. Die Zahlung selbst kommt später.
 - Änderungen mit mehreren Anweisungen laufen als SQLite-Transaktion (Regel 1 der zehn Regeln).
+- **Offen (Nutzer, 17.09.2026): Transaktionen einheitlich machen.** Ihn stört, dass `ordersSend` und `orderRemove`
+  `transaction` benutzen und `tableClose` nicht. Der Grund ist, dass in SQLite jede einzelne Anweisung schon eine
+  Transaktion ist: `tableClose` ist ein `UPDATE` über alle offenen Zeilen, `ordersRead` ein `SELECT`, `ordersSend`
+  dagegen ein `INSERT` je Bestellung. Zwei Wege, einen wählt der Nutzer.
+  **A (Empfehlung):** auch `tableClose` durch `transaction`, Regel „jede schreibende Funktion geht durch
+  `transaction`, lesende nicht“; kostet ein `BEGIN`/`COMMIT` ohne Wirkung, dafür fragt niemand mehr nach.
+  **B:** `transaction` löschen. Dann speichert `ordersSend` alle Bestellungen als ein `INSERT` mit einer
+  Klammergruppe je Bestellung (im Arbeitsspeicher geprüft: scheitert eine Gruppe an `CHECK (quantity > 0)`, landen
+  0 Zeilen), dafür wird der SQL-Text zur Laufzeit zusammengeklebt; und `orderRemove` kommt ohne `SELECT` aus, indem
+  es zuerst `DELETE … WHERE id = (neueste) AND quantity = 1` versucht und nur bei `changes === 0` das
+  `UPDATE … quantity - 1` (geprüft, gleiches Verhalten wie heute: 2 + 1 Cola ergeben 2 / 1 / weg, danach wirft es).
+  Nicht gepatcht, der Nutzer wollte weiterreden. Hinweis vom 18.09.2026: Weg B ist so überholt, es gibt weder
+  `orderRemove` noch `CHECK (quantity > 0)` mehr (eine Zeile je Portion, siehe oben); `ordersSend` und `ordersRemove`
+  laufen weiter durch `transaction`, `tableClose` nicht, die Frage selbst bleibt offen. Frage des Nutzers am
+  18.09.2026, ob Transaktionen mit einer Zeile je Portion entfallen: nein, sie tragen jetzt mehr. Eine Sendung von
+  2 Cola und 1 Red Bull sind drei `INSERT` statt zwei, und `ordersRemove` löscht erst und prüft danach `changes`
+  (3 Cola verlangt, 2 da: die 2 sind schon gelöscht, erst `ROLLBACK` holt sie zurück). Erklärt mit der Folge `BEGIN`,
+  drei `INSERT`, `COMMIT`, wie am 16.09.2026.
 - Zitrone und Buffetpersonen sind Bestellungen wie jede andere; ihre Sonderregeln kommen mit dem Bildschirm.
 - Tests: `test/orders.test.ts`, `node:test` gegen eine Datenbank im Arbeitsspeicher, Start mit `node --test` im
   Ordner `WokFlow`; kein Skript in `package.json`.
+- **So viele Tests wie nötig, so wenige wie möglich (Nutzer, 17.09.2026):** ein Test je Regel, die der Code umsetzt;
+  kein eigener Test für einen Randfall, der schon in einem anderen Test mitgeprüft wird oder keine eigene Regel ist.
+  Der Nutzer liest die Testnamen und einen Test ganz, nicht jeden Testkörper.
+- **Ein Test je Risiko, über alle Artikel (Nutzer, 17.09.2026):** Sein Vorwurf am ersten Test „every variant of the
+  menu has its own price“: Der Testkörper läuft mit denselben zwei `flatMap` und dem `map` durch Kategorien, Gruppen
+  und Varianten wie der Bau von `entries` in `menu.ts`, also „duplicated code … seems to be useless“. Das stimmt
+  halb: Ein falscher Gedanke in beiden Läufen fällt nicht auf. Der Test fängt aber zwei Dinge, die der Bau selbst nicht
+  sehen kann: Vollständigkeit (fehlt eine Gruppe in `entries`, etwa `extras`, wirft `entryOf`) und einen Preis aus der
+  falschen Variante (`article.variants[0].price` statt `variant.price` macht jede Cola 310 statt 450, ohne
+  Fehlermeldung). Nicht gefangen: doppelte deutsche Namen, weil `entryOf` mit `find` den ersten Treffer nimmt
+  (gemessen: 200 Varianten, 0 Doppelte). Geplant, noch nicht gepatcht: zwei ehrlich benannte Tests statt einem, beide
+  über alle 200 Varianten, „every variant is found with its own price“ und „no two variants share the same name“
+  (braucht `Set`, vorher erklären).
+- **Warum Tests überhaupt, die Erklärung, die ankam (17.09.2026):** nicht abstrakt, sondern sein eigener Tag. Er hat
+  `menu.ts` an einem Tag mehrmals umgebaut und danach jedes Mal in einer Sekunde 12 grüne Zeilen gesehen; ohne die
+  Testdatei müsste er nach jedem Umbau Server und Handy starten, Cola, Red Bull und Leitungswasser buchen, den Tisch
+  schließen und die Preise in der Datenbank nachsehen. Ein Test ist das aufgeschriebene Klicken. Der Nutzer sagt von
+  sich, er sei mit Tests „really unfamiliar“ und finde die Arbeit daran kompliziert; bei Tests deshalb besonders
+  kleinschrittig.
 - Nicht in Modul `tables`: HTTP, Bildschirm, Zahlung, Rechnung, RKSV, Druck, Tischplan.
 - Offen (16.09.2026): Der JSDoc von `orderbookCreate` nennt die Datenbanktabelle `orderbook`, das SQL legt noch
   `orders` an. Nachgefragt, ob die Tabelle `orderbook` heißen soll.
@@ -1456,16 +1738,16 @@ Stand 16.09.2026, mit dem Nutzer gebaut und umgesetzt in `WokFlow/src/catalog/`.
   Zero, Fanta, Sprite (Spread erklärt wie `addAll` in Java). Ausgeschrieben stehen Bier (Villacher und Radler
   kosten gleich, Preisänderung dann an zwei Stellen), Aloe Vera, Lycheesaft, Mineralwasser, Soda, Leitungswasser.
   Offen: ob die Hauptspeisen zu 14.90 € gemeinsam ihren Preis ändern.
-- **Zitrone (16.09.2026):** ein Zusatz, keine Variante; eigener Artikel `lemon` (Zitrone 柠檬, 0.20 €) in keiner
-  Gruppe, damit er nicht allein bestellbar ist. Soda hat deshalb keine eigenen Zitronen-Varianten mehr, sie
+- **Zitrone (16.09.2026):** ein Zusatz, keine Variante; eigener Artikel `lemon` (Zitrone 柠檬, 0.20 €). Seit
+  17.09.2026 in der Katalog-Gruppe `extras` unter Getränke, die der Bildschirm nicht als Gruppe zeigt, damit sie
+  nicht allein bestellbar ist (vorher in keiner Gruppe). Soda hat deshalb keine eigenen Zitronen-Varianten mehr, sie
   kosteten genau 0.20 € mehr. Wie eine Bestellzeile die Zitrone festhält, ist Bestelllogik und kommt später.
 - **Druck an der Hauptkategorie (Nutzer, 16.09.2026):** `print` neben `tax`, Getränke und Speisen `true`, Buffet
   `false`. Gemeint ist der Bestellbon; die Rechnung zeigt alles.
-- **Steuer nur an der Hauptkategorie:** Buffet 10 %, Speisen 10 %, Getränke 20 %. Abweichende Artikel stehen einmal
-  mit eigenem Satz in `taxExceptions` in `menu.ts`, nach deutschem Namen (`{ Leitungswasser: 10 }`). Den Satz
-  liefert `taxOf(category, article)` in `menu.ts` mit `taxExceptions[name] ?? category.tax` (erklärt wie
-  `getOrDefault` in Java); `ordersSend` fragt nur `taxOf` und weiß nichts von Ausnahmen, `taxExceptions` ist nicht
-  exportiert (Nutzer, 16.09.2026: Nachschlagen gehört ins Menü). `reducedTax` mit dem Satz der Speisen ist entfallen.
+- **Steuer nur an der Hauptkategorie:** Buffet 10 %, Speisen 10 %, Getränke 20 %. Seit 17.09.2026 steht die einzige
+  Ausnahme fest in `taxOf(articleId, variantId)` in `menu.ts`: Leitungswasser 10 (Nutzer: ändert sich fast nie);
+  vorher `taxExceptions` mit `taxOf(category, article)`. `orderOf` fragt nur `taxOf` und weiß nichts von Ausnahmen
+  (Nutzer, 16.09.2026: Nachschlagen gehört ins Menü). `reducedTax` mit dem Satz der Speisen ist entfallen.
   Schlüssel bleibt der deutsche Name als Text: Eine Konstante `tapWater` als Verknüpfung mit dem Artikel lehnte der
   Nutzer ab (keine Variable je Artikel); wird Leitungswasser umbenannt, `taxExceptions` mitändern. Verworfen: `tax?` am Artikel (eigene Property für eine Ausnahme),
   Pflicht-`tax` an jedem Artikel (Wiederholung); keine Option ist perfekt. Der Name bleibt `tax`, nicht `vatRate`.

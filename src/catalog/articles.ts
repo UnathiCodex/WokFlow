@@ -28,10 +28,10 @@ export type Article = {
 };
 
 /**
- * One selectable serving or choice of an article.
+ * One selectable serving or choice of an {@link Article}.
  *
  * - `name`: German and Chinese labels, null when there is no choice.
- * - `price`: Gross price as a Dinero amount in euros.
+ * - `price`: Gross price as a {@link Dinero} amount in euros.
  */
 export type Variant = {
     name: { de: string; zh: string; } | null;
@@ -44,7 +44,7 @@ export type Variant = {
 //#region Typefactories
 
 /**
- * Creates an article from its names and variants.
+ * Creates an {@link Article} from its names and {@link Variant}s.
  *
  * @param de - German name
  * @param zh - Chinese name
@@ -59,7 +59,7 @@ export function article(de: string, zh: string, variants: Variant[] | number): A
 }
 
 /**
- * Creates a variant from its names and price.
+ * Creates a {@link Variant} from its names and price.
  *
  * @param de - German name
  * @param zh - Chinese name

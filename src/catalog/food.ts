@@ -11,7 +11,7 @@ import type { Article, Variant } from "./articles.ts";
 //#region Variants
 
 /**
- * Creates the variants of sushi and maki with piece counts.
+ * Creates the {@link Variant}s of sushi and maki with piece counts.
  *
  * @param cents1 - Price of 6 pieces
  * @param cents2 - Price of 12 pieces

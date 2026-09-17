@@ -15,7 +15,7 @@ import { join } from "node:path";
  * Opens and returns a connection to the local SQLite database.
  * Absolute path to the SQLite database file is built with the operating system's path rules.
  *
- * @returns Database connection object
+ * @returns {@link DatabaseSync} connection object
  */
 export function databaseOpen(): DatabaseSync {
     const databasePath: string = join(import.meta.dirname, "../../wokflow.db");
