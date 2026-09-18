@@ -3,7 +3,6 @@
  *
  * Groups the restaurant articles and defines category tax rates.
  *
- * - `./articles.ts`: Defines the article type with its variants.
  * - `./buffet.ts`: Defines the buffet articles.
  * - `./food.ts`: Defines the food articles.
  * - `./drinks.ts`: Defines the drink articles.
@@ -134,12 +133,12 @@ const entries: MenuEntry[] =
     });
 
 /**
- * The {@link MenuEntry} of a variant.
- * Throws when the menu has no such article or variant.
+ * {@link MenuEntry} of a variant.
  *
  * @param articleId - German article name
  * @param variantId - German variant name (nullable)
- * @returns Entry with price and tax rate
+ * @returns {@link MenuEntry} with price and tax rate
+ * @throws {Error} - When the menu has no such article or variant
  */
 export function entryOf(articleId: string, variantId: string | null): MenuEntry {
     const entry: MenuEntry | undefined = entries.find((e: MenuEntry): boolean =>

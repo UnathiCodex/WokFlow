@@ -4,16 +4,14 @@
  * Waits at `localhost:3000` and answers the browser with menu and order data.
  * Start with `npm start`.
  *
- * - `node:http`: Creates HTTP servers and sends HTTP requests.
- * - `node:sqlite`: Opens and works with SQLite databases.
  * - `./database.ts`: Manages the local SQLite database connection.
- * - `./api.ts`: Connects browser requests to the catalog and the saved orders.
- * - `../tables/orders.ts`: Stores the orders of the tables.
+ * - `./api.ts`: Connects browser requests to the server.
+ * - `../tables/orderbook.ts`: Creates the database table of the orders.
  */
 
 import { databaseOpen } from "./database.ts";
 import { serverCreate } from "./api.ts";
-import { orderbookCreate } from "../tables/orders.ts";
+import { orderbookCreate } from "../tables/orderbook.ts";
 
 import type { Server } from "node:http";
 import type { DatabaseSync } from "node:sqlite";

@@ -8,12 +8,13 @@
  * A portion is open until its table is closed
  * and then stays stored for the records.
  *
- * - `node:sqlite`: Opens and works with SQLite databases.
  * - `../catalog/menu.ts`: Groups the restaurant articles.
- * - `../catalog/articles.ts`: Defines the article type with its variants.
+ * - `./orderbook.ts`: Creates the database table of the orders.
  */
 
 import { entryOf } from "../catalog/menu.ts";
+import { transaction } from "./orderbook.ts";
+
 import type { DatabaseSync, StatementResultingChanges } from "node:sqlite";
 import type { MenuEntry } from "../catalog/menu.ts";
 import type { Article, Variant } from "../catalog/articles.ts";
@@ -39,57 +40,20 @@ export type Order = {
 
 /**
  * An {@link Order} chosen on the phone that is not saved yet, without price and tax rate.
- * Also names the portions to take off in {@link ordersRemove}.
+ * Also names the portions to remove in {@link orderRemove}.
  */
 export type OrderNew = Omit<Order, "price" | "tax">;
 
-
 /**
- * Creates the `orderbook` table when it is missing.
- * Each row is one portion of an `order`, open while `closed` is null.
- * The index finds the open orders automatically by SQLite by `closed`.
+ * Update of the {@link Order}s of a table, as the phone sends it.
  *
- * @param database - Open database
+ * - `add`: Orders to add.
+ * - `remove`: Variants with the quantity to remove.
  */
-export function orderbookCreate(database: DatabaseSync): void {
-    database.exec(`
-        CREATE TABLE IF NOT EXISTS orders
-        (
-            id         INTEGER PRIMARY KEY,
-            table_id   TEXT    NOT NULL,
-            article_id TEXT    NOT NULL,
-            variant_id TEXT,
-            price      INTEGER NOT NULL,
-            tax        INTEGER NOT NULL,
-            closed     TEXT
-        ) STRICT;
-
-        CREATE INDEX IF NOT EXISTS tables_open
-            ON orders (table_id)
-            WHERE closed IS NULL;
-    `);
-}
-
-
-/**
- * Runs several orders as one SQLite transaction.
- * - `BEGIN` of the transactions.
- * - `COMMIT` end of the transaction, if everything worked.
- * - `ROLLBACK` undoes every order until BEGIN.
- *
- * @param database - Open database
- * @param work - Changes to run between BEGIN and COMMIT
- */
-function transaction(database: DatabaseSync, work: () => void): void {
-    database.exec("BEGIN");
-    try {
-        work();
-        database.exec("COMMIT");
-    } catch (error: unknown) {
-        database.exec("ROLLBACK");
-        throw error;
-    }
-}
+export type OrdersUpdate = {
+    add: OrderNew[];
+    remove: OrderNew[];
+};
 
 //#endregion Setup
 
@@ -99,10 +63,10 @@ function transaction(database: DatabaseSync, work: () => void): void {
 /**
  * Turns an {@link OrderNew} into an {@link Order}
  * with price and tax rate from {@link MenuEntry}.
- * {@link entryOf} throws when the menu has no such article or variant.
  *
  * @param order - Order chosen on the phone
  * @returns Order ready to save
+ * @throws {Error} - When {@link entryOf} finds no such article or variant
  */
 export function orderOf(order: OrderNew): Order {
     const entry: MenuEntry = entryOf(order.articleId, order.variantId);
@@ -110,63 +74,69 @@ export function orderOf(order: OrderNew): Order {
 }
 
 /**
- * Saves the {@link Order}s of a table, one row for each portion, all of them or none.
- * Throws when a quantity is not a whole number of at least 1.
+ * Adds an {@link Order} to a table, one row for each portion,
+ * with price and tax rate from {@link orderOf}.
  *
  * @param database - Open database
  * @param tableId - Table identifier
- * @param orderlist - Orders to save, each from {@link orderOf}
+ * @param orderNew - Order to add
+ * @throws {Error} - When the order has no menu entry or no valid quantity
  */
-export function ordersSend(database: DatabaseSync, tableId: string, orderlist: Order[]): void {
-    function work(): void {
+function orderAdd(database: DatabaseSync, tableId: string, orderNew: OrderNew): void {
+    const order: Order = orderOf(orderNew);
+    if (!Number.isInteger(order.quantity) || order.quantity < 1)
+        throw new Error(`${order.articleId} needs a valid quantity of at least 1`);
 
-        orderlist.forEach((order: Order): void => {
-            if (!Number.isInteger(order.quantity) || order.quantity < 1)
-                throw new Error(`${order.articleId} needs a valid quantity of at least 1`);
-
-            for (let portion: number = 1; portion <= order.quantity; portion++)
-                database.prepare(`
-                    INSERT INTO orders (table_id, article_id, variant_id, price, tax)
-                    VALUES (?, ?, ?, ?, ?)
-                `).run(tableId, order.articleId, order.variantId, order.price, order.tax);
-        });
-    }
-
-    transaction(database, work);
+    for (let portion: number = 1; portion <= order.quantity; portion++)
+        database.prepare(`
+            INSERT INTO orders (table_id, article_id, variant_id, price, tax)
+            VALUES (?, ?, ?, ?, ?)
+        `).run(tableId, order.articleId, order.variantId, order.price, order.tax);
 }
 
 /**
- * Takes portions off a table, all of them or none.
+ * Remove portions of a variant off a table.
  * Takes the newest portions of a variant first, so {@link ordersRead} keeps its order.
- * Throws when the table has fewer open portions of a variant than the quantity to take off.
  *
  * @param database - Open database
  * @param tableId - Table identifier
- * @param orderlist - Variants with the quantity to take off
+ * @param order - Variant with the quantity to remove
+ * @throws {Error} - When table has too few open portions to remove
  */
-export function ordersRemove(database: DatabaseSync, tableId: string, orderlist: OrderNew[]): void {
-    function work(): void {
+function orderRemove(database: DatabaseSync, tableId: string, order: OrderNew): void {
+    const removed: StatementResultingChanges = database.prepare(`
+        DELETE
+        FROM orders
+        WHERE id IN (SELECT id
+                     FROM orders
+                     WHERE table_id = ?
+                       AND closed IS NULL
+                       AND article_id = ?
+                       AND variant_id IS ?
+                     ORDER BY id DESC
+                     LIMIT ?)
+    `).run(tableId, order.articleId, order.variantId, order.quantity);
 
-        orderlist.forEach((order: OrderNew): void => {
-            const removed: StatementResultingChanges = database.prepare(`
-                DELETE
-                FROM orders
-                WHERE id IN (SELECT id
-                             FROM orders
-                             WHERE table_id = ?
-                               AND closed IS NULL
-                               AND article_id = ?
-                               AND variant_id IS ?
-                             ORDER BY id DESC
-                             LIMIT ?)
-            `).run(tableId, order.articleId, order.variantId, order.quantity);
+    if (removed.changes !== order.quantity)
+        throw new Error(`Not enough ${order.articleId} to remove ${order.quantity}`);
+}
 
-            if (removed.changes !== order.quantity)
-                throw new Error(`Not enough ${order.articleId} to remove ${order.quantity}`);
-        });
-    }
-
-    transaction(database, work);
+/**
+ * Updates a table as the phone sends it, all of it or nothing.
+ * Removes portions with {@link orderRemove} first,
+ * so only portions from before this update can be removed,
+ * then adds the new orders with {@link orderAdd}.
+ *
+ * @param database - Open database
+ * @param tableId - Table identifier
+ * @param update - Orders to add and variants to remove
+ * @throws {Error} - When a part of the update throws
+ */
+export function ordersUpdate(database: DatabaseSync, tableId: string, update: OrdersUpdate): void {
+    transaction(database, (): void => {
+        update.remove.forEach((order: OrderNew): void => orderRemove(database, tableId, order));
+        update.add.forEach((order: OrderNew): void => orderAdd(database, tableId, order));
+    });
 }
 
 /**
@@ -199,6 +169,7 @@ export function ordersRead(database: DatabaseSync, tableId: string): Order[] {
  *
  * @param database - Open database
  * @param tableId - Table identifier
+ * @throws {Error} - When the table has no open orders
  */
 export function tableClose(database: DatabaseSync, tableId: string): void {
     const closed: StatementResultingChanges = database

@@ -5,7 +5,6 @@
  *
  * - `node:test`: Runs tests and reports the results.
  * - `node:assert/strict`: Compares values exactly including types.
- * - `node:sqlite`: Opens and works with SQLite databases.
  */
 
 import { test, beforeEach } from "node:test";
@@ -24,17 +23,18 @@ const colaBig2: orders.Order = orders.orderOf({ articleId: "Cola", variantId: "0
 const colaBig3: orders.Order = orders.orderOf({ articleId: "Cola", variantId: "0.5", quantity: 3 });
 const redBull0: orders.Order = orders.orderOf({ articleId: "Red Bull", variantId: null, quantity: 0 });
 const redBull1: orders.Order = orders.orderOf({ articleId: "Red Bull", variantId: null, quantity: 1 });
+const pizza1: orders.OrderNew = { articleId: "Pizza", variantId: null, quantity: 1 };
 
 
 test(
     "A table goes from its first orders to closing",
     (): void => {
-        orders.ordersSend(database, "14", [colaBig1, colaSmall1, redBull1]);
-        orders.ordersSend(database, "14", [colaBig2]);
-        orders.ordersSend(database, "G3", [redBull1]);
+        orders.ordersUpdate(database, "14", { add: [colaBig1, colaSmall1, redBull1], remove: [] });
+        orders.ordersUpdate(database, "14", { add: [colaBig2], remove: [] });
+        orders.ordersUpdate(database, "G3", { add: [redBull1], remove: [] });
         deepEqual(orders.ordersRead(database, "14"), [colaBig3, colaSmall1, redBull1]);
 
-        orders.ordersRemove(database, "14", [colaBig2, redBull1]);
+        orders.ordersUpdate(database, "14", { add: [], remove: [colaBig2, redBull1] });
         deepEqual(orders.ordersRead(database, "14"), [colaBig1, colaSmall1]);
 
         orders.tableClose(database, "14");
@@ -44,29 +44,38 @@ test(
 );
 
 test(
-    "Sending saves all orders or none",
+    "A quantity below 1 changes nothing",
     (): void => {
-        throws((): void => orders.ordersSend(database, "14", [colaBig2, redBull0]));
+        throws((): void => orders.ordersUpdate(database, "14", { add: [colaBig2, redBull0], remove: [] }), /quantity/);
         deepEqual(orders.ordersRead(database, "14"), []);
     }
 );
 
 test(
-    "Removing takes all portions or none",
+    "An article missing in the menu changes nothing",
     (): void => {
-        orders.ordersSend(database, "14", [colaBig2, redBull1]);
-        throws((): void => orders.ordersRemove(database, "14", [redBull1, colaBig3]));
-        deepEqual(orders.ordersRead(database, "14"), [colaBig2, redBull1]);
+        orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] });
+        throws((): void => orders.ordersUpdate(database, "14", { add: [pizza1], remove: [colaBig1] }), /menu/);
+        deepEqual(orders.ordersRead(database, "14"), [colaBig1]);
+    }
+);
+
+test(
+    "Only portions from before an update can be removed",
+    (): void => {
+        orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] });
+        throws((): void => orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [colaBig2] }), /remove/);
+        deepEqual(orders.ordersRead(database, "14"), [colaBig1]);
     }
 );
 
 test(
     "A free table has nothing to remove or to close",
     (): void => {
-        orders.ordersSend(database, "14", [colaBig2]);
+        orders.ordersUpdate(database, "14", { add: [colaBig2], remove: [] });
         orders.tableClose(database, "14");
         deepEqual(orders.ordersRead(database, "14"), []);
-        throws((): void => orders.ordersRemove(database, "14", [colaBig1]));
-        throws((): void => orders.tableClose(database, "14"));
+        throws((): void => orders.ordersUpdate(database, "14", { add: [], remove: [colaBig1] }), /remove/);
+        throws((): void => orders.tableClose(database, "14"), /open/);
     }
 );

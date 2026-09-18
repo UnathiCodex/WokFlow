@@ -7,7 +7,7 @@
  */
 
 import { DatabaseSync } from "node:sqlite";
-import * as orders from "../src/tables/orders.ts";
+import { orderbookCreate } from "../src/tables/orderbook.ts";
 
 
 /**
@@ -17,6 +17,6 @@ import * as orders from "../src/tables/orders.ts";
  */
 export function databaseTest(): DatabaseSync {
     const database: DatabaseSync = new DatabaseSync(":memory:");
-    orders.orderbookCreate(database);
+    orderbookCreate(database);
     return database;
 }

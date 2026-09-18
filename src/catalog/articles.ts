@@ -4,10 +4,8 @@
  * Defines the article type with its variants and
  * stores variant prices as Dinero amounts.
  *
- * ### Modules
  * - {@link dinero}: Function used to create a money object.
  * - {@link EUR}: Currency constant used to create prices in euros.
- * - {@link Dinero}: Type used by TypeScript to check variant prices.
  */
 
 import { dinero, EUR } from "dinero.js";
