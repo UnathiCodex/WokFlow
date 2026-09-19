@@ -67,6 +67,17 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
   Folge kleiner Schritte, je Antwort genau einer: ein winziges Beispiel, ein bis zwei Sätze, dann „Questions?“ und
   warten. Nie mehrere Teile eines Ausdrucks in einer Antwort erklären, etwa bei `flatMap`: Schritt 1 nur `flat` an
   zwei Arrays, Schritt 2 `flatMap`, Schritt 3 `Object.values`, Schritt 4 alles zusammen.
+- **Beispielcode immer vollständig zeigen (Nutzer, 19.09.2026: „you have to show me full code always and not that I
+  have to scroll up“):** Jede Antwort mit Code zeigt das ganze lauffähige Beispiel samt allen Funktionen, die es
+  benutzt, nie nur den geänderten Teil mit Verweis nach oben. Kommentare hinter den Zeilen nennen das Ergebnis und
+  wann es erscheint („after one second, both together“), nie den Ablauf. Will er wissen, was Node tut, dann als
+  nummerierte Liste unter dem Code, Zeile für Zeile von oben nach unten (kam am 19.09.2026 gut an: „clear“).
+- **Verschärft (Nutzer, 18.09.2026 abends: „Your answer is still a little bit too long … patch it harder“; weiche
+  Regel, aber der Normalfall):** Vor dem Senden zählen: höchstens vier Sätze und höchstens ein Codeblock oder eine
+  Liste, nicht beides mehrfach. Antwort, Beleg, Empfehlung und Frage sind vier Stücke, nicht eine Antwort: erst die
+  Antwort auf die gestellte Frage, der Rest auf „weiter“. Verstoß: auf „why do we need objectRead, updateRead,
+  orderNewRead“ kamen Erklärung, Liste, Versuch mit 14 kaputten Anfragen, neue Codezeile, Erklärung von `as`,
+  Empfehlung und Frage in einer Antwort. Richtig wäre gewesen: zwei Sätze, wofür die drei da sind, dann „Questions?“.
 - **Gilt für jede Antwort, auch Berichte und Übergaben (Nutzer, 18.09.2026: „too much, paragraph should be SHORT
   … chunking, if there is more then offer continue“):** kurze Absätze, nur das erste Stück zeigen, dann anbieten
   weiterzumachen. Langes gehört in diese Datei, in den Chat nur der Hinweis darauf. Verstoß: eine Übergabe mit sechs
@@ -122,6 +133,22 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
 - So wenig Code, Dateien, Einstellungen und Bibliotheken wie nötig. Keine Vorratslösungen oder
   auskommentierten Reste. Bei einem Konflikt gewinnt Lesbarkeit, sonst Kürze. Jede Funktion hat eine Aufgabe
   (Nutzer, 17.09.2026).
+- **Nichts doppelt absichern, verbindlich (Nutzer, 18.09.2026 abends: „you are a little bit over engineering it“,
+  „waste of code waste of time“, „the evidence shows me that you didn't keep attention on clean code or short code“):**
+  Sorgfalt und gute Fehlertexte bleiben Pflicht, aber an genau einer Stelle, dort wo die Regel wohnt (bei
+  Bestellungen `orders.ts`). Vor jeder neuen Prüfung, jedem `try`, jedem Typ, jeder Funktion, jedem Feld einer
+  Antwort drei Fragen, und nur bei dreimal Ja bauen:
+  1. Fängt das heute noch keine andere Stelle ab? Nachsehen und mit einer kaputten Kopie im Scratchpad belegen,
+     nicht vermuten.
+  2. Braucht es ein Aufrufer, den es heute gibt? „Könnte das Handy später brauchen“ zählt nicht.
+  3. Ändert es ein Ergebnis, das jemand sieht (gespeicherte Daten, Anzeige, Protokoll)? Nur ein anderer Status oder
+     ein schönerer Text für einen Fall, der ein Fehler der eigenen Seite wäre, zählt nicht.
+  Beim Abgeben eines Moduls jede Funktion probeweise streichen: Bleiben alle Tests grün und das Verhalten gleich, ist
+  sie zu viel und kommt gar nicht erst in die Abgabe. Beleg vom 18.09.2026, alles von Claude gebaut und an einem
+  Abend wieder entfernt, `api.ts` von 176 auf 113 Zeilen: das `try` mit Status `400` (Fehler der eigenen Seite, `500`
+  mit Protokollzeile reicht), die offenen Bestellungen als Antwort des `POST` (niemand liest sie), die Formprüfung
+  `objectRead`/`updateRead`/`orderNewRead` (14 kaputte Anfragen enden mit und ohne sie gleich, `orders.ts` weist alles
+  ab). Für den Echtbetrieb nötige Härtung steht als Zeile unter „Sicherheitsrunde“, nicht vorab im Code.
 - **Erst einfach, Tempo später (Nutzer, 18.09.2026: „just try to code as easy as possible. And if the speed is
   good, then we just let this be“):** zuerst den einfachsten Weg bauen und am echten Handy ausprobieren;
   Zwischenspeichern, Cache-Einstellungen und ähnliche Feinheiten erst, wenn etwas spürbar langsam ist. Solche
@@ -191,8 +218,30 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
     all the send“), dazu je ein kurzer Test für jede Regel, die der Ablauf nicht zeigen kann („alle oder keine“,
     „freier Tisch“). Kein eigener Test für einen Randfall, der schon in einem anderen Test mitgeprüft wird oder keine
     eigene Regel ist. Der Nutzer liest die Testnamen und einen Test ganz, nicht jeden Testkörper.
-  - Testdaten als Konstanten auf Dateiebene direkt unter seinem `beforeEach`-Block, gebaut mit `orderOf`, keine
-    festen Preise oder Steuersätze. Namen von ihm: Artikel, bei Cola die Größe, dann immer die Menge als Ziffer
+  - **Keine Codezeile über 100 Zeichen (Nutzer, 18.09.2026 abends: „that it does not get overflow for the 100
+    characters“, „Also in the API please“), am selben Abend in `test/` und `api.ts` umgesetzt.** Umbruch in seiner
+    Form: ein Objekt als letztes Argument aufklappen, je Property eine Zeile, Komma nach der letzten (`updateSend("14",
+    {` … `});`, auch in `throws((): void => orders.ordersUpdate(database, "14", {` … `}), /quantity/);`); hat ein
+    Aufruf kein Objekt, steht der Funktionsname allein und jedes Argument in eigener Zeile (`deepEqual(` … `);`); eine
+    zu lange Konstante bricht nach dem `=` um wie `entries` in `menu.ts`; eine zu lange Signatur je Parameter eine
+    Zeile unter dem ersten. Prüfen: `awk 'length($0) > 100'` über `src/` und `test/`.
+  - **Kein eigener Name für einen Wert, der nur einmal gebraucht wird (Nutzer, 18.09.2026 abends, zu `pizza1`: „just
+    for one time use, we don't need the extra“):** Die Pizza steht in `api.test.ts` direkt im Aufruf.
+  - **Testbestellungen stehen einmal in `test/setup.ts`, als einzelne `export const colaBig1: Order = orderOf(…)`
+    (seine Entscheidung, 18.09.2026 abends, gegen Claudes Rat „keep“):** Jede Testdatei importiert neben
+    `databaseTest` nur die Namen, die sie braucht, ohne Präfix; **Ausnahme von der Importregel „ab vier Namen `import *
+    as`“, nur für Testdaten.** Durchprobiert und von ihm verworfen: ein Objekt `ordersTest`, dann `ot`, dann `odt`
+    („that's also not beautiful. So maybe just import those five“); der Präfix machte 13 Zeilen länger als 100
+    Zeichen. Die Importzeile in `orders.test.ts` hat er selbst in einer Zeile gelassen (104 Zeichen), nicht umbrechen.
+    **`{ add: […], remove: […] }` steht in einer Zeile, wo es unter 100 Zeichen passt („more beautiful“); aufgeklappt
+    nur in den drei `throws` von `orders.test.ts`. `deepEqual` nie umbrechen („I don't like that some deep equals are
+    inside it and some don't“), lieber kürzere Namen oder zwei `deepEqual`.**
+  - **`beforeEach` und `afterEach` bekommen genau eine `//`-Zeile direkt darüber (Nutzer, 18.09.2026 abends: „these
+    are important stuff here“, „just make a quick one line comment at most“):** groß beginnen, kein Punkt. Ein JSDoc
+    über einem Aufruf stellt IntelliJ nicht dar (von ihm geprüft), drei `//`-Zeilen wollte er auch nicht.
+    In `api.test.ts`: frische Datenbank und frischer Server, Port 0, `once`, `url`; `afterEach` schließt den Server,
+    sonst endet die Testdatei nie (geprüft: ohne `close` läuft `node --test` bis zum Abbruch).
+    Gebaut mit `orderOf`, keine festen Preise oder Steuersätze. Namen von ihm: Artikel, bei Cola die Größe, dann immer die Menge als Ziffer
     (`colaSmall1`, `colaBig2`, `redBull0`, `redBull1`); keine Namen wie `colaLater` oder `colaTwo`, keine Konstante
     ohne Ziffer.
   - Frischer Zustand je Test (seine Entscheidung gegen Claudes Empfehlung, nicht zurückbauen): auf Dateiebene
@@ -274,8 +323,11 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
       `{@link requestHandle}` und `{@link responseSend}`. Das Verhalten in einem Satz statt in drei Zeilen: „Answers
       an error of requestHandle with status `500` without stopping the server.“ Beim zweiten Nennen kein Link mehr.
     - Adressen in der Form der HTTP-Anfragezeile (`` `GET /api/menu`: Sends menu. ``), Statuscodes in Backticks.
-    - Kurze `//`-Kommentare über lokalen Konstanten, wenn der Inhalt nicht offensichtlich ist: groß beginnen, kein
-      Punkt, sagen, was drinsteckt („// Path of the url, without protocol, host, port“).
+    - **Keine `//`-Kommentare im Funktionskörper (Nutzer, 18.09.2026 abends: „I just don't like these two comments“,
+      danach „thats clean“):** Lokale Konstanten, deren Inhalt nicht offensichtlich ist, stehen als Stichpunkt im
+      JSDoc der Funktion, Name in Backticks, wie `statusCode` und `end` in `responseSend`: `` - `address`: Path of
+      the url, without protocol, host, port. `` Die Konstanten selbst stehen nackt im Körper. In der `if`-Kette von
+      `requestHandle` hat er die Leerzeilen zwischen den Zweigen selbst entfernt, nicht wieder einfügen.
     - Claudes Fehler, die er dabei korrigiert hat: zu lange Sätze, drei Zeilen für eine Aussage, Wiederholung dessen,
       was die Funktion darunter ohnehin zeigt („should be as short as possible because the function below explains
       this already“).
@@ -296,7 +348,10 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
     comments. Learn from it“):**
     - Jeder Satz endet mit einem Punkt, auch der letzte eines Blocks. Wer einen JSDoc anfasst, prüft alle seine
       Zeilen, nicht nur die neue.
-    - Keine langen Kommentarzeilen, **Richtwert rund 75 Zeichen** (abgelesen an seinen Korrekturen). **Umbruch dort,
+    - Keine langen Kommentarzeilen, **Richtwert rund 75 Zeichen** (abgelesen an seinen Korrekturen). Weich gemeint
+      (Nutzer, 18.09.2026): 85 nimmt er im Einzelfall hin, 90 mag er nicht mehr, wichtig ist ihm nur, die senkrechte
+      Randlinie in IntelliJ nicht zu treffen. In `.editorconfig` steht kein `max_line_length`, es gilt IntelliJs
+      Standard von 120. Seine eigenen Zeilen deshalb nicht wegen ein paar Zeichen anmerken. **Umbruch dort,
       wo ein Mensch beim Sprechen eine Pause macht (Nutzer, 18.09.2026, ausdrücklich korrigiert):** nicht mechanisch
       vor „so“ oder „and“, sondern wenn die Zeile zu lang wird, an der Stelle, an der man beim Vorlesen natürlich
       absetzt. Das ist oft nach einem Komma oder vor „so“, „and“, „with“, aber das Wort ist nicht die Regel, die
@@ -613,15 +668,41 @@ brauchen. Nicht entschieden.
   Kundenadresse (siehe „TOUCHIT-Abgleich“ unter „Entscheidungen“).
 - Technik: Weg zu den Nexi-Daten, Cloud-Anbieter, VESA-Halterung, Ersatzdrucker.
 
-## Nächster Chat: `api.ts` und `api.test.ts` mit dem Nutzer durchgehen (Übergabe vom 18.09.2026, nachmittags)
+## Nächster Chat: `api.ts` weiter durchgehen, dann `api.test.ts` (Übergabe vom 18.09.2026, spät abends)
 
-**Auftrag des Nutzers (18.09.2026):** „I will ask the new chat to explain that to me and work this out with the new
-chat.“ Also: (1) `src/server/api.ts` und `test/api.test.ts` Stück für Stück erklären und von ihm korrigieren lassen
-(Warum-Liste), (2) danach das nächste Modul, der Bestellbildschirm, samt Tischsperre.
+**Auftrag des Nutzers (18.09.2026):** (1) `src/server/api.ts` und `test/api.test.ts` Stück für Stück erklären und
+von ihm korrigieren lassen (Warum-Liste), (2) danach das nächste Modul, der Bestellbildschirm, samt Tischsperre.
+Er öffnet dafür neue Chats („every important thing right in the manifest and I will open new chats“).
 
-**Stand:** Typprüfung ohne Fehler (auch `src/server/index.ts`), `node --test` 16 grün: 5 `orders`, 4 `menu`, 6 `api`,
-dazu `setup.ts`. `npm start` läuft, mit `curl` geprüft. Nichts committet (letzter Commit `bcf3cc2`); Git macht der
-Nutzer selbst.
+**Genau hier weitermachen:** in `requestHandle` die `if`-Kette mit ihren vier Zweigen (das große Bild kennt er:
+„Türsteher“, vier Antworten). Neu darin: `await json(request)` (den Körper lesen, deshalb `async`); das `try` mit
+Status `400` im `POST`-Zweig ist seit 18.09.2026 abends weg (siehe unten bei `api.ts`). Die Region `Tables` gibt es
+nicht mehr (siehe unten), `api.ts` ist bis `responseSend` durchgegangen; danach `api.test.ts`. Offen aus `serverCreate`: Schritt 3, warum dort ein
+normales `try`/`catch` nicht greift (die `async`-Funktion gibt sofort die Quittung zurück, der Fehler kommt später).
+
+**Am 18.09.2026 erklärt und angekommen (nicht wiederholen, nur anknüpfen):** das große Bild Handy, `api.ts`,
+`orders.ts`, Datenbank; was das Handy bekommt (Seite, Menü, Bestellungen) und dass das Handy die Seite baut;
+`createServer` merkt sich die Lambda, Node ruft sie je Anfrage mit frischem `request` und `response`
+(`addActionListener`, „Kellner zu Schichtbeginn einweisen“); `requestHandle` ist unsere eigene Funktion (eigene
+Namen Substantiv zuerst, Nodes Namen Verb zuerst); `async` gibt sofort eine Quittung (`Promise`) zurück, `.catch`
+hängt einen Zettel „wenn es scheitert“ daran und gibt es nur an einem `Promise`; `.catch` in `serverCreate` ist sein
+„global exception handler“; `console.error` landet im Terminal, später im Systemprotokoll von Linux; `request.url`
+ist nur der Pfad (Namen der Teile: protocol, host, port, path), `?? ""` wie `orElse("")`; `match`, Muster,
+`[A-Z0-9]+`, Klammern als Textmarker, `^` und `$`, `?.[1]`; Aufbau einer HTTP-Anfrage und einer HTTP-Antwort
+(erste Zeile, Kopfzeilen, Leerzeile, Körper); `responseSend` Zeile für Zeile; `JSON` wie `Math` in Java mit
+`stringify` und `parse`.
+
+**Stand (19.09.2026, nachts):** Typprüfung ohne Fehler, `node --test` 13 grün: 5 `orders`, 4 `menu`, 3 `api`, dazu
+`setup.ts`. Letzter Commit `c6289bd` („remove wokflow.db and ignore it“, gepusht, `wokflow.db` ist aus Git heraus und
+steht in `.gitignore`). Seitdem geändert und nicht committet (Git macht der Nutzer selbst): `api.ts` (113 Zeilen: kein
+Status `400`, `POST` antwortet `200` mit `null`, keine Formprüfung, keine Regionen, keine `//` im Körper),
+`orders.ts` (Dateikopf ein Satz), `menu.ts`, alle vier Dateien unter `test/`, dazu neu `AGENTS.md` (zeigt Codex auf
+diese Datei). Auf GitHub gibt es den Zweig `origin/rksv` von Sophale (drei Commits, nur neue Dateien unter
+`src/RKSV/` und vier Tests), lokal nicht ausgecheckt, nicht in `main`; erklärt: `pull` holt ihn nur als Lesezeichen.
+**Offen, fünf kleine Stilpunkte, gezeigt, nicht gepatcht:** `api.ts` Zeile 28 mit 85 Zeichen; „A HTTP-request from as
+the phone sends with headers:“ liest sich kaputt (Zwilling: „An HTTP-answer as the server sends it:“); „Tableid“
+statt „Table identifier“; `menu.test.ts` Zeile 4 mit 82 Zeichen; der Test „Unknown articles and variants are
+rejected“ prüft nur eine unbekannte Variante (`Cola 0.3`), keinen unbekannten Artikel.
 
 - **`orders.ts`, vom Nutzer Stück für Stück abgenommen und mitentworfen:** `ordersUpdate(database, tableId, update:
   OrdersUpdate)` ist die einzige schreibende Tür neben `tableClose` und die einzige Stelle mit `transaction`.
@@ -637,9 +718,12 @@ Nutzer selbst.
   („send“ ist, was das Handy tut). **Erst entfernen, dann hinzufügen (seine Regel):** Ein Entfernen meint immer
   Portionen von vor dieser Nachricht; noch nicht Gesendetes korrigiert der Kellner am Handy, Gesendetes im Reiter
   „Bestellt“. So wirft „2 Cola dazu, 3 Cola weg“ bei nur 1 Cola am Tisch von selbst.
-- **`orders.test.ts`, 5 Tests, je Ursache eines Wurfs genau einer (sein Schnitt):** der Ablauf, „A quantity below 1
-  changes nothing“, „An article missing in the menu changes nothing“ (`pizza1` als schlichtes `OrderNew`; das
-  Restaurant hat keine Pizza, genau deshalb; prüft auch, dass ein schon ausgeführtes Entfernen zurückgerollt wird),
+- **`orders.test.ts`, 5 Tests (seit 18.09.2026 abends mit „Price and tax rate come from the menu“ aus `api.test.ts`), je Ursache eines Wurfs genau einer (sein Schnitt):** der Ablauf, „A quantity below 1
+  changes nothing“ (bucht erst `colaBig1`, dann `{ add: [colaBig2, redBull0], remove: [colaBig1] }`: der einzige
+  Test, in dem ein schon ausgeführtes Entfernen zurückgerollt werden muss; eine kaputte Kopie mit zwei getrennten
+  Transaktionen macht nur ihn rot). **Der Pizza-Test ist weg (Nutzer, 18.09.2026 abends: „in the menu test we already
+  test what happened if something isn't in the menu“):** Die Regel „nicht im Menü“ wohnt in `menu.ts` und wird in
+  `menu.test.ts` geprüft, nirgends sonst; Weiter:
   „Only portions from before a change can be removed“ (hält die Reihenfolge fest), „A free table has nothing to remove
   or to close“. **Jedes `throws` bekommt ein Stichwort als Muster (`/quantity/`, `/menu/`, `/remove/`, `/open/`), nie
   den ganzen Text** (ersetzt „keine Fehlertexte prüfen“ vom Vortag): Ein nacktes `throws(lambda)` besteht bei jedem
@@ -648,14 +732,28 @@ Nutzer selbst.
 - **`api.ts`, von Claude neu geschrieben, der Nutzer geht sie seit 18.09.2026 mit Claude durch:** `GET /api/menu`,
   `GET` und `POST /api/tables/:table/orders`; der `POST` bekommt ein `orders.OrdersUpdate` und ruft
   genau einmal `orders.ordersUpdate`, `DELETE` gibt es nicht mehr. **Keine eigene Fehlerklasse (Entscheidung des
-  Nutzers, 18.09.2026: „we should be sparingly with types“, „yes much better“):** Der Status entscheidet sich nach
-  dem Ort. Im `POST`-Zweig von `requestHandle` steht ein `try` um `updateRead(await json(request))` und
-  `orders.ordersUpdate`; alles, was dort wirft, bekommt 400 mit dem Fehlertext unter `error`. Alles andere fängt
-  `serverCreate`: 500, „The server failed“, eine Zeile im Serverprotokoll. Unbekannte Adresse oder Methode 404
-  direkt. `RequestError`, `tableChange`, `bodyRead` sind entfernt, die Formprüfung (`objectRead`, `updateRead`,
-  `orderNewRead`) wirft schlichte `Error`. Bewusst in Kauf genommen: Ein Fehler beim Speichern zählt immer als
-  Fehler des Handys, auch eine volle Platte; der Kellner sieht den Text, es gibt aber keine Protokollzeile (für die
-  Sicherheitsrunde vormerken). `node:http` bietet keine Fehlerklassen, nur `STATUS_CODES` (Exportliste geprüft).
+  Nutzers, 18.09.2026: „we should be sparingly with types“, „yes much better“):** **Kein Status 400 mehr
+  (Entscheidung des Nutzers, 18.09.2026 abends: „this client shit … too much for me“, „We should program this that
+  the client never can make a mistake. So patch this“):** Das `try` im `POST`-Zweig ist weg, er sieht aus wie die
+  beiden `GET`-Zweige. Jeder Fehler landet in `serverCreate`: 500, „The server failed“, der Grund steht als Zeile im
+  Serverprotokoll. Gespeichert wird trotzdem nichts Falsches (`transaction`). Grund: Mit Tischsperre und einem
+  Bildschirm, der nur Vorhandenes entfernen lässt, ist ein solcher Fehler ein Fehler in der eigenen Seite, nicht des
+  Kellners. Das `try` kommt nur zurück, wenn der Bildschirm den Grund wirklich anzeigen muss. **Der `POST` antwortet
+  mit `200` und `null`, nicht mehr mit den offenen Bestellungen (Nutzer, 18.09.2026 abends: „why we have to respond …
+  if the phone already knows what it sent“, „just patch“):** Gesendet wird am Rückweg zum Tischplan, das Handy zeigt
+  danach keine Bestellungen; beim nächsten Öffnen fragt es mit `GET …/orders`. Im Ablauftest prüfen die `POST` nur
+  noch den Status, der Stand kommt aus dem `GET` am Ende. **Die Formprüfung ist weg (Nutzer,
+  18.09.2026 abends: „remove is better“):** Die Region `Tables` (`objectRead`, `updateRead`, `orderNewRead`) ist
+  entfernt, der `POST`-Zweig ruft `orders.ordersUpdate(database, tableId, await json(request) as
+  orders.OrdersUpdate)`; `api.ts` hat 113 Zeilen. Belegt mit 14 kaputten Anfragen (Menge als Text, fehlende Liste,
+  `null`, Liste statt Objekt, Menge -1 und 1.5 beim Entfernen) gegen eine Kopie mit und ohne Prüfung: beide Male `500`
+  und Tisch unverändert, weil `orders.ts` alles selbst abweist (`entryOf` mit `===`, `Number.isInteger`, `changes`,
+  `transaction`). Das Serverprotokoll bleibt verfolgbar: Zeit, Methode, Adresse, Fehlertext aus `orders.ts` („Cola
+  needs a valid quantity of at least 1“) samt Aufrufkette mit Datei und Zeile; bei falscher Form ein `TypeError` mit
+  Zeile in `orders.ts`. Für die Sicherheitsrunde vormerken: Prüfung an der Tür, und der gesendete Körper steht nicht im
+  Protokoll. Offen: `api.ts` hat nur noch die Region `Server`; nach seiner Regel (Regionen nur bei mehreren Teilen)
+  wären die Marken verzichtbar, ihm überlassen. Unbekannte Adresse oder Methode 404 direkt. `RequestError`,
+  `tableChange`, `bodyRead` sind entfernt. `node:http` bietet keine Fehlerklassen, nur `STATUS_CODES` (Exportliste geprüft).
   Tischkennung nur Buchstaben und Ziffern; **kein `undefined`, wo ein leerer Text reicht (Nutzer, 18.09.2026: „this
   is just not beautiful with the undefined“):** `const tableId: string = address.match(…)?.[1] ?? ""`, geprüft
   wird mit `tableId !== ""`; sicher, weil das Muster mindestens ein Zeichen verlangt. **Muster mit vielen
@@ -678,8 +776,8 @@ Nutzer selbst.
   in `api.ts` keinen eigenen Typ mehr.
 - **Erste Durchsicht von `api.ts` durch den Nutzer (18.09.2026), offen, ein Thema nach dem anderen klären:**
   1. Erledigt: Menü roh senden, siehe oben. Das rohe Menü hat 28709 Zeichen (vorher 14609), im WLAN belanglos.
-  2. Dateikopf von `api.ts` auf einen Satz gekürzt (mit dem Menü-Patch). Für `orders.ts` gezeigt, nicht gepatcht:
-     „Stores the orders of the tables in SQLite, one row for each portion.“
+  2. Dateikopf von `api.ts` auf einen Satz gekürzt (mit dem Menü-Patch). `orders.ts` ebenso, auf sein „patch“ am
+     18.09.2026 abends: „Stores the orders of the tables in SQLite, one row for each portion.“
   3. Erledigt: `RequestError` ist weg, siehe oben.
   4. Erledigt: `Change` ist als `OrdersUpdate` nach `orders.ts` gewandert, siehe oben bei `orders.ts`.
   6. Ihm am Prototyp erklärt: Das Handy bekommt das Menü als Daten und baut den Bildschirm selbst, der Server
@@ -699,13 +797,19 @@ Nutzer selbst.
   Größenlimit für den Körper (64 KiB), Prüfung des `Content-Type`, Status 405, Dekodieren der Tischkennung. Begründung:
   Nur eigene Handys im Betriebs-WLAN sprechen mit dem Server. Offen für das Bildschirm-Modul: doppeltes Senden, wenn
   die Antwort im WLAN verloren geht (Idee: Kennung je Nachricht, die der Server nur einmal annimmt).
-- **`api.test.ts`, 6 Tests im Stil von `orders.test.ts`:** Ablauf über echte HTTP-Anfragen, er vergleicht die
-  Antwort von `GET /api/menu` mit `JSON.parse(JSON.stringify(menu))`, dem Menü nach der Reise als Text (mit zwei
-  kaputten Kopien geprüft, `menu.drinks` und `{ menu }`, beide machen ihn rot); „A failed change gets
-  status 400 and changes nothing“ (beide Richtungen, fängt auch zwei getrennte Aufrufe statt einem); „Price and tax
-  rate come from the menu“; „A broken request gets status 400 and changes nothing“; 404; 500 mit
-  `t.mock.method(console, "error", …)`. Server je Test auf Port 0 an `127.0.0.1`, `afterEach` schließt ihn. Mit 14
-  kaputten Kopien von `api.ts` und 12 von `orders.ts` geprüft, jede macht mindestens einen Test rot.
+- **`api.test.ts`, 3 Tests statt 6 (Wunsch des Nutzers, 18.09.2026 abends: „reduce … but still cover all of the
+  necessary cases“), insgesamt 13 Tests:** (1) Ablauf über echte HTTP-Anfragen: Menü gegen
+  `JSON.parse(JSON.stringify(menu))`, Updates an Tisch 14 und G3, beide Tische zurücklesen; (2) „An unknown address
+  gets status 404“; (3) „A failure gets status 500 and the server keeps running“: ein gescheitertes Update und eine
+  geschlossene Datenbank, danach antwortet das Menü weiter, `console.error` per `t.mock.method` zweimal gezählt.
+  „Price and tax rate come from the menu“ steht jetzt in `orders.test.ts`, weil die Regel in `orders.ts` wohnt.
+  Entfernt, weil `orders.test.ts` und Test 3 dasselbe fangen: „A failed update …“, „A broken request …“. Beleg: 12
+  kaputte Kopien (Menü nur Getränke, `GET` sendet nichts, `GET` oder `POST` immer Tisch 14, `POST` speichert nicht,
+  `POST` schluckt den Fehler und antwortet `200`, `GET`-Zweig nimmt auch `POST`, 404 als 200, 500 als 200, kein
+  Protokoll, Status nie gesetzt, `orders.ts` glaubt dem Preis des Handys): die 3 fangen alle 12, die 6 alten
+  übersahen die beiden „immer Tisch 14“. `beforeEach` braucht `database` als eigene Variable, weil Test 3 sie
+  schließt (seine Kürzung `serverCreate(databaseTest())` ließ die Typprüfung scheitern, zurückgenommen). Server je
+  Test auf Port 0 an `127.0.0.1`, `afterEach` schließt ihn.
 - **Tischsperre:** entschieden, steht im Manifest Abschnitt 4 Punkt 1; kommt mit dem Bildschirm-Modul.
 - **`orders.ts` geteilt (Wunsch des Nutzers, 18.09.2026: „for me its long somehow“, „orderbook is good“):**
   `src/tables/orderbook.ts` (neu, 56 Zeilen) hält `orderbookCreate` und `transaction`, beide mit `export`, seine
@@ -714,8 +818,10 @@ Nutzer selbst.
   damit `ordersUpdate` die einzige schreibende Tür bleibt (deshalb kein weiterer Schnitt). `index.ts` und
   `test/setup.ts` holen `orderbookCreate` aus der neuen Datei. Modulzeile überall: „`…/orderbook.ts`: Creates the
   database table of the orders.“ Keine eigene Testdatei dafür (Nutzer: „just one test is enough“), `orders.test.ts`
-  deckt beides. Verworfen: `orders.ts` plus `ordering.ts` plus `ordering.test.ts` (seine Zwischenidee). Offen: Die
-  Region `Setup` in `orders.ts` enthält nur noch die drei Typen, der Name passt nicht mehr; ihm überlassen.
+  deckt beides. Verworfen: `orders.ts` plus `ordering.ts` plus `ordering.test.ts` (seine Zwischenidee), am 18.09.2026 abends
+  noch einmal gefragt (Typen nach `orderbook.ts`, `orders.ts` zu `ordering.ts`): Claude riet ab, weil die drei Typen
+  Ein- und Ausgabe der Funktionen in `orders.ts` sind und `api.ts` samt beiden Tests sonst zwei Imports bräuchten. Die
+  Regionen in `orders.ts` hat er selbst entfernt („we don't need region if we just have three methods“).
 - **Für die Aufräumrunde notiert, nicht jetzt:** Kommentarzeilen über 80 Zeichen in `orders.ts` (25, 41, 98, 149),
   `articles.ts` (49), `menu.ts` (52), `database.ts` (16), `menu.test.ts` (4); die Datenbanktabelle heißt im SQL `orders`, im Kommentar und
   in `orderbookCreate` `orderbook` (mit `orderbook` wäre der Name `orders` im Code frei).
@@ -724,19 +830,60 @@ Nutzer selbst.
 `api.test.ts`. Mit dem großen Bild beginnen (Handy, `api.ts`, `orders.ts`, Datenbank), dann Region für Region, je
 Antwort ein Stück mit Datei, Funktion, Zeilen, dann warten; er korrigiert Kommentare und Namen selbst, daraus Regeln
 machen. Reihenfolge von oben nach unten (Nutzer, 18.09.2026: „from the top to the bottom step by step“); die Imports
-überspringen und jeden Namen dort erklären, wo er benutzt wird. Stand 18.09.2026: Dateikopf fertig (sein Wortlaut),
-weiter bei `//#region Server` mit `serverCreate`: Schritt 1 (die drei Schichten: `createServer`, Lambda je Anfrage,
-Lambda in `.catch`) ist erklärt, Schritt 2 wäre, dass `requestHandle` sein Ergebnis nicht sofort liefert (`async`,
-`Promise`), dann `.catch`. **Am 18.09.2026 abends war der Nutzer überfordert („i am sooooooooo overwhelmed“):**
+überspringen und jeden Namen dort erklären, wo er benutzt wird. Wo es weitergeht, steht am Anfang dieses Abschnitts.
+Er wollte `responseSend` vor der `if`-Kette sehen („should we not go through response send first“); den Helfer
+zuerst zu erklären ist also in Ordnung, wenn er danach fragt.
+**Am 18.09.2026 abends war der Nutzer überfordert („i am sooooooooo overwhelmed“):**
 Claude hatte zu `serverCreate` hintereinander drei Umbauten gezeigt (eigene Funktion `errorSend`, benannte Konstante
 `errorRequest`, `try`/`catch` in `requestHandle` statt `.catch`). Lehre: nur die gestellte Frage beantworten, keine
 weiteren Entwürfe nachschieben; bei Überforderung sofort aufhören, offene Entscheidungen mit „bleibt, wie es ist“
 schließen, einen einzigen kleinen nächsten Schritt nennen. `serverCreate` steht unverändert im Original und läuft.
 Nicht entschieden und nur auf seine Nachfrage wieder aufgreifen: `try`/`catch` in `requestHandle` statt `.catch`
-(in einer Kopie geprüft, Typprüfung und 16 Tests grün; Preis: ein `try` im `try` im `POST`-Zweig). **Noch nicht erklärt und in `api.ts` enthalten:** `async`, `await`,
-`Promise`, `.catch`, regulärer Ausdruck mit Gruppe, `?.` und `?.[1]`, `unknown` eingrenzen mit `typeof`, `json` aus
-`node:stream/consumers`, `error as Error` im `catch`; in `api.test.ts`: `fetch`, `Response`,
-`once`, Port 0, `AddressInfo`, `afterEach`, `t.mock.method`.
+(in einer Kopie geprüft, Typprüfung und 16 Tests grün; Preis: ein `try` im `try` im `POST`-Zweig).
+**Noch nicht erklaert und in `api.ts` enthalten:** `json` aus `node:stream/consumers`, `as orders.OrdersUpdate` im `POST`-Zweig; in `api.test.ts`: Port 0, `AddressInfo`, `t.mock.method`.
+
+**`beforeEach` in `api.test.ts` und Promise, Stand der Erklärung (18. auf 19.09.2026, nachts):** Er will es wirklich
+verstehen („nope i want to understand“), drei Leseregeln reichten ihm nicht. Angekommen: `listen` wartet nicht
+(`server.address()` ist direkt danach `null`), der Server hat je Ereignisname einen „slot“ mit Lambdas wie die
+`ActionListener`-Liste eines Java-Buttons (sein eigenes Bild), `node:test` startet den Test erst, wenn `beforeEach`
+fertig ist, `Promise<void>` trägt nur den Zustand. Gescheitert: zwei Promises A und B in einer Liste, das neue Wort
+„slip“ ohne Erklärung (vorher „receipt“), zwei Schritt-Bilder mit Akteuren, Code und Text zugleich, Kommentare im
+Beispielcode, die den Ablauf statt das Ergebnis nennen, und die Regel „läuft, wo `()` hinter dem Namen steht“ (er:
+dann liefe auch `function hello()`; richtig ist: `function` davor oder `=>` dahinter mit Rumpf ist Definition, nur der
+nackte Name mit Klammern ist ein Aufruf, wie in Java `void hello() {}` gegen `hello();`).
+**Die Leiter, die trägt, je Antwort eine Stufe, immer die ganze Datei, ausgeführt, Ergebnis als Kommentar, darunter
+„was Node tut“ als nummerierte Liste mit Zeilennummern:** (1) `setTimeout` als Küchenwecker, Ausgabe A, C, B, klar;
+(2) `serverStart(ready)` mit `setTimeout(ready, 1000)`, gleich `listen(3000, lambda)` in `index.ts`, klar nach der
+Node-Liste; (3) alles, was den fertigen Server braucht, steht in der Lambda; beide `console.log` laufen zusammen nach
+einer Sekunde (Claudes Kommentare „one second later“ je Zeile las er als zwei Sekunden, „you lied to me“); (4) wozu
+`await`: nie nötig, nur gegen Lambda in Lambda in Lambda bei mehreren Wartedingen (Server, Menü, Bestellungen),
+klar; (5) flach mit `await wait(1000)` aus `node:timers/promises`, sein Einwand „you didn't show me the wait“; (6)
+Nachbildung `PromiseSimple` (Feld `state`, Konstruktor ruft `work` sofort und reicht „schalte auf finished“ hinein),
+in Einzelschritten: Lambda wird übergeben und läuft nicht, der Konstruktor baut die fehlende Lambda selbst, `work(…)`
+ruft unsere Lambda, dort heißt das Geschenk `ready`. **Durchbruch: Er schrieb die Nachbildung selbst mit Namen statt
+Lambdas um** (`function worker(ready)`, Methode `workarg`, `new PromiseSimple(worker)`) und sagte danach „ok den code
+check i jetz“. Zwei Korrekturen dabei: `this.workarg` statt `workarg`, und `workarg` als Feld mit `=>`, weil eine
+normale Methode ihr `this` verliert, wenn man sie ohne `()` weiterreicht (geprüft: Zustand bleibt pending). Lehre:
+benannte Funktionen zuerst, Lambdas erst danach. (7) Gezeigt, noch nicht bestätigt: dieselbe Datei mit dem echten
+`new Promise<void>(worker)`, `console.log(result)` zeigt `Promise { <pending> }`, nach `await result` `Promise {
+undefined }`. **Erledigt am 19.09.2026, die ganze Kette hat getragen:** `on` und `emit` als Fach mit Lambdas, von Claude
+nachgebaut und von ihm bestaetigt (`ServerSimple` mit `slots`, dann ein Array je Name, dann Ueberladungen);
+`createServer(lambda)` ist nur `on("request", lambda)`; Node ruft `emit` auf, `emit` prueft nichts, die aufrufende
+Stelle entscheidet den Namen; ein einziger Arbeiter, belegt mit zwei gleichzeitigen Anfragen und einer blockierenden
+Schleife (`start /b`, `ende /b`, `start /a`, `ende /a`); `...args: unknown[]` als Javas Vararg, samt Kontrast mit und
+ohne Punkte; `once` als Methode gegen `once` als freie Funktion aus `node:events`, nachgebaut mit `new Promise` und
+`ready` ins Fach; `ready` heisst offiziell `resolve`; `await` braucht `async`, weil die Funktion beim ersten `await`
+mit einer Quittung zurueckkommt (Fehlertext TS1308 gezeigt); inneres und aeusseres Promise sind verschieden (sein
+eigener Einwand, richtig); `fetch` gegen einen winzigen Server. `beforeEach` und `afterEach` sagt er selbst
+verstanden zu haben. **Was trug:** je Antwort eine kleine lauffaehige Datei, vorher wirklich ausgefuehrt, Ergebnis als
+Kommentar hinter der Zeile; Nachbildungen statt Worte; `listenerCount` vor und nach `emit` fuer „fliegt raus"; echte
+tsc-Fehlertexte als Beleg. **Was nicht trug:** zwei Zeilen Vergleich ohne lauffaehige Datei, und jeder Satz, der
+`on`, `once` und Promise in einem Zug nennt.
+
+**Noch offen, in dieser Reihenfolge:** er liest Test 1 selbst und fragt; `updateSend` und warum es ein Promise nur
+durchreicht (`fetch` baut es, nicht `updateSend`); `deepEqual` mit `JSON.parse(JSON.stringify(menu))`; `await
+json(request)` und `as orders.OrdersUpdate` in `requestHandle`; `.catch` in `serverCreate`; `t.mock.method`, Port 0,
+`AddressInfo`. Im Frust wechselt er ins Deutsche, dann deutsch antworten.
 
 **Wie man ihm am 18.09.2026 etwas erklären konnte:** nicht mit SQL-Folgen und „Phone A/B“, sondern mit sechs
 nummerierten Schritten aus dem Restaurant („+1 Red Bull, −1 Cola“, Red Bull gespeichert, Cola schon weg, Handy bekommt
@@ -910,8 +1057,10 @@ ihren Tests steht in der Übergabe am Anfang dieses Abschnitts.
 ### Was der neue Chat zuerst tut
 
 1. Diese Datei lesen, zuerst „Zusammenarbeit“ und „Coden“, dann den Anfang des Abschnitts „Nächster Chat“.
-2. `src/tables/orders.ts` und `test/orders.test.ts` lesen, danach `src/server/api.ts` und `test/api.test.ts`.
-3. Dem Nutzer `api.ts` und `api.test.ts` erklären, Stück für Stück, und seine Korrekturen als Regeln festhalten.
+2. `src/tables/orders.ts`, `src/tables/orderbook.ts` und `test/orders.test.ts` lesen, danach `src/server/api.ts`
+   und `test/api.test.ts`.
+3. Dem Nutzer `api.ts` dort weiter erklären, wo die Übergabe am Anfang dieses Abschnitts steht, danach
+   `api.test.ts`; Stück für Stück, sehr kurze Antworten, seine Korrekturen als Regeln festhalten.
 4. Danach das nächste Modul nach der Modulreihenfolge, zuerst die Spezifikation. Am Ende diesen Abschnitt wieder auf
    das dann nächste Modul umschreiben.
 

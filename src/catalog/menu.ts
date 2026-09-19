@@ -119,18 +119,18 @@ export type MenuEntry = {
  * Built once when this menu file loads.
  */
 const entries: MenuEntry[] =
-    Object.values(menu).flatMap((category: Category): MenuEntry[] => {
-        return Object.values(category.groups).flat().flatMap((article: Article): MenuEntry[] => {
-            return article.variants.map((variant: Variant): MenuEntry => {
-                return {
+    Object.values(menu).flatMap((category: Category): MenuEntry[] =>
+        Object.values(category.groups).flat().flatMap((article: Article): MenuEntry[] =>
+            article.variants.map((variant: Variant): MenuEntry =>
+                ({
                     articleId: article.name.de,
                     variantId: variant.name?.de ?? null,
                     price: toSnapshot(variant.price).amount,
                     tax: article.name.de === "Leitungswasser" ? 10 : category.tax,
-                };
-            });
-        });
-    });
+                })
+            )
+        )
+    )
 
 /**
  * {@link MenuEntry} of a variant.

@@ -1,12 +1,7 @@
 /**
  * ## Orders
  *
- * Stores the orders of the tables in SQLite, each with name, price,
- * tax rate as they were at booking time.
- * Orders are saved when the phone sends them, one row for each portion,
- * so a quantity is counted and never stored.
- * A portion is open until its table is closed
- * and then stays stored for the records.
+ * Stores the orders of the tables in SQLite, one row for each portion.
  *
  * - `../catalog/menu.ts`: Groups the restaurant articles.
  * - `./orderbook.ts`: Creates the database table of the orders.
@@ -19,8 +14,6 @@ import type { DatabaseSync, StatementResultingChanges } from "node:sqlite";
 import type { MenuEntry } from "../catalog/menu.ts";
 import type { Article, Variant } from "../catalog/articles.ts";
 
-
-//#region Setup
 
 /**
  * A order of a table: A {@link Variant} of an {@link Article} with its quantity.
@@ -54,11 +47,6 @@ export type OrdersUpdate = {
     add: OrderNew[];
     remove: OrderNew[];
 };
-
-//#endregion Setup
-
-
-//#region Ordering
 
 /**
  * Turns an {@link OrderNew} into an {@link Order}
@@ -184,4 +172,3 @@ export function tableClose(database: DatabaseSync, tableId: string): void {
         throw new Error(`No open orders`);
 }
 
-//#endregion Ordering

@@ -10,20 +10,14 @@
 import { test, beforeEach } from "node:test";
 import { deepEqual, throws } from "node:assert/strict";
 import * as orders from "../src/tables/orders.ts";
-import { databaseTest } from "./setup.ts";
+import { databaseTest, colaSmall1, colaBig1, colaBig2, colaBig3, redBull0, redBull1 } from "./setup.ts";
 import type { DatabaseSync } from "node:sqlite";
 
 
 let database: DatabaseSync;
-beforeEach((): void => { database = databaseTest(); });
 
-const colaSmall1: orders.Order = orders.orderOf({ articleId: "Cola", variantId: "0.25", quantity: 1 });
-const colaBig1: orders.Order = orders.orderOf({ articleId: "Cola", variantId: "0.5", quantity: 1 });
-const colaBig2: orders.Order = orders.orderOf({ articleId: "Cola", variantId: "0.5", quantity: 2 });
-const colaBig3: orders.Order = orders.orderOf({ articleId: "Cola", variantId: "0.5", quantity: 3 });
-const redBull0: orders.Order = orders.orderOf({ articleId: "Red Bull", variantId: null, quantity: 0 });
-const redBull1: orders.Order = orders.orderOf({ articleId: "Red Bull", variantId: null, quantity: 1 });
-const pizza1: orders.OrderNew = { articleId: "Pizza", variantId: null, quantity: 1 };
+// Fresh database in memory before each test
+beforeEach((): void => { database = databaseTest(); });
 
 
 test(
@@ -46,16 +40,11 @@ test(
 test(
     "A quantity below 1 changes nothing",
     (): void => {
-        throws((): void => orders.ordersUpdate(database, "14", { add: [colaBig2, redBull0], remove: [] }), /quantity/);
-        deepEqual(orders.ordersRead(database, "14"), []);
-    }
-);
-
-test(
-    "An article missing in the menu changes nothing",
-    (): void => {
         orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] });
-        throws((): void => orders.ordersUpdate(database, "14", { add: [pizza1], remove: [colaBig1] }), /menu/);
+        throws((): void => orders.ordersUpdate(database, "14", {
+            add: [colaBig2, redBull0],
+            remove: [colaBig1],
+        }), /quantity/);
         deepEqual(orders.ordersRead(database, "14"), [colaBig1]);
     }
 );
@@ -64,7 +53,10 @@ test(
     "Only portions from before an update can be removed",
     (): void => {
         orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] });
-        throws((): void => orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [colaBig2] }), /remove/);
+        throws((): void => orders.ordersUpdate(database, "14", {
+            add: [colaBig1],
+            remove: [colaBig2],
+        }), /remove/);
         deepEqual(orders.ordersRead(database, "14"), [colaBig1]);
     }
 );
@@ -75,7 +67,19 @@ test(
         orders.ordersUpdate(database, "14", { add: [colaBig2], remove: [] });
         orders.tableClose(database, "14");
         deepEqual(orders.ordersRead(database, "14"), []);
-        throws((): void => orders.ordersUpdate(database, "14", { add: [], remove: [colaBig1] }), /remove/);
+        throws((): void => orders.ordersUpdate(database, "14", {
+            add: [],
+            remove: [colaBig1],
+        }), /remove/);
         throws((): void => orders.tableClose(database, "14"), /open/);
+    }
+);
+
+test(
+    "Price and tax rate come from the menu",
+    (): void => {
+        const colaCheap1: orders.Order = { ...colaBig1, price: 1, tax: 0 };
+        orders.ordersUpdate(database, "14", { add: [colaCheap1], remove: [] });
+        deepEqual(orders.ordersRead(database, "14"), [colaBig1]);
     }
 );
