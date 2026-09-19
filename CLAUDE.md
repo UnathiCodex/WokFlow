@@ -429,7 +429,7 @@ tatsächlichen Bedürfnissen des Restaurants heraus möglichst einfach gestaltet
 
 Stand 14.09.2026 abends, auf Wunsch des Nutzers: das ganze System in einem Stück, vom Bestellen bis zum
 Steuerberater. Einzelheiten und Quellen stehen unter „Entscheidungen“, „Buchhaltung“, „Korrespondenz“ und
-„RKSV“. Widerspricht ein neuerer Eintrag dort diesem Abschnitt, gilt der neuere, und dieser Abschnitt wird
+„rksv“. Widerspricht ein neuerer Eintrag dort diesem Abschnitt, gilt der neuere, und dieser Abschnitt wird
 nachgezogen.
 
 ### 1. Wofür WokFlow da ist
@@ -437,7 +437,7 @@ nachgezogen.
 - Kassen- und Bestellsystem der ASIA WOK Restaurant GmbH (Messeplatz 1, Halle 10, Klagenfurt): Buffet mit
   Wok, Speisekarte und Getränke. Buffet 11:30 bis 14:30 und 17:00 bis 21:30, Dienstag Ruhetag außer an
   Feiertagen.
-- WokFlow ersetzt TOUCHIT, spätestens bis Mai 2027: Dann muss die RKSV-Signaturkarte getauscht werden, und
+- WokFlow ersetzt TOUCHIT, spätestens bis Mai 2027: Dann muss die rksv-Signaturkarte getauscht werden, und
   TOUCHIT kennt die neue Karte vermutlich nicht. Grobe Schätzung vom 13.09.2026: 62 bis 96 Arbeitstage mit
   KI-Hilfe, nebenbei 8 bis 12 Monate.
 - Leitregeln: Funktion zuerst, dann Einfachheit. Große, gut lesbare Tasten für Kellner zwischen 50 und
@@ -459,7 +459,7 @@ nachgezogen.
 ### 3. Geräte und Technik
 
 - Ein Server: Lenovo-Mini-PC mit Linux an der Theke, daran Touch-Monitor (Kasse und Chef-Arbeitsplatz),
-  Lesegerät mit A-Trust-Signaturkarte (RKSV), Zentraldrucker (Metapace T-3II) und eine USB-SSD.
+  Lesegerät mit A-Trust-Signaturkarte (rksv), Zentraldrucker (Metapace T-3II) und eine USB-SSD.
 - 4 bis 5 Android-Handys der Kellner. WokFlow ist eine einzige Web-App, dieselbe Seite im Browser auf Handy
   und Theken-Monitor. Der Chef schaltet jedes Handy einmal frei, Kellner brauchen keinen Code, der Chef am
   PC einen Chef-Code.
@@ -536,7 +536,7 @@ nachgezogen.
    Danach direkt zur nächsten Person in derselben Auswahl zurückkehren, bis alles bezahlt ist.
    Normalfall weiter direkt die ganze Rechnung. Nur nach Artikeln, nie nach frei eingetippter Summe.
    Schieben auf einen anderen Tisch bleibt eine getrennte Funktion (siehe „Bildschirm und Bedienung“).
-6. Rechnung: WokFlow erstellt den Beleg, signiert ihn (RKSV-Kette, Umsatzzähler, QR-Code) und druckt ihn.
+6. Rechnung: WokFlow erstellt den Beleg, signiert ihn (rksv-Kette, Umsatzzähler, QR-Code) und druckt ihn.
    Danach ist der Beleg unveränderbar. Jede Teilrechnung ist ein eigener Beleg. Die Zahlart steht nicht
    auf dem Beleg.
 7. Bezahlen: Punkt 5.
@@ -570,7 +570,7 @@ nachgezogen.
 - Warum: Heute legt die Kasse die Zahlart beim Rechnungsdruck fest, Gäste entscheiden sich danach oft um,
   die Kartensumme stimmt nicht, und die Chefin rechnet jeden Abend mit dem Nexi-Zettel von Hand. Nur Nexi
   weiß sicher, ob mit Karte bezahlt wurde.
-- Rechtlich (mit Steuerberater und RKSV-Session bestätigen): Karte vor Ort ist steuerlich Barumsatz, der
+- Rechtlich (mit Steuerberater und rksv-Session bestätigen): Karte vor Ort ist steuerlich Barumsatz, der
   Beleg ist bei Bar und Karte gleich, die Zahlart ist ein protokollierter Vermerk, Kartenumsätze sind über
   die Transaktionsnummer erkennbar (§ 131 und § 132a BAO, FAQ Arbeitskreis Kassensoftware 2.4.15).
 
@@ -610,14 +610,14 @@ nachgezogen.
 
 ### 8. Monat und Jahr
 
-- Monatsende, automatisch: RKSV-Monatsbeleg (Beleg über 0 €), Export des RKSV-Journals als eigene Datei,
+- Monatsende, automatisch: rksv-Monatsbeleg (Beleg über 0 €), Export des rksv-Journals als eigene Datei,
   die nie überschrieben wird (USB-SSD und Cloud), Monatsauswertung als PDF und Datei per E-Mail an den
   Steuerberater, verschickt über das Postfach der Chefin. Dazu ein Knopf „An Steuerberater senden“.
 - Dezember: Jahresbeleg, mit der App des Finanzministeriums prüfen.
 - Steuerberater Mag. Helmut Allesch (Klagenfurt): Buchhaltung, monatliche Umsatzsteuer-Voranmeldung,
   Lohnverrechnung, Jahresabschluss. Er bekommt Kassenauswertung, Kontoauszüge, Belege, Nexi-Abrechnungen
   und Stundenzettel.
-- 7 Jahre aufbewahren: Belege, RKSV-Journal, Tagesabschlüsse, Nexi-Abrechnungen. Ablage des Nutzers in
+- 7 Jahre aufbewahren: Belege, rksv-Journal, Tagesabschlüsse, Nexi-Abrechnungen. Ablage des Nutzers in
   `M:\NomWorkspace\NomBusinessworkings\AsiaWokRestaurantGmbH` (Schema `Kategorie/Jahr/AsiaWok_Typ_JJJJMM.pdf`).
 
 ### 9. Buchhaltung und Zugänge (Plan)
@@ -659,7 +659,7 @@ brauchen. Nicht entschieden.
 - Nutzer: Antworten von Nexi und Steuerberater abwarten (Mails unter „Korrespondenz“), ID Austria.
   Tischplanskizzen sind da; einzelne handschriftliche Nummern noch bestätigen.
 - Steuerberater: Unterlagen, Kassabuch, Wechselgeld, Trinkgeld, Gutscheine.
-- RKSV-Session: Monats- und Jahresbelege, A-Trust-Karte unter Linux, Zahlart ohne Beleg bestätigen.
+- rksv-Session: Monats- und Jahresbelege, A-Trust-Karte unter Linux, Zahlart ohne Beleg bestätigen.
 - Bildschirm: wer Zahlarten korrigieren darf, Feiertage Josefstag und Volksabstimmung, Tischnummern 9, G15, G16
   bestätigen.
 - Modul-Chats (seit 17.09.2026): je Chat ein ganzes Modul; Ablauf, Regeln, Reihenfolge, nächste Aufgabe unter
@@ -698,7 +698,7 @@ steht in `.gitignore`). Seitdem geändert und nicht committet (Git macht der Nut
 Status `400`, `POST` antwortet `200` mit `null`, keine Formprüfung, keine Regionen, keine `//` im Körper),
 `orders.ts` (Dateikopf ein Satz), `menu.ts`, alle vier Dateien unter `test/`, dazu neu `AGENTS.md` (zeigt Codex auf
 diese Datei). Auf GitHub gibt es den Zweig `origin/rksv` von Sophale (drei Commits, nur neue Dateien unter
-`src/RKSV/` und vier Tests), lokal nicht ausgecheckt, nicht in `main`; erklärt: `pull` holt ihn nur als Lesezeichen.
+`rksv` und vier Tests), lokal nicht ausgecheckt, nicht in `main`; erklärt: `pull` holt ihn nur als Lesezeichen.
 **Offen, fünf kleine Stilpunkte, gezeigt, nicht gepatcht:** `api.ts` Zeile 28 mit 85 Zeichen; „A HTTP-request from as
 the phone sends with headers:“ liest sich kaputt (Zwilling: „An HTTP-answer as the server sends it:“); „Tableid“
 statt „Table identifier“; `menu.test.ts` Zeile 4 mit 82 Zeichen; der Test „Unknown articles and variants are
@@ -840,7 +840,7 @@ weiteren Entwürfe nachschieben; bei Überforderung sofort aufhören, offene Ent
 schließen, einen einzigen kleinen nächsten Schritt nennen. `serverCreate` steht unverändert im Original und läuft.
 Nicht entschieden und nur auf seine Nachfrage wieder aufgreifen: `try`/`catch` in `requestHandle` statt `.catch`
 (in einer Kopie geprüft, Typprüfung und 16 Tests grün; Preis: ein `try` im `try` im `POST`-Zweig).
-**Noch nicht erklaert und in `api.ts` enthalten:** `json` aus `node:stream/consumers`, `as orders.OrdersUpdate` im `POST`-Zweig; in `api.test.ts`: Port 0, `AddressInfo`, `t.mock.method`.
+**Noch nicht erklaert und in `api.ts` enthalten:** `json` aus `node:stream/consumers`, `as orders.OrdersUpdate` im `POST`-Zweig; in `api.test.ts`: Port 0, `AddressInfo`, `deepEqual` mit `JSON.parse(JSON.stringify(menu))`.
 
 **`beforeEach` in `api.test.ts` und Promise, Stand der Erklärung (18. auf 19.09.2026, nachts):** Er will es wirklich
 verstehen („nope i want to understand“), drei Leseregeln reichten ihm nicht. Angekommen: `listen` wartet nicht
@@ -880,10 +880,33 @@ Kommentar hinter der Zeile; Nachbildungen statt Worte; `listenerCount` vor und n
 tsc-Fehlertexte als Beleg. **Was nicht trug:** zwei Zeilen Vergleich ohne lauffaehige Datei, und jeder Satz, der
 `on`, `once` und Promise in einem Zug nennt.
 
-**Noch offen, in dieser Reihenfolge:** er liest Test 1 selbst und fragt; `updateSend` und warum es ein Promise nur
-durchreicht (`fetch` baut es, nicht `updateSend`); `deepEqual` mit `JSON.parse(JSON.stringify(menu))`; `await
-json(request)` und `as orders.OrdersUpdate` in `requestHandle`; `.catch` in `serverCreate`; `t.mock.method`, Port 0,
-`AddressInfo`. Im Frust wechselt er ins Deutsche, dann deutsch antworten.
+**19.09.2026, zweiter Teil, `api.test.ts` durchgegangen:** `fetch` gegen einen winzigen eigenen Server (Client
+gleich Handy); warum `await` ueberall noetig ist, es gibt kein wartendes `fetch`, der eine Arbeiter darf nicht
+stehenbleiben; `updateSend` reicht das Promise von `fetch` nur durch, deshalb kein `async`, und ein `await` innen
+nimmt dem Aufrufer seines nicht ab (TS2740 gezeigt); `async` ist Pflicht bei `await` (TS1308), inneres und aeusseres
+Promise sind verschieden; `t.mock.method` von unten aufgebaut, zuerst ganz ohne Testrahmen (`console.error` in eine
+Variable retten, ueberschreiben, zurueckschreiben), dann `typeof console.error` ist `function`, dann eigener
+Fehlerdrucker, dann stdout gegen stderr mit `1>` und `2>`; drei Parameter von `mock.method`, ohne den dritten zaehlt
+er nur mit; der Weg ueber `t`, weil node:test den Mock am Testende selbst zuruecklegt; Sketch, wie `test` das `t`
+baut und erst beim Laufen hineinreicht, samt Ablage im Array und `await` in der Schleife (sein Einwand „warum extra
+speichern" war berechtigt, Claudes erster Satz dazu war falsch herum und wurde korrigiert: `async` startet nichts,
+nur sofortiges Aufrufen wuerde ueberlappen). **Der Typ von `logged`** in mehreren Anlaeufen: ein Mock ist eine
+Funktion (`typeof` ist `function`, `logged === console.error` ist `true`) mit Zusatzfeld `mock`
+(`MockFunctionContext` mit `callCount()` und `calls`); `Mock<F> = F & { mock: ... }`, `&` ist beides zugleich, `|`
+ist ein einziger Typ mit mehreren Formen; `T extends string` ist eine Einschraenkung, kein Erben, und
+`type Box<string>` ist verboten (TS2368: Type parameter name cannot be 'string'). Sein Fazit trug erst, als jede
+Antwort nur noch einen Satz und eine Zeile Code hatte.
+
+**Stand der Dateien am 19.09.2026:** `logged` hat jetzt einen ausgeschriebenen Typ, auf seinen ausdruecklichen
+Wunsch, dazu `Mock` im `import type` aus `node:test`:
+`const logged: Mock<((...data: any[]) => void) | (() => void)> = t.mock.method(console, "error", (): void => {});`
+Typpruefung gruen. **Zwei Tests sind rot, aus seinen eigenen Aenderungen**, absichtlich nicht repariert: Test 1
+vergleicht `[added.status, changed.status]` gegen `[200, 200, 200]`, Test 2 nimmt `equal` statt `deepEqual` fuer zwei
+Arrays („not reference-equal"). Test 3 ist gruen.
+
+**Naechster Schritt (er, 19.09.2026 abends):** morgen neue Module bauen und durchgehen. Offen aus `api.test.ts`:
+`deepEqual` mit `JSON.parse(JSON.stringify(menu))`, Port 0 und `AddressInfo`; aus `api.ts`: `await json(request)`
+und `as orders.OrdersUpdate`. Im Frust wechselt er ins Deutsche, dann deutsch antworten.
 
 **Wie man ihm am 18.09.2026 etwas erklären konnte:** nicht mit SQL-Folgen und „Phone A/B“, sondern mit sechs
 nummerierten Schritten aus dem Restaurant („+1 Red Bull, −1 Cola“, Red Bull gespeichert, Cola schon weg, Handy bekommt
@@ -990,7 +1013,7 @@ ihren Tests steht in der Übergabe am Anfang dieses Abschnitts.
 3. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`. Vorher entscheiden, wie die
    Seite ausgeliefert wird (siehe „Aktueller Stand“: nicht vom eigenen Server, bei Bedarf Vite). Mit dem Bildschirm
    kommen die Tischsperre, die Sonderregeln für Zitrone und Buffetpersonen.
-4. Danach nach dem Manifest: Rechnung, Zahlung, Druck, RKSV, Tagesabschluss.
+4. Danach nach dem Manifest: Rechnung, Zahlung, Druck, rksv, Tagesabschluss.
 
 ### Modul `tables`, Spezifikation (gebaut 16.09.2026, Entscheidungen bis 18.09.2026)
 
@@ -1050,7 +1073,7 @@ ihren Tests steht in der Übergabe am Anfang dieses Abschnitts.
   Transaktion. Empfehlung von Claude: Regel „jede schreibende Funktion geht durch `transaction`, lesende nicht“,
   kostet ein `BEGIN`/`COMMIT` ohne Wirkung. Nicht entschieden; mit `ordersUpdate` aus der Übergabe neu ansehen.
 - Zitrone und Buffetpersonen sind Bestellungen wie jede andere; ihre Sonderregeln kommen mit dem Bildschirm.
-- Nicht in Modul `tables`: HTTP, Bildschirm, Zahlung, Rechnung, RKSV, Druck, Tischplan.
+- Nicht in Modul `tables`: HTTP, Bildschirm, Zahlung, Rechnung, rksv, Druck, Tischplan.
 - Offen (16.09.2026): Der JSDoc von `orderbookCreate` nennt die Datenbanktabelle `orderbook`, das SQL legt `orders`
   an. Nachgefragt, ob die Tabelle `orderbook` heißen soll.
 
@@ -1113,7 +1136,7 @@ Stand 18.09.2026. Planung im Manifest, Stand des Codes unter „Stand der Dateie
 Das Manifest beschreibt den Gesamtablauf; hier stehen ergänzende Details.
 Neuere Nutzerentscheidungen ersetzen ältere Vorschläge. Offene Punkte bleiben ausdrücklich offen.
 
-- **Startumfang:** Bonieren, Tischplan, zentrale Bons/Rechnungen, Zahlungen, Storno, RKSV,
+- **Startumfang:** Bonieren, Tischplan, zentrale Bons/Rechnungen, Zahlungen, Storno, rksv,
   Tagesabschluss, Backup, getrennt kassieren, Tischwechsel, Deutsch/Chinesisch und Gutscheine.
   Keine Zwischenrechnung oder offenen Kredite. Weitere Berichte noch offen; QR-Bestellung erst später.
 - **Artikel:** Produkte mit einer einheitlichen Variantenliste; jede bestellbare Variante trägt ihren Preis
@@ -1137,7 +1160,7 @@ Neuere Nutzerentscheidungen ersetzen ältere Vorschläge. Offene Punkte bleiben 
 - **Backup:** verschlüsselt, laufend nach wenigen Sekunden in die Cloud, stündlich auf USB-SSD,
   nachts vollständig in die Cloud mit EU-Rechenzentrum; Anbieter offen. Warnung bei mehr als einem Tag
   ohne Sicherung, monatlich Wiederherstellung testen. Schlüssel/Zugänge auf Papier zu Hause.
-  RKSV zusätzlich monatlich als nie überschriebene Datei. Modelljahr: 54.000 Rechnungen, 56 MB/14 MB
+  rksv zusätzlich monatlich als nie überschriebene Datei. Modelljahr: 54.000 Rechnungen, 56 MB/14 MB
   gepackt. TOUCHITs Kopie auf demselben PC schützt nicht gegen einen Plattenschaden.
 - **Storno:** offene Artikel per Minus mit Rücknahme; Gründe und Journal im Backend noch zu klären.
   Bezahlte Rechnung nur vollständig durch Chef am PC mit Grund, signiertem Stornobeleg und neuer
@@ -1154,8 +1177,8 @@ Neuere Nutzerentscheidungen ersetzen ältere Vorschläge. Offene Punkte bleiben 
   Monatsversand über das Postfach der Chefin, zusätzlich Nachsendeknopf; bei Ausfall später wiederholen
   und warnen. Verschlüsselung/Versanddetails offen. Keine Codex-Automation dafür anlegen.
 - **Zahlart und Beleg:** protokollierte Zahlart getrennt vom signierten Beleg; Kartenumsätze müssen
-  erkennbar bleiben. Recherchegrundlage: BAO § 131/§ 132a, RKSV § 11 und FAQ Arbeitskreis Kassensoftware
-  2.4.15. Vor Umsetzung mit Steuerberater/RKSV-Session bestätigen; nichts still überschreiben.
+  erkennbar bleiben. Recherchegrundlage: BAO § 131/§ 132a, rksv § 11 und FAQ Arbeitskreis Kassensoftware
+  2.4.15. Vor Umsetzung mit Steuerberater/rksv-Session bestätigen; nichts still überschreiben.
 - **Nexi-Vertrag:** Germany GmbH, Kundennummer 5905840, Vertragspartner 156469572. Mobile Premium an
   der Theke: 16,90 € Miete/Monat, 0,02 € je Zahlung und 3,99 € Monatspauschale.
   Disagio verhandelt, Mindestentgelt 0,25 €/Zahlung laut Preisblatt 01.08.2026; im August nicht auf
@@ -1715,19 +1738,19 @@ Später an den Steuerberater, bewusst noch nicht gefragt:
 - Löst ein verschenktes Buffet beim Einlösen Steuer aus (Werbegeschenk)? Was passiert mit den alten, per
   Hand geführten Gutscheinen?
 - Umstieg: Was braucht er, und ist Monats- oder Jahresende der bessere Zeitpunkt?
-- RKSV-Journal: Reicht ein monatlicher, nie überschriebener Export auf USB-SSD und in die Cloud?
+- rksv-Journal: Reicht ein monatlicher, nie überschriebener Export auf USB-SSD und in die Cloud?
 
 ### Behörden
 
 - ID Austria für Li Vu und Kim Hong Vu: beim Passamt anrufen, dann gemeinsam hingehen (Einzelheiten unter
   „Buchhaltung“). Danach GmbH bei FinanzOnline und USP anmelden, Nutzer als Benutzer anlegen.
 
-## RKSV
+## rksv
 
-Wissen und offene Fragen der RKSV-Session (seit 13.09.2026). Fertige Entscheidungen stehen unter
+Wissen und offene Fragen der rksv-Session (seit 13.09.2026). Fertige Entscheidungen stehen unter
 „Entscheidungen“.
 
-- **Grundlagen:** RKSV heißt Registrierkassensicherheitsverordnung. Jeder Beleg bekommt eine elektronische
+- **Grundlagen:** rksv heißt Registrierkassensicherheitsverordnung. Jeder Beleg bekommt eine elektronische
   Signatur, die an der vorherigen hängt wie an einer Kette, und einen QR-Code. Startbeleg (0 €) bei
   Inbetriebnahme, Anmeldung bei FinanzOnline, Prüfung mit der App des Finanzministeriums. Monatsbeleg (0 €)
   jeden Monat, der vom Dezember ist der Jahresbeleg und wird ebenfalls mit der App geprüft. Schlussbeleg
@@ -1758,15 +1781,15 @@ Wissen und offene Fragen der RKSV-Session (seit 13.09.2026). Fertige Entscheidun
 - **Trainingsmodus und mehrere Kassen:** Vor der Anmeldung darf getestet werden. Danach zählen Übungsbelege
   als Training (signiert, im DEP, ohne Umsatzzähler, Wert „TRA“, Aufdruck „Trainingsmodus“). Mehrere Kassen
   im Betrieb sind erlaubt, jede echte Rechnung nur in einer.
-- **Storno:** Vor dem Beleg (offener Tisch) kein RKSV-Thema. Einen ausgestellten Beleg darf man nicht
+- **Storno:** Vor dem Beleg (offener Tisch) kein rksv-Thema. Einen ausgestellten Beleg darf man nicht
   löschen, dafür gibt es einen signierten Stornobeleg (Wert „STO“) und bei Bedarf eine neue Rechnung. Ein
   Grund ist nicht vorgeschrieben, viele Stornos ohne Grund fallen bei Prüfungen aber auf und können zu
   Hinzuschätzungen führen; empfohlen ist eine kurze Auswahlliste.
 - **Teilrechnungen:** Jede getrennt kassierte Teilrechnung ist ein eigener Beleg. Eine Tischrechnung darf
   auch zeitnah von mehreren Gästen in Teilen bezahlt werden, ohne Beleg pro Gast.
-- **Zahlart:** kein Pflichtbestandteil des Belegs (§ 132a Abs. 3 BAO, § 11 RKSV). Änderungen nach dem Druck
+- **Zahlart:** kein Pflichtbestandteil des Belegs (§ 132a Abs. 3 BAO, § 11 rksv). Änderungen nach dem Druck
   mit Protokoll sind zulässig, sofern Kartenumsätze erkennbar sind (FAQ Arbeitskreis Kassensoftware 2.4.15).
-- **Journal sichern** (§ 7 RKSV): mindestens vierteljährlich unveränderbar auf einem externen Medium, 7 Jahre
+- **Journal sichern** (§ 7 rksv): mindestens vierteljährlich unveränderbar auf einem externen Medium, 7 Jahre
   aufbewahren, jederzeit im vorgeschriebenen Format exportierbar. Laufende und stündliche Kopien werden
   überschrieben und zählen vermutlich nicht, deshalb monatlich ein DEP-Export als eigene Datei auf USB-SSD
   und in die Cloud (mit dem Steuerberater prüfen). Prüfwerkzeug des Finanzministeriums:
@@ -1777,14 +1800,14 @@ Wissen und offene Fragen der RKSV-Session (seit 13.09.2026). Fertige Entscheidun
 
 ## Sicherheit
 
-- Im Ordner `TOUCHIT/` stehen Zugangsdaten im Klartext: SQL-Admin-Passwort, RKSV-Karten-PIN und
+- Im Ordner `TOUCHIT/` stehen Zugangsdaten im Klartext: SQL-Admin-Passwort, rksv-Karten-PIN und
   AES-Schlüssel, FTP-, Mail- und Kamerapasswörter, Lizenzschlüssel. Unter anderem in
   `TOUCHIT/TOUCHIT/RESOURCEN/INI/touchit.ini`, `TOUCHIT/TOUCHIT_DIENSTE/RESOURCEN/INI/touchit_dienste.ini`
   und `TOUCHIT/TOUCHIT_PHONE/Web.config`. Die Werte nicht in andere Dateien übernehmen.
 - **Diesen Projektordner nie in ein öffentliches Repository oder ins Internet stellen.** Git nur im
   Ordner `WokFlow/`, und der enthält nur neuen Code. `TOUCHIT/` und `Nexi/` kommen nie in ein
   Repository.
-- Den AES-Schlüssel aufbewahren. Er wird gebraucht, damit das alte RKSV-Journal prüfbar bleibt.
+- Den AES-Schlüssel aufbewahren. Er wird gebraucht, damit das alte rksv-Journal prüfbar bleibt.
 - Programme in `TOUCHIT/DECOMPILED/recovered/` sind reine Analysekopien: **nie starten.**
 - An der echten Kasse keine Test-Verkäufe, Stornos, Zahlungen oder Fiskalbelege auslösen. Kasse,
   Handys und Drucker im Restaurant nur nach Rückfrage beim Nutzer ansprechen.
@@ -1795,7 +1818,7 @@ Wissen und offene Fragen der RKSV-Session (seit 13.09.2026). Fertige Entscheidun
   mit 139 MB, nur Binärdateien. Datenbank Microsoft SQL Server `TOUCHIT_FILIALE_1` (ca. 155 Tabellen) unter
   `C:\KKK-Corporation\DATEN\Filiale_1\`. Die Handys öffnen ein ASP.NET-Webprogramm (2008, .NET 3.5,
   21 Seiten aus `TOUCHIT/TOUCHIT_PHONE/_www/`) im Browser, eine Android-App gibt es nicht. Die Lizenz hängt an
-  der CPU-Kennung, ein Ersatz-PC bräuchte vermutlich eine neue. RKSV mit A-Trust-Karte, KasseID 1, ein
+  der CPU-Kennung, ein Ersatz-PC bräuchte vermutlich eine neue. rksv mit A-Trust-Karte, KasseID 1, ein
   Kartenleser aktiv.
 - Genutzt (laut `TOUCHIT/TOUCHIT/RESOURCEN/INI/touchit.ini`): 1 PC (nicht 2, der Druckmanager führt denselben
   PC zweimal), 4 Handys, Tischplan, Splitten, Transfer, Storno mit Grund, Zwischenrechnung, offene Kredite,
@@ -1831,7 +1854,7 @@ Wissen und offene Fragen der RKSV-Session (seit 13.09.2026). Fertige Entscheidun
     - `TOUCHIT/BACKUP/Filiale1 (local)/`: Datenbank-Backups. Das neueste ist vom 18.07.2024.
     - `TOUCHIT/TOUCHIT_PHONE/`: Kellner-Handy-Programm.
     - `TOUCHIT/TOUCHIT_TOOLS/`: Werkzeugkiste des Herstellers. Ein paar eigene Hilfsprogramme (Backup,
-      Kartenleser, IP-Scanner, NFC-Leser, RKSV-Tool), die sind dekompiliert. Sonst Software anderer
+      Kartenleser, IP-Scanner, NFC-Leser, rksv-Tool), die sind dekompiliert. Sonst Software anderer
       Firmen, nicht dekompiliert: Treiber (FTDI, Epson, Metapace, Intel, Microsoft), A-Trust-Installer, Fernwartung
       (TeamViewer, UltraVNC), Synology, Adobe Reader, Datenbank-Reparatur (Stellar Phoenix).
     - `TOUCHIT/TOUCHIT_TOOLS/SOFTWARE/RKSV/DEP_Pruefung`: Prüfwerkzeug des Finanzministeriums.
@@ -1914,7 +1937,7 @@ Schreibbefehle könnten Zähler doppelt erhöhen, ein Beweis für doppelt gebuch
 
 Brauchbares Wissen (nur die Idee, nie Code): Datenmodell (`ARTIKEL`, `WGR`, `TASTENPLAN`, `OBJEKTE_TISCHE`,
 `MTISCHE`, `LOG_RECHNUNG`, `LOG_BON`, `LOG_RECHNUNG_ZAHLART`, `LOG_STORNOS`, `ZUGRIFF`, chinesischer Name in
-`Bezeichnung_2`), der RKSV-Ablauf, ESC/POS-Druck und die 33 Berichtsvorlagen als Liste gebrauchter Zahlen.
+`Bezeichnung_2`), der rksv-Ablauf, ESC/POS-Druck und die 33 Berichtsvorlagen als Liste gebrauchter Zahlen.
 
 ## Die 10 Regeln fürs neue System
 
@@ -1929,5 +1952,5 @@ Brauchbares Wissen (nur die Idee, nie Code): Datenmodell (`ARTIKEL`, `WGR`, `TAS
    Datumsangaben sind echte Datumswerte.
 7. Jeder Fehler wird mit Zeit, Station und Benutzer protokolliert. Keine leeren Fehlerbehandlungen.
 8. Bildschirme bleiben klein. Eine Funktion, die länger als eine Bildschirmseite ist, wird aufgeteilt.
-9. RKSV-Code hat automatische Tests und wird vor dem Start mit dem Prüfwerkzeug des Ministeriums geprüft.
+9. rksv-Code hat automatische Tests und wird vor dem Start mit dem Prüfwerkzeug des Ministeriums geprüft.
 10. Konfiguration und Geheimnisse liegen an einem Ort, nicht im Code.

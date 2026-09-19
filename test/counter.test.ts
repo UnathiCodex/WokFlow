@@ -7,7 +7,7 @@
 import { test } from "node:test";
 import { equal, throws } from "node:assert/strict";
 import { Buffer } from "node:buffer";
-import { counterAdd, counterEncrypt, counterStorno, counterTraining } from "../src/RKSV/counter.ts";
+import { counterAdd, counterEncrypt, counterStorno, counterTraining } from "../src/./rksv/counter.ts";
 
 
 /**

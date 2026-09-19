@@ -13,7 +13,7 @@ import { test } from "node:test";
 import { equal, ok, throws } from "node:assert/strict";
 import { generateKeyPairSync, verify } from "node:crypto";
 import { Buffer } from "node:buffer";
-import { jwsCreate, signerKey } from "../src/RKSV/signature.ts";
+import { jwsCreate, signerKey } from "../src/./rksv/signature.ts";
 import type { KeyObject } from "node:crypto";
 
 

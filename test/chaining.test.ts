@@ -8,7 +8,7 @@
 
 import { test } from "node:test";
 import { equal } from "node:assert/strict";
-import { chainingCreate } from "../src/RKSV/chaining.ts";
+import { chainingCreate } from "../src/./rksv/chaining.ts";
 
 
 test("the start receipt takes the fingerprint of the cash register ID", (): void => {

@@ -6,7 +6,7 @@
 
 import { test } from "node:test";
 import { deepEqual, equal, throws } from "node:assert/strict";
-import { amountFormat, dataLineCreate, taxAmountsSum, timeFormat } from "../src/RKSV/receipt.ts";
+import { amountFormat, dataLineCreate, taxAmountsSum, timeFormat } from "../src/./rksv/receipt.ts";
 
 
 test("the items are summed per tax rate", (): void => {
