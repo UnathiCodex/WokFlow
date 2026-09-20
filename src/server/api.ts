@@ -8,12 +8,14 @@
  * - `node:stream/consumers`: Reads a whole stream into one value.
  * - `../catalog/menu.ts`: Groups the restaurant articles.
  * - `../tables/orders.ts`: Stores the orders of the tables.
+ * - `../tables/locks.ts`: Locks a table for one device.
  */
 
 import { createServer } from "node:http";
 import { json } from "node:stream/consumers";
 import { menu } from "../catalog/menu.ts";
 import * as orders from "../tables/orders.ts";
+import { tableLock, tableUnlock } from "../tables/locks.ts";
 
 import type { IncomingMessage, ServerResponse, Server } from "node:http";
 import type { DatabaseSync } from "node:sqlite";
@@ -37,48 +39,6 @@ export function serverCreate(database: DatabaseSync): Server {
             responseSend(response, 500, { error: "The server failed" });
         });
     });
-}
-
-/**
- * Handles a request by its method and its address.
- * - `GET /api/menu`: Sends menu.
- * - `GET /api/tables/:table/orders`: Sends open orders of the table.
- * - `POST /api/tables/:table/orders`: Adds and removes orders of the table.
- *
- * A HTTP-request from as the phone sends with headers:
- *
- * ```
- * GET /api/menu HTTP/1.1
- * Host: localhost:3000
- * Connection: keep-alive
- * ```
- * - `address`: Path of the url, without protocol, host, port.
- * - `tableId`: Tableid from the path, highlighted by `()`.
- * - An unknown address gets status `404`.
- *
- * @param database - Open database
- * @param request - Request from the phone
- * @param response - Answer to the phone
- * @throws {unknown} - Error of the chosen answer thrown again
- */
-async function requestHandle(database: DatabaseSync,
-                             request: IncomingMessage,
-                             response: ServerResponse): Promise<void> {
-
-    const address: string = request.url ?? "";
-    const tableId: string =
-        address.match(new RegExp("^/api/tables/([A-Z0-9]+)/orders$"))?.[1] ?? "";
-
-    if (request.method === "GET" && address === "/api/menu") {
-        responseSend(response, 200, menu);
-    } else if (request.method === "GET" && tableId !== "") {
-        responseSend(response, 200, orders.ordersRead(database, tableId));
-    } else if (request.method === "POST" && tableId !== "") {
-        orders.ordersUpdate(database, tableId, await json(request) as orders.OrdersUpdate);
-        responseSend(response, 200, null);
-    } else {
-        responseSend(response, 404, { error: "No such address" });
-    }
 }
 
 /**
@@ -108,4 +68,63 @@ function responseSend(response: ServerResponse, status: number, body: unknown): 
     response.setHeader("Content-Type", "application/json; charset=utf-8");
     response.setHeader("Cache-Control", "no-store");
     response.end(JSON.stringify(body));
+}
+
+/**
+ * Handles a request by its method and its address.
+ * - `GET /api/menu`: Sends menu.
+ * - `GET /api/tables/:table/orders`: Sends open orders of table.
+ * - `POST /api/tables/:table/orders`: Adds/removes orders of table.
+ * - `POST /api/tables/:table/lock`: Locks table for device in body.
+ * - `DELETE /api/tables/:table/lock`: Unlocks table for device in body.
+ *
+ * A HTTP-request from as the phone sends with headers:
+ *
+ * ```
+ * GET /api/menu HTTP/1.1
+ * Host: localhost:3000
+ * Connection: keep-alive
+ * ```
+ * - `address`: Path of the url, without protocol, host, port.
+ * - `match`: Match of the path with its groups in `()`, else `null`.
+ * - `tableId`: Tableid from the path, highlighted by `()`.
+ * - `tableResource`: `orders` or `lock` from the path, highlighted by `()`.
+ * - An unknown address gets status `404`.
+ *
+ * @param database - Open database
+ * @param request - Request from the phone
+ * @param response - Answer to the phone
+ * @throws {unknown} - Error of the chosen answer thrown again
+ */
+async function requestHandle(database: DatabaseSync,
+                             request: IncomingMessage,
+                             response: ServerResponse): Promise<void> {
+
+    const address: string = request.url ?? "";
+    const match: RegExpMatchArray | null = // path /api/tables/:table/orders|lock
+        address.match(new RegExp("^/api/tables/([A-Z0-9]+)/(orders|lock)$"));
+
+    const tableId: string = match?.[1] ?? "";
+    const tableResource: string = match?.[2] ?? "";
+
+    if (request.method === "GET" && address === "/api/menu") {
+        responseSend(response, 200, menu);
+
+    } else if (request.method === "GET" && tableResource === "orders") {
+        responseSend(response, 200, orders.ordersRead(database, tableId));
+
+    } else if (request.method === "POST" && tableResource === "orders") {
+        orders.ordersUpdate(database, tableId, await json(request) as orders.OrdersUpdate);
+        responseSend(response, 200, null);
+
+    } else if (request.method === "POST" && tableResource === "lock") {
+        responseSend(response, 200, tableLock(tableId, await json(request) as string));
+
+    } else if (request.method === "DELETE" && tableResource === "lock") {
+        tableUnlock(tableId, await json(request) as string);
+        responseSend(response, 200, null);
+
+    } else {
+        responseSend(response, 404, { error: "No such address" });
+    }
 }

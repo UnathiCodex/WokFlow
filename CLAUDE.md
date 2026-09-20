@@ -218,13 +218,17 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
     all the send“), dazu je ein kurzer Test für jede Regel, die der Ablauf nicht zeigen kann („alle oder keine“,
     „freier Tisch“). Kein eigener Test für einen Randfall, der schon in einem anderen Test mitgeprüft wird oder keine
     eigene Regel ist. Der Nutzer liest die Testnamen und einen Test ganz, nicht jeden Testkörper.
-  - **Keine Codezeile über 100 Zeichen (Nutzer, 18.09.2026 abends: „that it does not get overflow for the 100
-    characters“, „Also in the API please“), am selben Abend in `test/` und `api.ts` umgesetzt.** Umbruch in seiner
+  - **Länge von Codezeilen, weich (Nutzer, 20.09.2026, ersetzt die harten 100 vom 18.09.2026):** Maß ist die
+    senkrechte Randlinie in IntelliJ. Er hat sie selbst ausgemessen (Zeile mit `d` bis zur Linie gefüllt): Sie sitzt
+    bei 120 Zeichen; einen harten Umbruch hat er nicht eingestellt („there is no hard wrap“, „a bit soft“). Eine
+    Signatur mit 101 Zeichen hat er deshalb wieder in eine Zeile gezogen, ebenso zwei Konstanten mit 104 und 107.
+    Also: bis etwa 105 in einer Zeile lassen, erst deutlich darüber umbrechen, nie wegen ein paar Zeichen über 100.
+    Prüfen: `awk 'length($0) > 110'` über `src/` und `test/`. Umbruch, wenn nötig, in seiner
     Form: ein Objekt als letztes Argument aufklappen, je Property eine Zeile, Komma nach der letzten (`updateSend("14",
     {` … `});`, auch in `throws((): void => orders.ordersUpdate(database, "14", {` … `}), /quantity/);`); hat ein
     Aufruf kein Objekt, steht der Funktionsname allein und jedes Argument in eigener Zeile (`deepEqual(` … `);`); eine
     zu lange Konstante bricht nach dem `=` um wie `entries` in `menu.ts`; eine zu lange Signatur je Parameter eine
-    Zeile unter dem ersten. Prüfen: `awk 'length($0) > 100'` über `src/` und `test/`.
+    Zeile unter dem ersten.
   - **Kein eigener Name für einen Wert, der nur einmal gebraucht wird (Nutzer, 18.09.2026 abends, zu `pizza1`: „just
     for one time use, we don't need the extra“):** Die Pizza steht in `api.test.ts` direkt im Aufruf.
   - **Testbestellungen stehen einmal in `test/setup.ts`, als einzelne `export const colaBig1: Order = orderOf(…)`
@@ -326,8 +330,17 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
     - **Keine `//`-Kommentare im Funktionskörper (Nutzer, 18.09.2026 abends: „I just don't like these two comments“,
       danach „thats clean“):** Lokale Konstanten, deren Inhalt nicht offensichtlich ist, stehen als Stichpunkt im
       JSDoc der Funktion, Name in Backticks, wie `statusCode` und `end` in `responseSend`: `` - `address`: Path of
-      the url, without protocol, host, port. `` Die Konstanten selbst stehen nackt im Körper. In der `if`-Kette von
-      `requestHandle` hat er die Leerzeilen zwischen den Zweigen selbst entfernt, nicht wieder einfügen.
+      the url, without protocol, host, port. `` Die Konstanten selbst stehen nackt im Körper. **`if`-Kette von
+      `requestHandle`, Stand 20.09.2026, von ihm selbst umformatiert, als die zwei Zweige der Tischsperre dazukamen:**
+      nach jedem Zweig eine Leerzeile vor dem `} else if`. Ersetzt den Stand vom 18.09.2026 (damals hatte er die
+      Leerzeilen entfernt). Nicht zurückbauen. **Adress-Stichpunkte noch knapper (von ihm gekürzt, „learn off and out
+      of it“):** gar keine Artikel, auch nicht im Satz, und `/` für zwei Verben: „Sends open orders of table.“,
+      „Adds/removes orders of table.“, „Locks table for device in body.“ Claude hatte „Locks table for the device in
+      the body.“ geschrieben. Hinter `const match: RegExpMatchArray | null =` hat er selbst einen kurzen
+      `//`-Kommentar am Zeilenende gesetzt, der das Muster als Pfad zeigt (`// path /api/tables/:table/orders|lock`),
+      darunter eine Leerzeile vor `tableId`; seine Ausnahme von „keine `//` im Körper“, nicht entfernen.
+      **Claudes Patzer:** Ein `replace_all` mit Leerzeichen am Ende machte aus `=== "lock"` ein
+      `==="lock"`; nach jedem `replace_all` die Stellen mit Grep ansehen.
     - Claudes Fehler, die er dabei korrigiert hat: zu lange Sätze, drei Zeilen für eine Aussage, Wiederholung dessen,
       was die Funktion darunter ohnehin zeigt („should be as short as possible because the function below explains
       this already“).
@@ -698,12 +711,13 @@ ist nur der Pfad (Namen der Teile: protocol, host, port, path), `?? ""` wie `orE
 (erste Zeile, Kopfzeilen, Leerzeile, Körper); `responseSend` Zeile für Zeile; `JSON` wie `Math` in Java mit
 `stringify` und `parse`.
 
-**Stand (19.09.2026, nachts), am 20.09.2026 nachgezogen:** Typprüfung ohne Fehler, ohne rksv 15 Tests grün: 5
-`orders`, 4 `menu`, 3 `api`, 3 `locks`. Letzter Commit `597fe3f` („Renamed RKSV into rksv“). Der Zweig `origin/rksv`
-von Sophale ist seit `ea1f325` in `main`: `src/rksv/` mit fünf Dateien und fünf Tests. **rksv ist vorerst nicht Teil
-des Nutzers (20.09.2026: „this part is not for me currently“); in Modul-Chats nicht lesen, nicht anfassen.** Nicht
-committet (Git macht der Nutzer selbst): `test/api.test.ts` (seine Korrektur am Ablauftest), neu
-`src/tables/locks.ts` und `test/locks.test.ts` (Modul Tischsperre, siehe unten bei „Tischsperre“).
+**Stand (19.09.2026, nachts), am 20.09.2026 nachgezogen:** Typprüfung ohne Fehler, ohne rksv 16 Tests grün: 5
+`orders`, 4 `menu`, 4 `api`, 3 `locks`. Letzter Commit `6351f72` („lock updated after pull“, 20.09.2026, gepusht).
+Sophale arbeitet an rksv und pusht auf `main` (`src/rksv/`, `dep.ts`); am 20.09.2026 wurde deshalb ein Push des
+Nutzers abgelehnt, `git pull` machte den Merge-Commit `89fae5d`, ihm mit Buchstaben A, B, C, M erklärt (Bild mit zwei
+Linien kam an, der Satz „A, then C“ nicht). **rksv ist vorerst nicht Teil des Nutzers (20.09.2026: „this part is not
+for me currently“); in Modul-Chats nicht lesen, nicht anfassen.** Nicht committet (Git macht der Nutzer selbst): die
+Anbindung der Tischsperre in `api.ts` und `test/api.test.ts`, Kommentare in `test/locks.test.ts`, diese Datei.
 **Offen, fünf kleine Stilpunkte, gezeigt, nicht gepatcht:** `api.ts` Zeile 28 mit 85 Zeichen; „A HTTP-request from as
 the phone sends with headers:“ liest sich kaputt (Zwilling: „An HTTP-answer as the server sends it:“); „Tableid“
 statt „Table identifier“; `menu.test.ts` Zeile 4 mit 82 Zeichen; der Test „Unknown articles and variants are
@@ -886,11 +900,24 @@ rejected“ prüft nur eine unbekannte Variante (`Cola 0.3`), keinen unbekannten
   - Beleg: 8 kaputte Kopien (anderes Gerät bekommt den Tisch, kein Verlängern, läuft nie ab, Verlängern verlängert
     nicht, jeder darf entsperren, Entsperren tut nichts, eine Sperre für alle Tische, läuft eine Millisekunde zu spät
     ab); jede macht mindestens einen Test rot, jeder der 3 Tests fängt mindestens einen Fehler allein.
-  - **Offen, nächster Schritt:** Anbindung in `api.ts` als Vorher/Nachher zeigen, erst nach seinem Ja patchen.
-    Vorschlag: `serverCreate` und die Signatur von `requestHandle` bleiben, wie sie sind; `POST
-    /api/tables/:table/lock` mit der Gerätekennung als JSON-Text im Körper antwortet `200` mit `true` oder `false`,
-    `DELETE` derselben Adresse entsperrt und antwortet `200` mit `null`; ein Ablauftest mehr in `api.test.ts`, mit
-    eigenem Tisch. Die Seite verlängert, solange ein Tisch offen ist (kommt mit dem Bildschirm).
+  - **Anbindung in `api.ts`, gebaut am 20.09.2026 auf sein Wort („you do it fast and i read it fast“, ohne
+    Vorher/Nachher), von ihm noch zu lesen:** `serverCreate` und die Signatur von `requestHandle` sind unverändert.
+    Neu: Modulzeile „`../tables/locks.ts`: Locks a table for one device.“, Import von `tableLock` und `tableUnlock`,
+    **ein Muster für beide Adressen (seine Idee, 20.09.2026: „it's about the same table“, „this is nice“):** `const
+    match: RegExpMatchArray | null = address.match(new RegExp("^/api/tables/([A-Z0-9]+)/(orders|lock)$"));`, daraus
+    `tableId` (`match?.[1] ?? ""`) und `tableResource` (`match?.[2] ?? ""`); die Zweige fragen `request.method ===
+    "POST" && tableResource === "lock"`. Claudes erster Stand mit zweitem Muster und `tableIdLock` ist weg. Namen: Er
+    fand `parts`/`tablePart` „weird“ und fragte nach den üblichen Wörtern: Das Ergebnis von `match` heißt „match“, die
+    `()` heißen „capture groups“, `orders`/`lock` in einer Adresse „resource“. Zwei Zweige: `POST /api/tables/:table/lock` antwortet `200`
+    mit `true` oder `false`, `DELETE` derselben Adresse entsperrt und antwortet `200` mit `null`; die Gerätekennung
+    steht als JSON-Text im Körper (`await json(request) as string`). In `api.test.ts` der Helfer `lockSend(method,
+    tableId, deviceId): Promise<boolean | null>`, der die Antwort schon als JSON liest (Typ von ihm gewählt statt
+    Claudes `unknown`: „makes more sense“; erklärt: der Körper ist nie leer, `true`/`false`/`null` als JSON-Text,
+    `response.json()` packt den Inhalt aus, deshalb kein `Response` wie bei `updateSend`), und ein Ablauftest mit vier Zeilen „A table is locked
+    for one device until it is unlocked“. Kein `locks.clear()` dort, weil nur dieser eine Test sperrt; ein zweiter
+    sperrender Test braucht es. Beleg: 4 kaputte Kopien von `api.ts` (sperren antwortet immer `true`, entsperren
+    entsperrt nicht, Gerät ignoriert, `DELETE`-Zweig nimmt jede Methode), jede macht den neuen Test rot. Die Seite
+    verlängert, solange ein Tisch offen ist (kommt mit dem Bildschirm).
 - **`orders.ts` geteilt (Wunsch des Nutzers, 18.09.2026: „for me its long somehow“, „orderbook is good“):**
   `src/tables/orderbook.ts` (neu, 56 Zeilen) hält `orderbookCreate` und `transaction`, beide mit `export`, seine
   Kommentare wörtlich übernommen. `orders.ts` (186 Zeilen) hält die Typen `Order`, `OrderNew`, `OrdersUpdate` und
@@ -983,8 +1010,11 @@ Wunsch, dazu `Mock` im `import type` aus `node:test`:
 Typpruefung gruen. Die zwei Tests, die aus seinen eigenen Aenderungen rot waren, hat er selbst repariert (20.09.2026
 geprueft, alle drei gruen): Test 1 vergleicht jetzt drei Status samt dem `GET`, Test 2 nimmt `deepEqual`.
 
-**Naechster Schritt (20.09.2026):** Modul Tischsperre, Stand und offene Anbindung in `api.ts` oben bei „Tischsperre“;
-danach liest er `locks.ts` (Warum-Liste), dann der Bestellbildschirm. Offen aus `api.test.ts`:
+**Naechster Schritt (20.09.2026):** Er liest die Anbindung der Tischsperre in `api.ts` und `api.test.ts` (oben bei
+„Tischsperre“) und committet. Danach in einem frischen Chat diese Datei stark kürzen (sein Wunsch, 20.09.2026: 2.039
+Zeilen, davon 496 im Abschnitt „Nächster Chat“, großteils die abgeschlossene Durchsicht von `api.ts`; es bleiben
+Regeln, Entscheidungen mit einem Satz Grund, offene Punkte, Stand, nächster Schritt). Dann der Bestellbildschirm.
+Offen aus `api.test.ts`:
 `deepEqual` mit `JSON.parse(JSON.stringify(menu))`, Port 0 und `AddressInfo`; aus `api.ts`: `await json(request)`
 und `as orders.OrdersUpdate`. Im Frust wechselt er ins Deutsche, dann deutsch antworten.
 
@@ -1089,9 +1119,9 @@ ihren Tests steht in der Übergabe am Anfang dieses Abschnitts.
    Gebaut 16.09.2026, am 18.09.2026 auf eine Zeile je Portion umgestellt, Tests vom Nutzer abgenommen.
 2. Server-Schnittstelle: Katalog und Bestellungen als JSON über `node:http`, damit der Bildschirm sie holen kann.
    Gebaut und mit dem Nutzer durchgegangen (18. und 19.09.2026).
-3. Tischsperre: die Regel in `src/tables/locks.ts` ist seit 20.09.2026 gebaut, **die Anbindung in `api.ts` ist die
-   nächste Aufgabe** (siehe „Tischsperre“ am Anfang dieses Abschnitts). Vorgezogen, weil sie entschieden ist, am Server
-   wohnt, ohne Bildschirm testbar ist.
+3. Tischsperre: `src/tables/locks.ts` und die Adresse `…/lock` in `api.ts` sind seit 20.09.2026 gebaut (siehe
+   „Tischsperre“ am Anfang dieses Abschnitts). Vorgezogen, weil sie entschieden ist, am Server wohnt, ohne Bildschirm
+   testbar ist. Es fehlt nur die Seite, die sperrt, verlängert, entsperrt.
 4. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`. Vorher entscheiden, wie die
    Seite ausgeliefert wird (siehe „Aktueller Stand“: nicht vom eigenen Server, bei Bedarf Vite). Mit dem Bildschirm
    kommen die Sonderregeln für Zitrone und Buffetpersonen; für Browser-Code gibt es noch keine Stilregeln. Der

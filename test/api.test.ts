@@ -60,6 +60,22 @@ function updateSend(tableId: string, update: unknown): Promise<Response> {
     });
 }
 
+/**
+ * Sends a lock or an unlock of a table to the test server.
+ *
+ * @param method - `POST` locks, `DELETE` unlocks
+ * @param tableId - Table identifier
+ * @param deviceId - Device identifier
+ * @returns `true` or `false` for a lock, `null` for an unlock
+ */
+async function lockSend(method: string, tableId: string, deviceId: string): Promise<boolean | null> {
+    const response: Response = await fetch(`${url}/api/tables/${tableId}/lock`, {
+        method, // POST or DELETE
+        body: JSON.stringify(deviceId),
+    });
+    return response.json();
+}
+
 
 test(
     "A phone reads the menu and updates the orders of two tables",
@@ -73,6 +89,16 @@ test(
 
         deepEqual(await validRead.json(), [colaBig1, redBull1, colaSmall1]);
         deepEqual([validAdd.status, validChange.status, validRead.status], [200, 200, 200]);
+    }
+);
+
+test(
+    "A table is locked for one device until it is unlocked",
+    async (): Promise<void> => {
+        deepEqual(await lockSend("POST", "14", "phone"), true);
+        deepEqual(await lockSend("POST", "14", "pc"), false);
+        deepEqual(await lockSend("DELETE", "14", "phone"), null);
+        deepEqual(await lockSend("POST", "14", "pc"), true);
     }
 );
 
