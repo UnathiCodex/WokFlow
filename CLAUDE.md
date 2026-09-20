@@ -816,8 +816,9 @@ rejected“ prüft nur eine unbekannte Variante (`Cola 0.3`), keinen unbekannten
   schließt (seine Kürzung `serverCreate(databaseTest())` ließ die Typprüfung scheitern, zurückgenommen). Server je
   Test auf Port 0 an `127.0.0.1`, `afterEach` schließt ihn.
 - **Tischsperre, Regel gebaut am 20.09.2026 ohne Spezifikation (Nutzer: „build this without showing me the spec, but
-  as short as possible, but all what we need“); er geht `src/tables/locks.ts` seit 20.09.2026 von oben nach unten
-  durch, die Anbindung in `api.ts` wartet, bis er fertig ist.** Die Datei hat keine Imports, der JSDoc von `Lock` trägt
+  as short as possible, but all what we need“); `src/tables/locks.ts` und `test/locks.test.ts` ist er am 20.09.2026
+  von oben nach unten durchgegangen, am Ende geprüft: Typprüfung ohne Fehler, 15 Tests grün, 8 kaputte Kopien gefangen.
+  Offen ist nur noch die Anbindung in `api.ts` (Vorher/Nachher zeigen, dann sein Ja).** Die Datei hat keine Imports, der JSDoc von `Lock` trägt
   den Dateikopf `## Table-lock` (von ihm geschrieben). Inhalt: Typ `Lock = { deviceId, expires }`, Konstante
   `lockDuration`, die Konstante `locks` (`Map<string, Lock>`, mit `export` nur für die Tests), `tableLock(tableId,
   deviceId): boolean`, `tableUnlock(tableId, deviceId): void`. Dazu `test/locks.test.ts` mit 3 Tests, Geräte heißen
