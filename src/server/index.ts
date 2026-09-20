@@ -1,7 +1,9 @@
 /**
  * ## WokFlow server
  *
- * Waits at `localhost:3000` and answers the browser with menu and order data.
+ * {@link serverCreate} creates the server that waits at `localhost:3000`
+ * and answers each request with page file, menu, orders of a table.
+ *
  * Start with `npm start`.
  *
  * - `./database.ts`: Manages the local SQLite database connection.
@@ -19,10 +21,5 @@ import type { DatabaseSync } from "node:sqlite";
 
 const database: DatabaseSync = databaseOpen();
 orderbookCreate(database);
-
-/**
- * API server using the open database.
- */
 const server: Server = serverCreate(database);
-
-server.listen(3000, (): void => console.log("WokFlow server: http://localhost:3000"));
+server.listen(3000, (): void => console.log("http://localhost:3000"));

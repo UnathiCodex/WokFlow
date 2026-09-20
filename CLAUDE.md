@@ -12,6 +12,10 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
 
 - **Chat-Sprache (Nutzer, 16.09.2026):** Englisch bevorzugt, bei Bedarf Deutsch, etwa bei österreichischen
   Fachbegriffen, Behörden, Steuern. Diese Datei ist deutsch.
+- **Der Nutzer diktiert (20.09.2026: „I'm using voice and therefore not everything is getting correctly
+  transcribed“):** Ein unsinniges Wort zuerst als Diktatfehler lesen. Bisher: Vite als „WIT“, „VIT“, „Witt“, „Vita“,
+  „wird“; JSON als „Jason“; TypeScript als „krebs kripps“, „kripp“; Fable als „Faber“; einmal kam eine ganze
+  Nachricht koreanisch an. Hängt an einem mehrdeutigen Satz eine Regel oder ein Patch, erst nachfragen, nicht raten.
 - **Der Nutzer ist völliger TypeScript-Anfänger mit Java-Erfahrung (16.09.2026).** Jeden neuen Begriff am
   konkreten Code erklären, auch Grundlagen, gern wiederholt. Java-Vergleiche sind erwünscht, etwa die
   Index-Signatur `{ [name: string]: Group }` wie `Map<String, Group>`. **Nie mit einem Begriff erklären oder
@@ -89,6 +93,14 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
   in einer Zeile als „kommt danach“ nennen. Keine Begründungen, Nebenbemerkungen, Alternativen, wenn er nicht danach
   fragt. Verstöße an diesem Abend: Antworten mit drei Überschriften, Tabellen mit acht Zeilen, Seitenbemerkung zu
   Java-Backslashes, die eine halbe Stunde Verwirrung kostete.
+- **Nochmals enger (Nutzer, 20.09.2026: „the soft limit is getting harder, not hard limit, but still respected“):**
+  Die weiche Grenze gilt auch für Bauberichte. Die Dateitabelle darf stehen, dazu höchstens zwei Sätze;
+  Prüfergebnis, Startbefehle, Ausblick kommen erst auf „weiter“. Verstoß: der Bericht nach dem Umbau mit Tabelle,
+  Prüfabsatz, Befehlen, Ausblick in einer Antwort.
+- **Fertig ist eine Datei erst, wenn er es sagt (Nutzer, 20.09.2026, verärgert: „nobody said that page … ts is done.
+  Nothing is done which should change from the last commit to now“):** Claude erklärt nie eine Datei oder ein Stück
+  für erledigt, auch nicht nach Fragen dazu. Offen ist alles, was sich seit dem letzten Commit geändert hat, bis er
+  es abnimmt; Claude fragt, wo er weiterlesen will, und schlägt höchstens die nächste Stelle vor.
 - **Langsam, ein Thema je Antwort (Nutzer, 18.09.2026: „too much requests … we have to sort it out slowly
   again“, „I don't know what you removed and what not“):** Beim ersten Lesen von `api.ts` stellte er in fünf
   Nachrichten sieben Fragen; Claude antwortete auf alle zugleich und patchte nebenbei. Richtig: nur ein Thema je
@@ -109,6 +121,10 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
 - **Ein Wort, eine Bedeutung (16.09.2026):** „order“ hieß im ersten Bau der offene Vorgang, im Prototyp die Position;
   der Nutzer verstand den Code deshalb nicht. „table“ ist im Code der Tisch; Datenbanktabellen im Chat immer „database
   table“ nennen, bei Verwechslung auf Deutsch trennen, Tisch gegen Tabelle.
+- **Keinen Gegensatz behaupten, wo keiner ist (Nutzer, 20.09.2026, zu „Daten“ gegen „Dateien“: „nicht so tun, als
+  wären es völlig unterschiedliche Sachen“):** Eine Datei ist Daten unter einem Namen auf der Platte. Ein Wortpaar,
+  das nur in WokFlow als Abkürzung dient, ausdrücklich so einführen. Hier: „die Seite“ (liegt fertig im Ordner, wird
+  unverändert verschickt) gegen „die Antworten der API“ (baut unser Code je Anfrage aus der Datenbank).
 - **Eine Frage oder ein Wunsch ist kein Auftrag (Nutzer, 16.09.2026):** In Dateien nur auf ausdrückliche Anweisung
   schreiben („patch“, „mach das“, „rename …“). Fragt der Nutzer, wo etwas ist oder woher etwas kommt, oder sagt er,
   wie er etwas haben will („I want to do it above …“), nur antworten und den Code im Chat zeigen; er baut solche
@@ -689,6 +705,183 @@ brauchen. Nicht entschieden.
 
 ## Nächster Chat: `api.ts` weiter durchgehen, dann `api.test.ts` (Übergabe vom 18.09.2026, spät abends)
 
+**Ende der Sitzung vom 20. auf den 21.09.2026 (bis tief in die Nacht). Abgenommen nach seinem Wort: `src/server/api.ts`,
+`src/server/page.ts` („finished completely“), `test/api.test.ts` („I think we're finished with the API test“; den
+ersten Test hat er selbst „A phone reads the index-page“ genannt). Verstanden und von ihm umgeschrieben, aber nicht
+ausdrücklich abgenommen: `index.ts`, `orders.ts`, `orders.test.ts`, `test/setup.ts`. Noch gar nicht gelesen:
+`vite.config.ts`, `package.json` (Skripte `build`, `watch`), `.gitignore`, `src/page/plan.ts`, `index.html`,
+`plan.css`. Nichts ist committet; `commands.md` führt er selbst nach (`npm run dev` raus, `npm run build` und `npm
+run watch` rein). Er hat die Seite noch nie laufen sehen: `npm run build`, `npm start`, `localhost:3000`.**
+
+**`resume()` in `pathSend`, Stand der Klärung (21.09.2026):** Claude hatte es vorsorglich eingebaut und falsch
+begründet („sonst endet die Testdatei nie“); nachgeprüft: ohne `resume()` laufen alle 41 Tests und enden normal,
+auch mit gebauter Seite. Die Node-Dokumentation zu `http.ClientRequest`, Ereignis `response`, verlangt es trotzdem:
+Wer auf `response` hört, muss den Körper verbrauchen (`read`, `data` oder `resume`), sonst feuert `end` nie und die
+ungelesenen Daten bleiben im Speicher. Bei winzigen Antworten in einem kurzen Test ohne sichtbare Wirkung. Claudes
+Empfehlung: drinlassen, mit dem richtigen Grund; seine Entscheidung steht aus. **Lehre:** keine Begründung nennen,
+die nicht nachgeprüft ist.
+
+**Reihenfolge im nächsten Chat:** (1) Entscheidung zu `resume`, siehe oben. (2) Seite
+bauen und ansehen. (3) `vite.config.ts`, dann `plan.ts`, HTML, CSS, je Antwort ein Stück. (4) Commit, macht er
+selbst. (5) Diese Datei kürzen, sein Wunsch vom 20.09., seither ist sie noch gewachsen. (6) Scheibe 2.
+
+**Merkliste, bewusst zurückgestellt (sein Wort: „put in a to-do list … maybe it's not worth it to learn this deeply
+now“):** Mock (`t.mock.method`, der Typ `Mock<…>` im Test „A failure gets status 500 …“) hat er nicht tief
+verstanden; erst wieder anfassen, wenn er danach fragt.
+
+**Stand 20.09.2026 abends, gilt vor allem darunter: Scheibe 1 des Bestellbildschirms, der Tischplan, ist gebaut, vom
+Nutzer erst zum Teil gelesen (`tablesRead` und der Zweig in `api.ts` sind verstanden), nicht committet.** Am selben
+Abend auf sein Wort „rebuild!“ umgebaut, siehe „Ein Server“ unten. Nächster Schritt: Er baut die Seite mit `npm run
+build`, startet `npm start`, öffnet `localhost:3000`; dann weiter Datei für Datei: `page.ts`, die Änderungen in
+`api.ts` und `index.ts`, die Tests, `vite.config.ts`, danach `plan.ts`, HTML, CSS. `commands.md` führt er selbst nach
+(`npm run dev` raus, `npm run build` und `npm run watch` rein). Danach Scheibe 2: einen Tisch öffnen (Sperre nehmen
+und verlängern, Bestellungen lesen, „besetzt“ anzeigen, Rückweg zum Plan fragt `GET /tables` neu).
+
+- **Ein Server, kein `/api` (Entscheidung des Nutzers, 20.09.2026, „rebuild!“):** Vite übersetzt nur noch (`vite
+  build` legt die fertige Seite nach `dist`, `npm run watch` wiederholt das bei jedem Speichern), unser Server gibt
+  `dist` aus und beantwortet die Adressen; ein Programm, Port 3000, beim Entwickeln wie im Restaurant („I don't want
+  complexity and otherness for the development and the discrepancy then to the restaurant“). Er lädt von Hand neu,
+  automatisches Auffrischen will er nicht. Damit entfallen der Vite-Server samt Proxy, Port 5173, `fs.allow`, und die
+  Adressen heißen `/menu`, `/tables`, `/tables/:table/orders|lock`: Das `/api` hatte nur die Proxy-Regel getragen,
+  in `dist` liegen nur `/index.html` und `/assets/…`, nichts kann mit einer Adresse zusammenfallen. **Lehre für
+  Claude:** Er fragte viermal „why do we need this“; Claude verteidigte erst den Vorsatz, statt die Annahme dahinter
+  (der Vite-Server) zu prüfen. Früher die einfachere Anordnung anbieten. Im Restaurant darf der Vite-Server ohnehin
+  nicht laufen: Er gab in der Kopie über `/@fs/…` jede Projektdatei aus, auch `wokflow.db` (geprüft, `200`).
+- **`src/server/page.ts` (neu):** `contentTypes` (Endung zu `Content-Type`, zugleich die Liste dessen, was überhaupt
+  ausgegeben wird) und `pageSend(response, path): void`: `/` ist `index.html`, `join` löst `..` auf, eine Prüfung
+  hält den Dateipfad im Ordner (siehe nächster Punkt), `no-store` wie bei `responseSend`, damit er nach einem Build
+  nie eine alte Seite sieht. **`pageSend` beantwortet beide Fälle selbst, Datei oder `404` ohne Körper (seine
+  Entscheidung, 20.09.2026: „this would be really clean“):** Claudes erste Fassung `else if (!pageSend(…))` fand er
+  „cringe“, zu Recht, eine Bedingung soll fragen, nicht handeln; der letzte Zweig von `requestHandle` ist jetzt ein
+  schlichtes `else { pageSend(response, path); }`. Der Aufruf steht in `requestHandle`, damit auch ein
+  Fehler beim Lesen bei `.catch` in `serverCreate` landet. Das Beispiel im JSDoc von `responseSend` zeigt deshalb
+  die `500`-Antwort, die `404` mit JSON-Körper gibt es nicht mehr. **Seine Wörter (selbst umbenannt):** in `api.ts`
+  `path` statt `address`, `pathMatch` statt `match`; in `page.ts` heißt der Dateipfad deshalb `file`. **Kommentare:**
+  das Ding beim Namen nennen statt „it“, wo es nichts kostet („so the answer has to name its type“); ein zweiter
+  Satz sagt, wofür etwas gebraucht wird, so allgemein, wie man es einem Anfänger sagen würde, „sent“ statt
+  „travels“. Erklärt und angekommen: Es reist keine Datei, nur ihr Inhalt als Zeichen, deshalb nennt jede Antwort
+  ihren Typ (Beispiel `<h1>14</h1>` mit `text/html` gegen `text/plain`).
+- **Der Ordner der Seite ist eine Konstante in `page.ts` (seine Entscheidung, 20.09.2026: „I don't want to keep
+  parameter … just because of the test, that's not clean code“):** `export const pageFolder`, gebaut wie der Pfad in
+  `database.ts`, `export` nur für die Tests (wie `locks`); Claudes Parameter durch `index.ts`, `serverCreate`,
+  `requestHandle`, `pageSend` ist wieder weg, `pageSend(response, path)`. Die Prüfung heißt jetzt
+  `relative(pageFolder, file).startsWith("..")`, damit es den Sonderfall Nachbarordner (`dist-old`) gar nicht gibt.
+  **Tests mit Attrappen (seine Idee: „the test can make dummies“):** `before` legt `dist/test/page.html` und
+  `page.css` an, ein `index.html` nur, wenn nichts gebaut ist; `after` räumt sie weg, den ganzen Ordner nur, wenn
+  die Tests ihn angelegt haben; ein gebautes `dist` bleibt unberührt (beides geprüft). Zwei Tests in `api.test.ts`;
+  `pathSend` schickt den Pfad mit `request` aus `node:http` wörtlich, weil `fetch` jedes `..` vor dem Senden
+  auflöst; außerhalb liegt `/../src/page/index.html`. 42 Tests grün, 5 von 5 kaputten Kopien gefangen. **Lehre:**
+  Einen Parameter, den nur die Tests brauchen, lehnt er ab, auch wenn er wie `database` aussieht; zuerst fragen,
+  wie die Tests sich selbst helfen können.
+
+- **Der Bildschirm wird in Scheiben gebaut (Nutzer einverstanden, 20.09.2026):** Für Browser-Code gibt es noch keine
+  Stilregeln; seine Korrekturen an Scheibe 1 werden die Regeln für den Rest. Innerhalb einer Scheibe baut Claude
+  alles ganz, danach wird langsam gelesen. **Gut statt schnell (Nutzer: „du musst nicht schnell bauen … clean, so kurz
+  wie möglich, so lang wie nötig, in meinem Stil“, „mehrere Iterationen“):** Nach dem Bau klar benennen, welche
+  Dateien geändert und welche neu sind, wie viel darin neu ist, als Tabelle (Datei, neu, was), und damit beginnen;
+  danach Datei für Datei jede geänderte Zeile wörtlich zeigen, TypeScript zuerst, CSS und HTML danach. **Die Liste
+  bleibt (Nutzer: „this is good that you show me. Don't make it away“):** Er sieht die Änderungen zwar in Git, kann
+  die Git-Ansicht aber noch nicht lesen. Claude hatte ein verstümmeltes Diktat als „Liste weglassen“ gelesen und als
+  Regel notiert; bei mehrdeutigem Diktat zuerst nachfragen. Installieren (`npm install -D vite`) bleibt seine Sache
+  („really good that you left it to me“): Claude trägt nur das Skript ein, die Zeile unter `devDependencies` schreibt
+  sein Befehl.
+- **Die Seite:** `vite.config.ts` (26 Zeilen: `root`, `outDir`, `emptyOutDir`, `sourcemap`), `src/page/index.html`
+  (103, der Plan aus dem Prototyp, je Tisch eine Zeile mit `data-table` und `grid-area`), `src/page/plan.css` (344,
+  aus den 98 Regeln des Prototyps, die der Plan wirklich benutzt, flach zusammengeführt), `src/page/plan.ts` (47:
+  `tablesShow`, `areaShow`). **Am Server dazu:** `orders.ts` (+16, `tablesRead`: `SELECT DISTINCT table_id … WHERE
+  closed IS NULL`, ohne `ORDER BY`, weil kein Aufrufer die Reihenfolge braucht; sein `@returns` von ihm gekürzt, kein
+  „none when …“ mehr, auch nicht in `ordersRead`), Zweig `GET /tables` in `api.ts`, `orders.test.ts` (+3) und
+  `api.test.ts` (+2), dort immer nur ein belegter Tisch im Vergleich, damit kein Test von einer nicht zugesagten
+  Reihenfolge abhängt. `package.json`: Skripte `build` und `watch`; `.gitignore`: `dist`.
+- **Geprüft in einer Kopie im Scratchpad, nie in seinem Ordner:** Typprüfung ohne Fehler, 42 Tests grün (mit rksv),
+  kaputte Kopien: bei `tablesRead` und seinem Zweig 6 von 7 gefangen (nicht gefangen: der Zweig nimmt auch `POST`,
+  harmlos), bei `page.ts` und dem letzten Zweig 8 von 8 (eine davon so, dass die Testdatei nie endet). Gegen den
+  laufenden Server: alle Adressen und Dateien richtig, 8 Versuche, `dist` zu verlassen (`/../wokflow.db`,
+  `/..%2f…`, `/..\…`, `/assets/../../…`), enden mit `404`. Seite im Browser bei 360 × 780 gegen den Prototyp
+  vermessen: alle Tische, Linien, Gang, Logo gleich, nur alles 1,8 px höher, weil die Kopftasten keinen
+  durchsichtigen Rand mehr haben. Passt auch bei 320 × 640 ohne Scrollen. Ohne Server erscheint der Streifen „Keine
+  Verbindung 无连接“ (neu, im Prototyp nicht vorhanden, Aussehen wie der Schieben-Streifen; Chinesisch von ihm zu
+  prüfen). Die gebaute Seite hat rund 165 KB.
+- **Stilkorrekturen des Nutzers beim Lesen (20.09.2026 abends, „I found it too long, learn from my style“), gelten
+  vor den älteren Regeln unter „Coden“:** In `requestHandle` hat er alle Stichpunkte zu lokalen Konstanten aus dem
+  JSDoc gestrichen (`address`, `match`, `tableId`, `tableResource`, dazu Claudes `pageSend` und „An unknown address
+  …“); was eine Konstante ist, steht jetzt als kurzes `//` am Zeilenende, groß begonnen, ohne Artikel (`// Path of
+  url, without protocol, host, port.`, `// Path /tables/:table/orders|lock`). Der JSDoc einer Funktion sagt nur noch,
+  was sie tut, plus die Adressliste. Eine Signatur mit vier Parametern bricht er nach dem zweiten um, zwei je Zeile,
+  die Fortsetzung unter dem ersten Parameter, ohne Leerzeile danach. **Stichpunkte zu benutzten Funktionen beginnen
+  mit dem Verb, das sagt, was die Funktion tut („joins and checks is also a description starting with what it
+  does“):** `{@link relative}: Resolves way from page folder to file, …`, nicht „Way from …“. In `pageSend` hat er
+  selbst das `if` mit `else` statt frühem `return` geschrieben, die Konstante `contentType` samt Prüfung auf
+  `undefined` gestrichen (ein vergessener Eintrag in `contentTypes` endet so als `500` mit Protokollzeile) und den
+  Zweck von `no-store` als `//` ans Zeilenende gesetzt. `page.ts` hat er danach nach eigenem Wort ganz verstanden.
+- **Promise sitzt noch nicht fest (Nutzer, 20.09.2026 spät, beim Wiederlesen von `await once(server, "listening")`:
+  „write in the handoff that I still had problem with the promise“):** Er wusste nicht mehr, warum `once` ein
+  Promise gibt und `server.on` nicht. Was trug: die drei Rollen als Tabelle (Autor der Klasse Promise baut im
+  Konstruktor `ready` und ruft `worker` sofort; der Ersteller eines Promise schreibt `worker`, in WokFlow die Autoren
+  von `once` und `fetch`; der Benutzer schreibt nur `await`, das ist er); `ready` als Knopf, der das Promise beendet;
+  `worker` mit Namen statt Lambda; das kleinste Beispiel mit `setTimeout(ready, 1000)`. Trennen: wer `ready` baut
+  (der Konstruktor) und wer `ready` ruft (wem `worker` den Knopf gibt: Timer oder Fach des Servers, also Node). Was
+  nicht trug: „hands us“, „we“ ohne zu sagen, wer gemeint ist, die Hilfsvariable `readyKept`, „worker is where we
+  decide when“. Beim nächsten Mal mit der Rollentabelle beginnen. Am Ende hat er die Skizze `onceSimple` selbst
+  richtig erklärt („we put the button into a slot of the server … the fulfillment button“): `worker` bestimmt, wer
+  den Knopf bekommt, der Halter bestimmt, wann er drückt. Claudes Patzer: „worker“ hieß in der Skizze die Funktion,
+  am 19.09. aber der eine Arbeiter von Node; zwei Bedeutungen für ein Wort. **Durchbruch in derselben Nacht, an
+  `pathSend` (`await once(raw, "response")` gibt ein Array):** Er hat den ganzen Nachbau selbst laut durchgespielt
+  und richtig beendet. Was trug: alle Lambdas als benannte Funktionen (`worker`, `inSlot`), verschiedene Namen für
+  verschiedene Dinge (`result` im Typ, `args` in der Funktion; Claudes doppeltes `values` hatte ihn aus der Bahn
+  geworfen), ein nachgebauter `EmitterSimple` mit `once` und `emit`, und vor allem `console.log` mit Nummern 1 bis
+  6 in jedem Schritt, daneben die echte Ausgabe. Sein eigener Merksatz: wissen, wann etwas nur gespeichert oder
+  weitergereicht und wann es ausgeführt wird (Name ohne Klammern gegen Name mit Klammern). Wer entscheidet was: die
+  Klasse Promise, wie beendet wird (`ready`), der Emitter, also Node, wann und mit welchen Werten (`emit`). Offen:
+  `resume` in `pathSend`.
+- **Alles Gerüst der API-Tests wohnt in `test/setup.ts` (seine Entscheidung, 21.09.2026 nach Mitternacht, nach
+  mehreren Anläufen; keine neue Datei: „setup is like a new file“):** `export let database` und `export let url`
+  (andere Dateien lesen sie, nur `serverStart` setzt sie; `url` ist je Test neu, weil der Port frei gewählt wird),
+  `serverStart`, `serverStop`, `pageDummyCreate`, `pageDummyRemove`, dazu `updateSend`, `lockSend`, `pathSend` mit
+  seinen Kommentaren wörtlich. `api.test.ts` hat nur noch vier gleich gebaute Hooks (`before(dummiesCreate);` …
+  `afterEach(serverStop);`, je mit seiner `//`-Zeile) und die Tests, 96 statt 175 Zeilen. Ein exportiertes `let`
+  ihm an zwei kleinen Dateien gezeigt (lesen geht, schreiben gibt TS2632); `locks` ist dagegen ein `const`, dessen
+  Inhalt sich ändert, Claudes Vergleich damit war schief. Seine eigene Zwischenfassung von `before` mit frühem
+  `return` legte bei gebauter Seite die CSS-Attrappe nicht an; ihm gesagt. Die zwei `404`-Tests hat er selbst zu
+  einem zusammengelegt. 41 Tests grün, mit und ohne gebautes `dist`. **Nur noch eine Attrappe (seine Entscheidung
+  nach langem Hin und Her):** `index.html` mit dem Text `pageDummy`, nur wenn keine Seite gebaut ist;
+  `pageDummyRemove` löscht sie nur, wenn ihr Inhalt die Attrappe ist (**seine Regel: ein Test stellt den Zustand
+  wieder her, den er vorgefunden hat**); ein leerer Ordner `dist` kann übrig bleiben. Die CSS-Attrappe samt Prüfung
+  des Typs `text/css` ist weg, weil Vite dem echten CSS je Build einen neuen Namen gibt und ihn die Ungleichheit
+  zur `index.html` störte; die kaputte Kopie „jede Datei als `text/html`“ fängt deshalb kein Test mehr, ein
+  falscher Typ zeigt sich beim Öffnen der Seite. Die Namen mit Fingerabdruck und `no-store` haben ihn sehr
+  verwirrt; nicht wieder aufmachen, für WokFlow gilt nur: `pageSend` und `responseSend` senden immer `no-store`.
+  `src/rksv/receipt.ts` steht in Git als geändert, nicht von Claude.
+- **Zu viele Kommentare in Claudes `setup.ts` (Nutzer, 21.09.2026: „you messed up a lot of comments … so much
+  unnecessary there“, er kürzt selbst):** Ein Kommentar sagt nur, was Name und Signatur nicht schon sagen; kein
+  JSDoc, der den Funktionsnamen in einen Satz umschreibt („Removes the dummy folder from the page folder“ über
+  `dummiesRemove`), keine zwei Zeilen, wo eine reicht, nichts doppelt mit der `//`-Zeile am Hook. **Artikel
+  weglassen, wo der Satz ohne sie lesbar bleibt, in allen Kommentaren, nicht nur in Stichpunkten („many the is not
+  really needed for readability“):** „Closes test server“ statt „Closes the test server“. Im nächsten Chat
+  zuerst seine gekürzte `test/setup.ts` lesen und die Kommentardichte dort als Maß nehmen.
+- **Für die Aufräumrunde notiert:** bei weiterem Wachstum die Seitentests nach `test/page.test.ts`; mit den
+  Bildschirm-Scheiben prüfen, welche API-Tests bleiben.
+- **Der Plan fragt nur, wenn er angezeigt wird, kein Timer (Entscheidung des Nutzers, 20.09.2026):** TOUCHIT frischt
+  den Handy-Tischplan auch nie von selbst auf (in `Bonieren_1a.aspx` und im dekompilierten Code geprüft); eine alte
+  Farbe kann nichts Falsches buchen, weil das Öffnen frisch liest und sperrt. Später bei Bedarf: neu fragen, wenn das
+  Handy entsperrt wird.
+- **Abweichungen vom Prototyp, alle ohne sichtbare Wirkung außer der ersten:** Tischpaare 19/18 und 24/23 haben
+  außen 12 px Rundung wie alle Tische (Prototyp 8 px, dort vermutlich beim Umstellen auf 12 px übersehen); englische
+  Klassennamen (`table`, `occupied`, `tab`, `selected` statt `t`, `b`, `g`, `on`); keine durchsichtigen Ränder; Logo
+  als CSS-Hintergrund, weil Vite beim Entwickeln ein `<img>` außerhalb von `root` nicht findet; keine `aria-label`
+  und kein `type="button"` (kein Formular auf der Seite); `large` entfällt (am Handy wirkungslos).
+- **Vite, am 20.09.2026 erklärt und angekommen:** die Seite gegen die Antworten der API; Vite übersetzt TypeScript
+  und gibt die Seite aus; läuft in Node wie unser Server, zwei Programme, Ports 5173 und 3000; Package als Bibliothek
+  (`dinero.js`) oder Werkzeug (Vite); die Seite reist einmal (rund 330 KB), danach nur Antworten; Einfärben passiert
+  am Handy mit dem Etikett `occupied` (CSS-Klasse, keine Java-Klasse); `vite` gegen `vite build`, `dist` ist nur ein
+  Ordnername; `/../../` am Beispiel `wokflow.db`. **Nicht angekommen:** „Daten“ gegen „Dateien“ als Gegensatz (Regel
+  unter „Zusammenarbeit“), `dist` und Caddy in einer Antwort mit zwei Wegen, eine Spezifikation mit fünf Punkten („zu
+  viel auf einmal“). Der Vite-Server mit Port 5173 ist seit dem Umbau erklärtes Wissen, nicht mehr der Aufbau. Was
+  ankam: eingefügte Zeilen mit ihren Nachbarn zeigen und mit „← new“ markieren („I understand this perfectly“). Noch
+  nicht erklärt und im neuen Code enthalten: `export default`, `defineConfig`, `join`, `extname`, `sep`,
+  `existsSync`, der `?:`-Ausdruck in `pageSend`, `request` aus `node:http` mit `resume`, `document.querySelectorAll`,
+  `classList.toggle`, `toggleAttribute`, `addEventListener`, CSS-Grid und `subgrid`.
+
 **Auftrag des Nutzers (18.09.2026):** (1) `src/server/api.ts` und `test/api.test.ts` Stück für Stück erklären und
 von ihm korrigieren lassen (Warum-Liste), (2) danach das nächste Modul, der Bestellbildschirm, samt Tischsperre.
 Er öffnet dafür neue Chats („every important thing right in the manifest and I will open new chats“).
@@ -1122,10 +1315,10 @@ ihren Tests steht in der Übergabe am Anfang dieses Abschnitts.
 3. Tischsperre: `src/tables/locks.ts` und die Adresse `…/lock` in `api.ts` sind seit 20.09.2026 gebaut (siehe
    „Tischsperre“ am Anfang dieses Abschnitts). Vorgezogen, weil sie entschieden ist, am Server wohnt, ohne Bildschirm
    testbar ist. Es fehlt nur die Seite, die sperrt, verlängert, entsperrt.
-4. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`. Vorher entscheiden, wie die
-   Seite ausgeliefert wird (siehe „Aktueller Stand“: nicht vom eigenen Server, bei Bedarf Vite). Mit dem Bildschirm
-   kommen die Sonderregeln für Zitrone und Buffetpersonen; für Browser-Code gibt es noch keine Stilregeln. Der
-   Tischplan braucht vom Server noch die Liste der belegten Tische, das Schieben eine Funktion in `orders.ts`.
+4. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`, in Scheiben. Scheibe 1,
+   der Tischplan mit den belegten Tischen vom Server, ist seit 20.09.2026 gebaut (siehe Anfang dieses Abschnitts);
+   Vite baut die Seite nach `dist`, unser Server gibt sie aus. Mit dem Bildschirm kommen die Sonderregeln für Zitrone und
+   Buffetpersonen; für Browser-Code gibt es noch keine Stilregeln. Das Schieben braucht eine Funktion in `orders.ts`.
 5. Danach nach dem Manifest: Rechnung, Zahlung, Druck, rksv, Tagesabschluss.
 
 ### Modul `tables`, Spezifikation (gebaut 16.09.2026, Entscheidungen bis 18.09.2026)
@@ -1223,10 +1416,10 @@ Stand 18.09.2026. Planung im Manifest, Stand des Codes unter „Stand der Dateie
   in `preview-menu.js`, Schriften unter `fonts/`. Handyansicht mit `?vorschau=1#tables`, dieselben Bildschirme mit
   Erläuterungen mit `?uebersicht=1`, Tagesabschluss des Chefs mit `?chef=1#closing`. Eine lokale Demo, keine echte
   Kasse. Regeln unter „Bildschirm und Bedienung“. Der Nutzer reagiert auf sichtbare Beispiele.
-- **Auslieferung der Seite (Nutzer, 16.09.2026):** nicht vom eigenen Server, sondern bei Bedarf mit Vite, ohne
-  eigenen Code. Dateien ausliefern lösen fertige Werkzeuge; von Hand ist es mühsam und riskant, etwa könnte eine
-  Adresse wie `/../../` beliebige Dateien des Server-PCs lesen. Danach am Handy im WLAN mit ein bis zwei Kellnern
-  erproben.
+- **Auslieferung der Seite (Nutzer, 20.09.2026, ersetzt den Stand vom 16.09.2026 „nicht vom eigenen Server“):** Vite
+  baut die Seite nach `dist`, unser eigener Server gibt sie aus (`src/server/page.ts`), beim Entwickeln wie im
+  Restaurant; Begründung und die Prüfung gegen `/../../` am Anfang von „Nächster Chat“. Danach am Handy im WLAN mit
+  ein bis zwei Kellnern erproben.
 - **Git:** `origin` ist `git@github.com:UnathiCodex/WokFlow.git` per SSH (lokaler Schlüssel `id_ed25519`), `main`
   folgt `origin/main`, das Repository ist privat. Git 2.54, Git Credential Manager 2.7.3, GitHub CLI `gh` nicht
   installiert, systemweit `pull.rebase false`. Git macht der Nutzer selbst; `commands.md` hat über jedem Befehl

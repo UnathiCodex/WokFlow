@@ -5,16 +5,25 @@
  * Sums the orders per tax rate and writes amounts and time.
  *
  * ```
- * _R1-AT1_cashboxId_number_time_taxNormal_taxReduced1_taxReduced2_taxZero_taxSpecial_counter_certificateSerial_chaining
+ * _R1-AT1
+ * _cashboxId
+ * _number
+ * _time
+ * _taxNormal
+ * _taxReduced1
+ * _taxReduced2
+ * _taxZero
+ * _taxSpecial
+ * _counter
+ * _certificateSerial
+ * _chaining
  * ```
- */
-
-/**
- * One ordered item on the receipt.
  *
+ * One ordered item on the receipt.
  * - `price`: Gross price of one portion in cents.
  * - `tax`: Tax rate in percent.
  */
+
 export type Item = {
     quantity: number;
     price: number;
@@ -48,16 +57,11 @@ export function taxAmountsSum(items: Item[]): TaxAmounts {
     const amounts: TaxAmounts = { taxNormal: 0, taxReduced1: 0, taxReduced2: 0, taxZero: 0, taxSpecial: 0 };
     for (const item of items) {
         const total: number = item.quantity * item.price;
-        if (item.tax === 20)
-            amounts.taxNormal += total;
-        else if (item.tax === 10)
-            amounts.taxReduced1 += total;
-        else if (item.tax === 13)
-            amounts.taxReduced2 += total;
-        else if (item.tax === 0)
-            amounts.taxZero += total;
-        else
-            throw new Error(`Tax rate ${item.tax}% is not allowed.`);
+        if (item.tax === 20) amounts.taxNormal += total;
+        else if (item.tax === 10) amounts.taxReduced1 += total;
+        else if (item.tax === 13) amounts.taxReduced2 += total;
+        else if (item.tax === 0) amounts.taxZero += total;
+        else throw new Error(`Tax rate ${item.tax}% is not allowed.`);
     }
     return amounts;
 }

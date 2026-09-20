@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>WokFlow</title>
+
+        <link rel="stylesheet" href="plan.css">
+        <script type="module" src="plan.ts"></script>
+    </head>
+    <body>
+
+        <header class="header">
+            <a class="header-button" href="#reservations">Reservierungen <span lang="zh-Hans">预订</span></a>
+            <a class="header-button" href="#today">Heute <span lang="zh-Hans">今日</span></a>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab selected" data-area="indoor">Innen</button>
+            <button class="tab" data-area="garden">Garten</button>
+        </nav>
+
+        <p class="offline" hidden>Keine Verbindung <span lang="zh-Hans">无连接</span></p>
+
+        <div class="area" id="indoor">
+            <div class="tables tables-indoor">
+                <span class="divider" style="grid-area: 3 / 1 / 4 / 4"></span>
+                <span class="divider" style="grid-area: 3 / 5 / 4 / 7"></span>
+                <span class="divider" style="grid-area: 4 / 1 / 5 / 4"></span>
+                <span class="divider" style="grid-area: 4 / 5 / 5 / 7"></span>
+                <div class="aisle" style="grid-area: 2 / 4 / 4 / 5"></div>
+
+                <div class="tables-front">
+                    <button class="table" data-table="1" style="grid-area: 1 / 1">1</button>
+                    <button class="table" data-table="2" style="grid-area: 1 / 2">2</button>
+                    <button class="table" data-table="3" style="grid-area: 1 / 3">3</button>
+                    <button class="table" data-table="4" style="grid-area: 1 / 4">4</button>
+                    <button class="table" data-table="5" style="grid-area: 1 / 5">5</button>
+                    <button class="table short" data-table="6" style="grid-area: 1 / 6">6</button>
+                    <button class="table" data-table="11" style="grid-area: 2 / 1">11</button>
+                    <button class="table" data-table="10" style="grid-area: 2 / 2">10</button>
+                    <button class="table" data-table="9" style="grid-area: 2 / 3">9</button>
+                    <button class="table" data-table="8" style="grid-area: 2 / 5">8</button>
+                    <button class="table" data-table="7" style="grid-area: 2 / 6">7</button>
+                </div>
+
+                <button class="table" data-table="12" style="grid-area: 3 / 1">12</button>
+                <button class="table" data-table="13" style="grid-area: 3 / 2">13</button>
+                <button class="table" data-table="14" style="grid-area: 3 / 3">14</button>
+                <button class="table" data-table="15" style="grid-area: 3 / 5">15</button>
+                <button class="table" data-table="16" style="grid-area: 3 / 6">16</button>
+
+                <button class="table" data-table="21" style="grid-area: 4 / 1">21</button>
+                <button class="table" data-table="22" style="grid-area: 4 / 2">22</button>
+                <div class="table-pair" style="grid-area: 4 / 5 / 6 / 6">
+                    <button class="table" data-table="19">19</button>
+                    <button class="table" data-table="18">18</button>
+                </div>
+                <button class="table" data-table="17" style="grid-area: 4 / 6">17</button>
+
+                <div class="table-pair" style="grid-area: 5 / 1 / 7 / 2">
+                    <button class="table" data-table="24">24</button>
+                    <button class="table" data-table="23">23</button>
+                </div>
+                <button class="table takeaway" data-table="M" style="grid-area: 5 / 2 / 6 / 5">Mitnehmen</button>
+                <button class="table small" data-table="20" style="grid-area: 6 / 2">20</button>
+                <div class="logo"></div>
+            </div>
+        </div>
+
+        <div class="area" id="garden" hidden>
+            <section>
+                <h2 class="area-title">Raum</h2>
+                <div class="tables tables-room">
+                    <button class="table" data-table="33">33</button>
+                    <button class="table" data-table="34">34</button>
+                    <button class="table" data-table="30">30</button>
+                    <button class="table" data-table="32">32</button>
+                    <button class="table" data-table="31">31</button>
+                    <button class="table" data-table="35">35</button>
+                </div>
+            </section>
+
+            <section class="section-garden">
+                <h2 class="area-title">Garten</h2>
+                <div class="tables tables-garden">
+                    <button class="table" data-table="G12" style="grid-area: 1 / 1">G12</button>
+                    <button class="table" data-table="G11" style="grid-area: 1 / 2">G11</button>
+                    <button class="table" data-table="G1" style="grid-area: 1 / 4">G1</button>
+                    <button class="table" data-table="G2" style="grid-area: 1 / 5">G2</button>
+                    <button class="table" data-table="G3" style="grid-area: 1 / 6">G3</button>
+                    <button class="table" data-table="G4" style="grid-area: 1 / 7">G4</button>
+                    <button class="table" data-table="G15" style="grid-area: 2 / 1">G15</button>
+                    <button class="table" data-table="G16" style="grid-area: 2 / 2">G16</button>
+                    <button class="table" data-table="G9" style="grid-area: 2 / 5">G9</button>
+                    <button class="table" data-table="G8" style="grid-area: 2 / 6">G8</button>
+                    <div class="aisle" style="grid-area: 1 / 3 / 3 / 4"></div>
+                </div>
+            </section>
+        </div>
+
+    </body>
+</html>

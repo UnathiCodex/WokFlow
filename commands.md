@@ -30,7 +30,7 @@ git push -u origin main
 node -v
 
 # Install development tools, -D: save under devDependencies
-npm install -D typescript @types/node@26
+npm install -D typescript @types/node@26 vite
 
 # Install Dinero.js 2.0.2 for money amounts, saved under dependencies
 npm install dinero.js@2.0.2
@@ -47,4 +47,7 @@ npm start
 
 # Run all tests from the WokFlow folder, --test: finds test files
 node --test
+
+# Start Vite at localhost:5173, runs vite from package.json
+npm run dev
 ```

@@ -21,10 +21,12 @@ beforeEach((): void => { database = databaseTest(); });
 
 
 test(
-    "A table goes from its first orders to closing",
+    "Orders and occupied tables are read from first orders to closing",
     (): void => {
         orders.ordersUpdate(database, "14", { add: [colaBig1, colaSmall1, redBull1], remove: [] });
         orders.ordersUpdate(database, "14", { add: [colaBig2], remove: [] });
+        deepEqual(orders.tablesRead(database), ["14"]);
+
         orders.ordersUpdate(database, "G3", { add: [redBull1], remove: [] });
         deepEqual(orders.ordersRead(database, "14"), [colaBig3, colaSmall1, redBull1]);
 
@@ -34,6 +36,7 @@ test(
         orders.tableClose(database, "14");
         deepEqual(orders.ordersRead(database, "14"), []);
         deepEqual(orders.ordersRead(database, "G3"), [redBull1]);
+        deepEqual(orders.tablesRead(database), ["G3"]);
     }
 );
 

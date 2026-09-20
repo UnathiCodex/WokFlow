@@ -2,11 +2,14 @@
   "name": "wokflow",
   "type": "module",
   "scripts": {
-    "start": "node src/server/index.ts"
+    "start": "node src/server/index.ts",
+    "build": "vite build",
+    "watch": "vite build --watch"
   },
   "devDependencies": {
+    "typescript": "^7.0.2",
     "@types/node": "^26.6.1",
-    "typescript": "^7.0.2"
+    "vite": "^8.3.0"
   },
   "dependencies": {
     "dinero.js": "^2.0.2"

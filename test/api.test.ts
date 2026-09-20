@@ -6,88 +6,45 @@
  *
  * - `node:test`: Runs tests and reports the results.
  * - `node:assert/strict`: Compares values exactly including types.
- * - `node:events`: Waits for an event of an object.
  */
 
-import { test, beforeEach, afterEach } from "node:test";
+import { test, before, after, beforeEach, afterEach } from "node:test";
 import { deepEqual } from "node:assert/strict";
-import { once } from "node:events";
-import { serverCreate } from "../src/server/api.ts";
 import { menu } from "../src/catalog/menu.ts";
-import { databaseTest, colaSmall1, colaBig1, colaBig2, redBull1 } from "./setup.ts";
-
+import {
+    database, url, pageDummyCreate, pageDummyRemove, serverStart, serverStop,
+    updateSend, lockSend, pathSend, colaSmall1, colaBig1, colaBig2, redBull1,
+} from "./setup.ts";
 import type { TestContext, Mock } from "node:test";
-import type { Server } from "node:http";
-import type { AddressInfo } from "node:net";
-import type { DatabaseSync } from "node:sqlite";
 
 
-let database: DatabaseSync;
-let server: Server;
-let url: string;
-
-// Fresh database and fresh server on a free port before each test
-beforeEach(async (): Promise<void> => {
-    database = databaseTest();
-    server = serverCreate(database).listen(0, "127.0.0.1");
-    await once(server, "listening");
-    url = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
-});
-
-// Closes the server after each test, otherwise the test file never ends
-afterEach((): void => {
-    server.close();
-});
+before(pageDummyCreate);
+after(pageDummyRemove);
+beforeEach(serverStart);
+afterEach(serverStop);
 
 
-/**
- * Sends an update of a table to the test server with
- * - {@link fetch}: Sends an HTTP request.
- * - {@link RequestInit.method}: HTTP method as text.
- *   Common values: `GET` (default), `POST`, `PUT`, `PATCH`,
- *   `DELETE`, `HEAD`, `OPTIONS`.
- * - {@link RequestInit.body}: Data to send, here JSON text from
- *   {@link JSON.stringify}. Omitted for `GET` and `HEAD`.
- *
- * @param tableId - Table identifier
- * @param update - Value to send as JSON
- * @returns Answer of the server
- */
-function updateSend(tableId: string, update: unknown): Promise<Response> {
-    return fetch(`${url}/api/tables/${tableId}/orders`, {
-        method: "POST",
-        body: JSON.stringify(update),
-    });
-}
-
-/**
- * Sends a lock or an unlock of a table to the test server.
- *
- * @param method - `POST` locks, `DELETE` unlocks
- * @param tableId - Table identifier
- * @param deviceId - Device identifier
- * @returns `true` or `false` for a lock, `null` for an unlock
- */
-async function lockSend(method: string, tableId: string, deviceId: string): Promise<boolean | null> {
-    const response: Response = await fetch(`${url}/api/tables/${tableId}/lock`, {
-        method, // POST or DELETE
-        body: JSON.stringify(deviceId),
-    });
-    return response.json();
-}
-
+test(
+    "A phone reads the index-page",
+    async (): Promise<void> => {
+        const page: Response = await fetch(`${url}/`);
+        deepEqual(page.headers.get("Content-Type"), "text/html; charset=utf-8");
+    }
+);
 
 test(
     "A phone reads the menu and updates the orders of two tables",
     async (): Promise<void> => {
-        const menuResponse: Response = await fetch(`${url}/api/menu`);
+        const menuResponse: Response = await fetch(`${url}/menu`);
         deepEqual(await menuResponse.json(), JSON.parse(JSON.stringify(menu)));
 
         const validAdd: Response = await updateSend("14", { add: [colaBig2, redBull1], remove: [] });
         const validChange: Response = await updateSend("14", { add: [colaSmall1], remove: [colaBig1] });
-        const validRead: Response = await fetch(`${url}/api/tables/14/orders`);
+        const validRead: Response = await fetch(`${url}/tables/14/orders`);
+        const validTables: Response = await fetch(`${url}/tables`);
 
         deepEqual(await validRead.json(), [colaBig1, redBull1, colaSmall1]);
+        deepEqual(await validTables.json(), ["14"]);
         deepEqual([validAdd.status, validChange.status, validRead.status], [200, 200, 200]);
     }
 );
@@ -103,10 +60,11 @@ test(
 );
 
 test(
-    "An unknown address gets status 404",
+    "An unknown address or address outside the page folder gets status 404",
     async (): Promise<void> => {
-        const invalidAdress: Response = await fetch(`${url}/api/missing`);
-        const invalidMethod: Response = await fetch(`${url}/api/tables/14/orders`, { method: "DELETE" });
+        deepEqual(await pathSend("/../src/page/index.html"), 404);
+        const invalidAdress: Response = await fetch(`${url}/missing`);
+        const invalidMethod: Response = await fetch(`${url}/tables/14/orders`, { method: "DELETE" });
         deepEqual([invalidAdress.status, invalidMethod.status], [404, 404]);
     }
 );
@@ -119,9 +77,9 @@ test(
 
         const noPortions: Response = await updateSend("14", { add: [], remove: [colaBig1] });
         database.close();
-        const noDatabase: Response = await fetch(`${url}/api/tables/14/orders`);
+        const noDatabase: Response = await fetch(`${url}/tables/14/orders`);
 
-        const menuRead: Response = await fetch(`${url}/api/menu`);
+        const menuRead: Response = await fetch(`${url}/menu`);
         deepEqual([noPortions.status, noDatabase.status, menuRead.status], [500, 500, 200]);
         deepEqual(logged.mock.callCount(), 2);
     }

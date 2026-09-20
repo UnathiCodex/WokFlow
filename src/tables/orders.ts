@@ -135,7 +135,7 @@ export function ordersUpdate(database: DatabaseSync, tableId: string, update: Or
  *
  * @param database - Open database
  * @param tableId - Table identifier
- * @returns Open {@link Order}s of a table in booking order, none when the table is free
+ * @returns Open {@link Order}s of a table in booking order
  */
 export function ordersRead(database: DatabaseSync, tableId: string): Order[] {
     const entries = database.prepare(`
@@ -148,6 +148,22 @@ export function ordersRead(database: DatabaseSync, tableId: string): Order[] {
     `).all(tableId) as Order[];
 
     return entries.map((entry: Order): Order => ({ ...entry }));
+}
+
+/**
+ * Reads the occupied tables, the tables with at least one open portion.
+ *
+ * @param database - Open database
+ * @returns `tableId` of all occupied tables
+ */
+export function tablesRead(database: DatabaseSync): string[] {
+    const entries = database.prepare(`
+        SELECT DISTINCT table_id AS tableId
+        FROM orders
+        WHERE closed IS NULL
+    `).all() as { tableId: string }[];
+
+    return entries.map((entry: { tableId: string }): string => entry.tableId);
 }
 
 /**
