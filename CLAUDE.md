@@ -372,7 +372,13 @@ keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon fes
 - **Dateikopf im Stil des Nutzers (16.09.2026, mehrfach von Hand korrigiert):**
   - `## Titel`, darunter eine Beschreibung als Fließtext, keine Stichpunkte; sagt der Titel alles, keine
     Beschreibung (`## Drinks`). Keine Zusätze in Klammern, keine Ebenenzahlen. Dateien ohne Imports beginnen
-    direkt mit dem JSDoc der ersten Deklaration.
+    direkt mit dem JSDoc der ersten Deklaration: Zwei Kommentarblöcke vor derselben Deklaration gehen nicht, IntelliJ
+    stellt den ersten dann nicht dar. **Ist die erste Deklaration die Hauptsache der Datei, trägt ihr JSDoc den
+    Dateikopf (Nutzer, 20.09.2026, in `locks.ts` selbst geschrieben: „look at it and learn from it“):** `## Titel`,
+    Leerzeile, die Beschreibung als ganzer Satz mit dem Handelnden vorn, Leerzeile, die Property-Liste. Sein Wortlaut:
+    `## Table-lock`, „The device that has the table open holds a table-lock.“ Claudes Fassung davor, ohne Titel und
+    mit Doppelpunkt: „A lock of a table: The device that has the table open.“ Der Begriff heißt bei ihm „table-lock“
+    mit Bindestrich.
   - **Beschreibung so kurz wie möglich (Nutzer, 18.09.2026, zu `api.ts`: „should be as short as possible because
     the function below explains this already“):** in der Regel ein Satz, was die Datei tut. Nichts wiederholen, was
     die JSDocs der Funktionen und Typen darunter schon sagen, etwa einzelne Adressen oder Abläufe.
@@ -692,13 +698,12 @@ ist nur der Pfad (Namen der Teile: protocol, host, port, path), `?? ""` wie `orE
 (erste Zeile, Kopfzeilen, Leerzeile, Körper); `responseSend` Zeile für Zeile; `JSON` wie `Math` in Java mit
 `stringify` und `parse`.
 
-**Stand (19.09.2026, nachts):** Typprüfung ohne Fehler, `node --test` 13 grün: 5 `orders`, 4 `menu`, 3 `api`, dazu
-`setup.ts`. Letzter Commit `c6289bd` („remove wokflow.db and ignore it“, gepusht, `wokflow.db` ist aus Git heraus und
-steht in `.gitignore`). Seitdem geändert und nicht committet (Git macht der Nutzer selbst): `api.ts` (113 Zeilen: kein
-Status `400`, `POST` antwortet `200` mit `null`, keine Formprüfung, keine Regionen, keine `//` im Körper),
-`orders.ts` (Dateikopf ein Satz), `menu.ts`, alle vier Dateien unter `test/`, dazu neu `AGENTS.md` (zeigt Codex auf
-diese Datei). Auf GitHub gibt es den Zweig `origin/rksv` von Sophale (drei Commits, nur neue Dateien unter
-`rksv` und vier Tests), lokal nicht ausgecheckt, nicht in `main`; erklärt: `pull` holt ihn nur als Lesezeichen.
+**Stand (19.09.2026, nachts), am 20.09.2026 nachgezogen:** Typprüfung ohne Fehler, ohne rksv 15 Tests grün: 5
+`orders`, 4 `menu`, 3 `api`, 3 `locks`. Letzter Commit `597fe3f` („Renamed RKSV into rksv“). Der Zweig `origin/rksv`
+von Sophale ist seit `ea1f325` in `main`: `src/rksv/` mit fünf Dateien und fünf Tests. **rksv ist vorerst nicht Teil
+des Nutzers (20.09.2026: „this part is not for me currently“); in Modul-Chats nicht lesen, nicht anfassen.** Nicht
+committet (Git macht der Nutzer selbst): `test/api.test.ts` (seine Korrektur am Ablauftest), neu
+`src/tables/locks.ts` und `test/locks.test.ts` (Modul Tischsperre, siehe unten bei „Tischsperre“).
 **Offen, fünf kleine Stilpunkte, gezeigt, nicht gepatcht:** `api.ts` Zeile 28 mit 85 Zeichen; „A HTTP-request from as
 the phone sends with headers:“ liest sich kaputt (Zwilling: „An HTTP-answer as the server sends it:“); „Tableid“
 statt „Table identifier“; `menu.test.ts` Zeile 4 mit 82 Zeichen; der Test „Unknown articles and variants are
@@ -810,7 +815,81 @@ rejected“ prüft nur eine unbekannte Variante (`Cola 0.3`), keinen unbekannten
   übersahen die beiden „immer Tisch 14“. `beforeEach` braucht `database` als eigene Variable, weil Test 3 sie
   schließt (seine Kürzung `serverCreate(databaseTest())` ließ die Typprüfung scheitern, zurückgenommen). Server je
   Test auf Port 0 an `127.0.0.1`, `afterEach` schließt ihn.
-- **Tischsperre:** entschieden, steht im Manifest Abschnitt 4 Punkt 1; kommt mit dem Bildschirm-Modul.
+- **Tischsperre, Regel gebaut am 20.09.2026 ohne Spezifikation (Nutzer: „build this without showing me the spec, but
+  as short as possible, but all what we need“); er geht `src/tables/locks.ts` seit 20.09.2026 von oben nach unten
+  durch, die Anbindung in `api.ts` wartet, bis er fertig ist.** Die Datei hat keine Imports, der JSDoc von `Lock` trägt
+  den Dateikopf `## Table-lock` (von ihm geschrieben). Inhalt: Typ `Lock = { deviceId, expires }`, Konstante
+  `lockDuration`, die Konstante `locks` (`Map<string, Lock>`, mit `export` nur für die Tests), `tableLock(tableId,
+  deviceId): boolean`, `tableUnlock(tableId, deviceId): void`. Dazu `test/locks.test.ts` mit 3 Tests, Geräte heißen
+  dort `"phone"` und `"pc"`.
+  - **Die `Map` wohnt in `locks.ts`, nicht beim Aufrufer (Idee und Entscheidung des Nutzers, 20.09.2026: „this is
+    really nice“):** wie `entries` in `menu.ts`, eine Konstante in der Datei. Gewinn: ein Parameter weniger, `api.ts`
+    braucht keine `Map`. Weil sich alle Tests einer Datei die eine `Map` teilen, leert die Testdatei sie vor jedem
+    Test: `beforeEach((): void => { locks.clear(); });` (seine Idee: „or we just refresh the map“, „locks clear is
+    good“); dafür trägt `locks` ein `export`, das sonst niemand benutzen soll, `api.ts` importiert nur `tableLock` und
+    `tableUnlock`. Tests in `api.test.ts`, die sperren, brauchen dasselbe `clear` im `beforeEach`. Verworfen: je Test
+    ein eigener Tisch (Claudes erster Stand), eine eigene `Map` der Tests als dritter Parameter (ein Parameter nur für
+    Tests, die echte `Map` bliebe ungetestet).
+  - **Import in `locks.test.ts`, von Claude entschieden, ihm gesagt:** vier einzelne Namen aus `locks.ts` statt
+    `import * as locks`, obwohl die Importregel ab vier Namen den Stern verlangt; sonst hieße es `locks.locks.clear()`,
+    und `menu.menu` fand er hässlich.
+  - **Lehre für Claude (Nutzer: „why don't you suggest me that previously“):** Claude hatte die `Map` hineingereicht
+    wie `database`, wegen „frischer Zustand je Test“, und sein eigenes Muster `entries` übersehen. Vor dem Bauen im
+    Code des Nutzers nach einem Vorbild suchen und die kürzere Fassung zuerst zeigen; weniger Parameter wiegen für ihn
+    schwerer als ein frischer Zustand je Test.
+  - **`lockDuration` ist 5000 (vom Nutzer selbst von 30000 geändert, 20.09.2026).** Folge für den Bildschirm: Die
+    Seite muss deutlich öfter als alle 5 Sekunden verlängern, etwa alle 2 Sekunden; gehen im WLAN zwei Verlängerungen
+    verloren, ist der Tisch frei. Ihm gesagt, Entscheidung bleibt seine.
+  - **Sein JSDoc von `tableLock`:** unter dem ersten Satz Stichpunkte statt weiterer Sätze, ohne Artikel am Anfang
+    („Lock of a device runs out by itself after …“), wie in `api.ts`. Gilt damit auch in `src/tables/`.
+    **Bedingung zuerst (Nutzer, 20.09.2026, zu Claudes „Renews the Lock, when the device has the table already.“):**
+    erst der Fall, dann was passiert: „If the device holds the {@link Lock} already, the lock is renewed.“
+    Claudes JSDoc von `locks` hat er auf eine Zeile gekürzt: „Table-locks in server memory, at most one {@link Lock}
+    for each table.“ („in server memory“ statt „in the memory of the server“): knappe Fügungen, eine Zeile, wo es passt.
+  - **Erklärt und angekommen (20.09.2026):** eine Sperre ist nur ein Zettel (Gerät, Ablaufzeit), `locks` das Notizbuch
+    mit höchstens einem Zettel je Tisch; `locks.get` gibt `undefined` ohne Zettel; `typeof` kennt zur Laufzeit kein
+    `Lock`, nur `object` und `undefined` (TS2367 gezeigt); `Date.now()` ist eine Zahl in Millisekunden seit 1970;
+    Verlängern ist ein erneuter Aufruf von `tableLock` (Zeile mit `locks.set`); das Verlängern sitzt am Handy, weil nur
+    das Handy weiß, ob der Tisch noch offen ist (mit einem Timer in `locks.ts` liefe die Sperre eines toten Handys nie
+    ab); kein eigener Arbeiter am Server, der Server vergleicht nur, wenn jemand fragt.
+  - **Die Leiter zu `t.mock.timers`, die trug (20.09.2026), je Antwort eine Stufe, jede Datei vorher ausgeführt:** (1)
+    `Date.now` von Hand tauschen wie gestern `console.error` (retten, überschreiben, zurückschreiben); (2) eigene Uhr
+    mit `let time`, `time += 4999`; (3) `t.mock.method(Date, "now", (): number => 0)`: die ersten zwei Argumente
+    nennen, was ersetzt wird, das dritte ist der Ersatz; (4) `timers` als Tabelle „von Hand / mit dem Werkzeug“; (5)
+    `enable` schaltet ein und startet bei 0 (als ISO-Text 1970), `apis` ist ein Union-Typ mit vier Namen (TS2322
+    gezeigt); (6) `"Date"` tauscht `Date.now()` und `new Date()`, nicht `new Date(zahl)`; (7) der echte Test mit dem
+    Uhrstand hinter jeder Zeile. **Claudes Fehler dabei: „mock“ für zwei Dinge benutzt** (den Ersatz und die Kiste
+    `t.mock`); gelöst mit einer nachgebauten Kiste `const mock = { method: methodSwap };`. Er: „I understand this for
+    now, not forever“.
+  - **Seine `//`-Kommentare im zweiten Test von `locks.test.ts` (20.09.2026, selbst geschrieben, von Claude auf sein
+    „patch it“ berichtigt):** hinter jeder Zeile der Uhrstand oder das Ergebnis, klein geschrieben, in seinen Worten:
+    `// clock 4999`, `// lock obtained (at 0)`, `// lock refused (5000 > 4999)`, `// lock renewed (at 4999)`. Der
+    Vergleich steht wie im Code, `expires > clock`. Nicht entfernen.
+  - **`tableUnlock` bleibt `void` (seine Frage, 20.09.2026):** Niemand läse die Antwort, der Kellner verlässt den Tisch
+    in beiden Fällen; derselbe Grund wie bei `null` im `POST …/orders`.
+  Claudes übrige Entscheidungen, vom Nutzer zu bestätigen:
+  - **Besetzt ist keine Ausnahme:** `tableLock` gibt `false` zurück, wenn ein anderes Gerät den Tisch hat, und wirft
+    nicht. Der Kellner muss das sehen, es ist kein Fehler der eigenen Seite; so braucht `api.ts` weder `try` noch
+    einen neuen Statuscode.
+  - **Nehmen und Verlängern sind dieselbe Funktion:** Dasselbe Gerät ruft `tableLock` einfach wieder auf.
+  - **Die Gerätekennung ist ein Text, den das Gerät selbst wählt.** Nicht die IP-Adresse: Hinter Vite kämen alle
+    Handys von derselben Adresse. Das Freischalten der Handys durch den Chef ist ein späteres Modul.
+  - **`tableUnlock` prüft das Gerät:** Ein Handy, dessen Sperre abgelaufen ist, darf beim Rückweg zum Tischplan nicht
+    die Sperre des nächsten Geräts löschen. Abgelaufene Einträge bleiben in der `Map` liegen (höchstens einer je
+    Tisch), kein Aufräumen.
+  - **`POST …/orders` prüft die Sperre nicht:** Die Seite verlängert vor dem Senden, danach hält sie den Tisch sicher
+    für `lockDuration`; gegen einen Fehler der eigenen Seite schützt weiter `ordersUpdate` (alles oder nichts). So bleibt
+    `OrdersUpdate` unverändert. Erst nachrüsten, wenn es am echten Handy schiefgeht.
+  - **Zeit im Test:** `t.mock.timers.enable({ apis: ["Date"] })` und `tick`, damit `tableLock` keinen Parameter nur
+    für Tests braucht. Neu für den Nutzer: `Map` mit `get`/`set`/`delete`, `Date.now()`, `t.mock.timers`.
+  - Beleg: 8 kaputte Kopien (anderes Gerät bekommt den Tisch, kein Verlängern, läuft nie ab, Verlängern verlängert
+    nicht, jeder darf entsperren, Entsperren tut nichts, eine Sperre für alle Tische, läuft eine Millisekunde zu spät
+    ab); jede macht mindestens einen Test rot, jeder der 3 Tests fängt mindestens einen Fehler allein.
+  - **Offen, nächster Schritt:** Anbindung in `api.ts` als Vorher/Nachher zeigen, erst nach seinem Ja patchen.
+    Vorschlag: `serverCreate` und die Signatur von `requestHandle` bleiben, wie sie sind; `POST
+    /api/tables/:table/lock` mit der Gerätekennung als JSON-Text im Körper antwortet `200` mit `true` oder `false`,
+    `DELETE` derselben Adresse entsperrt und antwortet `200` mit `null`; ein Ablauftest mehr in `api.test.ts`, mit
+    eigenem Tisch. Die Seite verlängert, solange ein Tisch offen ist (kommt mit dem Bildschirm).
 - **`orders.ts` geteilt (Wunsch des Nutzers, 18.09.2026: „for me its long somehow“, „orderbook is good“):**
   `src/tables/orderbook.ts` (neu, 56 Zeilen) hält `orderbookCreate` und `transaction`, beide mit `export`, seine
   Kommentare wörtlich übernommen. `orders.ts` (186 Zeilen) hält die Typen `Order`, `OrderNew`, `OrdersUpdate` und
@@ -900,11 +979,11 @@ Antwort nur noch einen Satz und eine Zeile Code hatte.
 **Stand der Dateien am 19.09.2026:** `logged` hat jetzt einen ausgeschriebenen Typ, auf seinen ausdruecklichen
 Wunsch, dazu `Mock` im `import type` aus `node:test`:
 `const logged: Mock<((...data: any[]) => void) | (() => void)> = t.mock.method(console, "error", (): void => {});`
-Typpruefung gruen. **Zwei Tests sind rot, aus seinen eigenen Aenderungen**, absichtlich nicht repariert: Test 1
-vergleicht `[added.status, changed.status]` gegen `[200, 200, 200]`, Test 2 nimmt `equal` statt `deepEqual` fuer zwei
-Arrays („not reference-equal"). Test 3 ist gruen.
+Typpruefung gruen. Die zwei Tests, die aus seinen eigenen Aenderungen rot waren, hat er selbst repariert (20.09.2026
+geprueft, alle drei gruen): Test 1 vergleicht jetzt drei Status samt dem `GET`, Test 2 nimmt `deepEqual`.
 
-**Naechster Schritt (er, 19.09.2026 abends):** morgen neue Module bauen und durchgehen. Offen aus `api.test.ts`:
+**Naechster Schritt (20.09.2026):** Modul Tischsperre, Stand und offene Anbindung in `api.ts` oben bei „Tischsperre“;
+danach liest er `locks.ts` (Warum-Liste), dann der Bestellbildschirm. Offen aus `api.test.ts`:
 `deepEqual` mit `JSON.parse(JSON.stringify(menu))`, Port 0 und `AddressInfo`; aus `api.ts`: `await json(request)`
 und `as orders.OrdersUpdate`. Im Frust wechselt er ins Deutsche, dann deutsch antworten.
 
@@ -1008,12 +1087,15 @@ ihren Tests steht in der Übergabe am Anfang dieses Abschnitts.
 1. `tables`: Bestellungen je Tisch in SQLite. Reine Logik und Speicherung, keine HTTP-Anbindung, kein Bildschirm.
    Gebaut 16.09.2026, am 18.09.2026 auf eine Zeile je Portion umgestellt, Tests vom Nutzer abgenommen.
 2. Server-Schnittstelle: Katalog und Bestellungen als JSON über `node:http`, damit der Bildschirm sie holen kann.
-   `src/server/api.ts` und `test/api.test.ts` gibt es aus einem anderen Chat, aber nicht auf dem Stand von
-   `orders.ts`. **Das ist die nächste Aufgabe** (siehe Anfang dieses Abschnitts).
-3. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`. Vorher entscheiden, wie die
+   Gebaut und mit dem Nutzer durchgegangen (18. und 19.09.2026).
+3. Tischsperre: die Regel in `src/tables/locks.ts` ist seit 20.09.2026 gebaut, **die Anbindung in `api.ts` ist die
+   nächste Aufgabe** (siehe „Tischsperre“ am Anfang dieses Abschnitts). Vorgezogen, weil sie entschieden ist, am Server
+   wohnt, ohne Bildschirm testbar ist.
+4. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`. Vorher entscheiden, wie die
    Seite ausgeliefert wird (siehe „Aktueller Stand“: nicht vom eigenen Server, bei Bedarf Vite). Mit dem Bildschirm
-   kommen die Tischsperre, die Sonderregeln für Zitrone und Buffetpersonen.
-4. Danach nach dem Manifest: Rechnung, Zahlung, Druck, rksv, Tagesabschluss.
+   kommen die Sonderregeln für Zitrone und Buffetpersonen; für Browser-Code gibt es noch keine Stilregeln. Der
+   Tischplan braucht vom Server noch die Liste der belegten Tische, das Schieben eine Funktion in `orders.ts`.
+5. Danach nach dem Manifest: Rechnung, Zahlung, Druck, rksv, Tagesabschluss.
 
 ### Modul `tables`, Spezifikation (gebaut 16.09.2026, Entscheidungen bis 18.09.2026)
 

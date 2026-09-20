@@ -10,7 +10,7 @@
  */
 
 import { test, beforeEach, afterEach } from "node:test";
-import { deepEqual, equal } from "node:assert/strict";
+import { deepEqual } from "node:assert/strict";
 import { once } from "node:events";
 import { serverCreate } from "../src/server/api.ts";
 import { menu } from "../src/catalog/menu.ts";
@@ -67,12 +67,12 @@ test(
         const menuResponse: Response = await fetch(`${url}/api/menu`);
         deepEqual(await menuResponse.json(), JSON.parse(JSON.stringify(menu)));
 
-        const added: Response = await updateSend("14", { add: [colaBig2, redBull1], remove: [] });
-        const changed: Response = await updateSend("14", { add: [colaSmall1], remove: [colaBig1] });
-        deepEqual([added.status, changed.status], [200, 200]);
+        const validAdd: Response = await updateSend("14", { add: [colaBig2, redBull1], remove: [] });
+        const validChange: Response = await updateSend("14", { add: [colaSmall1], remove: [colaBig1] });
+        const validRead: Response = await fetch(`${url}/api/tables/14/orders`);
 
-        const read14: Response = await fetch(`${url}/api/tables/14/orders`);
-        deepEqual(await read14.json(), [colaBig1, redBull1, colaSmall1]);
+        deepEqual(await validRead.json(), [colaBig1, redBull1, colaSmall1]);
+        deepEqual([validAdd.status, validChange.status, validRead.status], [200, 200, 200]);
     }
 );
 
