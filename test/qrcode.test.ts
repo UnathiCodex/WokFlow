@@ -11,7 +11,7 @@
 
 import { test } from "node:test";
 import { equal, throws } from "node:assert/strict";
-import { qrcodeCreate } from "../src/./rksv/qrcode.ts";
+import { qrcodeCreate } from "../src/rksv/qrcode.ts";
 
 
 test("a signed receipt becomes data line, underscore, signature in Base64", (): void => {
