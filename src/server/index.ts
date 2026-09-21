@@ -1,10 +1,10 @@
 /**
  * ## WokFlow server
  *
+ * Start with `npm start`.
+ *
  * {@link serverCreate} creates the server that waits at `localhost:3000`
  * and answers each request with page file, menu, orders of a table.
- *
- * Start with `npm start`.
  *
  * - `./database.ts`: Manages the local SQLite database connection.
  * - `./api.ts`: Connects browser requests to the server.

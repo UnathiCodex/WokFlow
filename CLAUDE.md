@@ -1,1984 +1,1629 @@
-# Asia Wok Kassensystem: Projektinfos
+# Asia Wok POS system: project info
 
-Stand: 18.09.2026, an diesem Tag auf Wunsch des Nutzers gekürzt (vorher 2.280 Zeilen).
+Status: 21.09.2026. Translated into English and shortened on that day at the user's request.
 
-**Alle Meta-Infos stehen nur in dieser Datei.** Keine Handoff- oder Memory-Dateien anlegen, nichts
-verteilen. Neue Erkenntnisse und den aktuellen Stand hier nachtragen.
-**Kurz halten (Nutzer, 18.09.2026):** Jeder neue Chat liest die ganze Datei. Hier steht nur, was die Arbeit noch
-leitet: Regeln, Entscheidungen mit einem Satz Grund, offene Punkte, der Stand, der nächste Schritt. Kein Verlauf,
-keine überholten Entwürfe, nichts doppelt, nichts, was Code oder Git schon festhalten.
+**All meta info lives in this file only.** Do not create handoff or memory files. Add new findings and the current
+status here. Every new chat reads the whole file, so only what still guides the work belongs here: rules, decisions
+with one sentence of reason, open points, the status, the next step. No history, no outdated drafts, nothing twice,
+nothing that code or Git already records.
 
-## Zusammenarbeit
+## Collaboration
 
-- **Chat-Sprache (Nutzer, 16.09.2026):** Englisch bevorzugt, bei Bedarf Deutsch, etwa bei österreichischen
-  Fachbegriffen, Behörden, Steuern. Diese Datei ist deutsch.
-- **Der Nutzer diktiert (20.09.2026: „I'm using voice and therefore not everything is getting correctly
-  transcribed“):** Ein unsinniges Wort zuerst als Diktatfehler lesen. Bisher: Vite als „WIT“, „VIT“, „Witt“, „Vita“,
-  „wird“; JSON als „Jason“; TypeScript als „krebs kripps“, „kripp“; Fable als „Faber“; einmal kam eine ganze
-  Nachricht koreanisch an. Hängt an einem mehrdeutigen Satz eine Regel oder ein Patch, erst nachfragen, nicht raten.
-- **Der Nutzer ist völliger TypeScript-Anfänger mit Java-Erfahrung (16.09.2026).** Jeden neuen Begriff am
-  konkreten Code erklären, auch Grundlagen, gern wiederholt. Java-Vergleiche sind erwünscht, etwa die
-  Index-Signatur `{ [name: string]: Group }` wie `Map<String, Group>`. **Nie mit einem Begriff erklären oder
-  vergleichen, den er noch nicht kennt** (Nutzer verärgert, 16.09.2026: `Record` und `interface` kamen unerklärt
-  als Vergleich); Neues zuerst selbst erklären, am einfachsten Beispiel.
-- **Bibliotheksfunktionen am echten Aufruf erklären, nie mit der rohen Signatur aus `.d.ts` beginnen (17.09.2026):**
-  Die Signatur von `test` mit `TestFn`, `TestContext`, `done`, `Promise` auf einmal war dem Nutzer zu viel („This is
-  nothing but for a beginner“). Zweiter Anlauf: der erste echte Test, dazu eine vereinfachte Nachbildung im Stil von
-  `transaction` (Funktion bekommt eine Funktion und ruft sie in `try` auf). Die echte Signatur danach Stück für Stück,
-  als Zeilen mit Kommentar je Teil. Eine vereinfachte Nachbildung sofort neben die echte Signatur stellen und jede
-  Abweichung nennen (`?`, Parametername, Rückgabetyp), sonst hält der Nutzer sie später für die echte (17.09.2026:
-  „some shit signature which didn't have the question mark“). Gibt es Überladungen, zuerst alle zeigen und sagen,
-  welche der eigene Aufruf nutzt.
-- **Schwieriges von Grund auf aufbauen, mit winzigen Beispielen (Nutzer, 17.09.2026: „this explanation was good. So
-  save it“):** Kommt eine Erklärung nicht an, nicht weiter mit Worten, Signaturen oder Java-Vergleichen nachlegen,
-  sondern ganz unten neu anfangen und Schritt für Schritt hochbauen, je Antwort ein Schritt. Jedes Beispiel wenige
-  Zeilen, Namen aus WokFlow (`"Cola"`), Ergebnis als Kommentar hinter jeder Zeile (`// Article: Cola`), Fehlertexte
-  wörtlich wie in IntelliJ und vorher mit `tsc` und `node` in einer Kopie im Scratchpad geprüft. Vorbild, warum eine
-  Test-Lambda weniger Parameter haben darf als `TestFn` anbietet: (1) reines JavaScript, `show(article)` mit einem,
-  zwei, null Argumenten, zu viele werden ignoriert, fehlende sind `undefined`; (2) dieselbe Funktion in TypeScript,
-  selbst aufgerufen muss die Anzahl stimmen, außer bei `?`; (3) `run(work)` ruft `work("Cola")`, übergebene Lambda
-  mit gleich vielen, weniger, mehr Parametern: weniger passt, mehr ist ein Fehler. Vorher gescheitert: Worte über
-  Aufrufer und Richtung, die `forEach`-Signatur mit vier Parametern, der Satz „JavaScript erlaubt beides“.
-- **Schon erklärt, darauf aufbauen, nicht alles neu erklären** (nur Stichworte):
-  - Node und Server: Node als Laufzeit, npm und devDependencies, Module und Imports, HTTP-Kopf und Inhalt,
-    `setHeader`/`end`/`write`, Ports und localhost, UTF-8, Vererbung, IntelliJs getrennte Prüfungen für Code und
-    Kommentar-Links, `request.url`, `readFileSync`, relative Pfade ab dem Startordner, `import.meta.dirname`.
-  - TypeScript: `type`, Objekttyp, Union-Typ, Index-Signatur, `Record`, `Map`, `interface` (WokFlow nutzt `type`),
-    `import type`, `typeof`, `===`, Narrowing (`Array.isArray` engt ein, `Number.isInteger` nicht), Template
-    Literals, Spread `...`, Kurzschreibweise `{ tea }`, Hoisting, `const`/`let`, Semikolons, Komma nach dem letzten
-    Eintrag, Shadowing, JSDoc-Tags, `//#region`, Array statt „Liste“, Dinero-Optionen, Strg+Klick, Strg+P, `number`
-    wie Javas `double` (kein `int`, nur `bigint`).
-  - Tests mit `node:test`: `test(name, lambda)` statt `@Test`, fehlschlagen heißt werfen, `?` am Parameter, `TestFn`
-    als Funktionsform wie `work: () => void`, `t: TestContext` wie `order` bei `forEach`, Lambdas mit weniger
-    Parametern, Rückgabetyp `void` oder `Promise<void>`, `undefined` gegen `null`, die vier Überladungen von `test`,
-    `done`, Funktionen als Werte, `interface` und `type` verschwinden beim Ausführen, `any` gegen `unknown`, Typ vom
-    Zieltyp, `deepEqual` mit und ohne `/strict`, `:memory:` und `databaseTest`, `import * as`, `throws` mit
-    Suchmuster `/…/` gegen Text, warum Tests überhaupt (ein Test ist das aufgeschriebene Klicken: nach jedem Umbau
-    von `menu.ts` sah er in einer Sekunde grüne Zeilen, statt Server und Handy zu starten). Offen: `Promise`,
-    `node --test`.
-  - SQLite: `StatementSync` mit `run`/`get`/`all` (`run` liefert nur `{ changes, lastInsertRowid }`), jede einzelne
-    Anweisung ist schon eine Transaktion, `BEGIN`/`COMMIT`/`ROLLBACK` an der echten SQL-Folge, ohne `ORDER BY` ist
-    keine Reihenfolge zugesagt (wie beim Durchlaufen einer `HashMap`), SQL-`AS` gegen TypeScript-`as`, `IS` gegen
-    `=` (die Mischung im Code bleibt, Nutzer: „nevermind“), `!==` gegen `!=`, `COUNT` mit `GROUP BY`, `LIMIT ?`, `IN (SELECT …)` (Nutzer, 18.09.2026: in einer anderen
-    Session durchgegangen und verstanden).
-  - Git: Staging-Bereich, `-m`/`-M`, Branch als Lesezeichen, `parent`, Abzweigung, `origin/main`, `-u`, lokale gegen
-    allgemeine `.gitconfig`, `refs/heads/main`, Push (auch abgelehnt: `fetch first`, `non-fast-forward`), `fetch`,
-    `merge`, `pull` als `fetch` plus `merge`, fast-forward, blob-tree-commit, `HEAD`, detached HEAD. Offen: Konflikt,
-    Zusammenarbeit praktisch üben. Schrittweise Animationen mit „Weiter“ kommen sehr gut an; einfacher sprechen,
-    für Grundideen Buchstaben A, B, C statt Commit-Kennungen.
-- **Kurz, in Schritten (Nutzer, 17.09.2026: „Your explanation is still too long“):** Höchstens drei bis vier Sätze,
-  ein Gedanke, höchstens eine Frage; mehr nur auf Wunsch. Keine unerklärten Fachwörter. Eine Erklärung ist eine
-  Folge kleiner Schritte, je Antwort genau einer: ein winziges Beispiel, ein bis zwei Sätze, dann „Questions?“ und
-  warten. Nie mehrere Teile eines Ausdrucks in einer Antwort erklären, etwa bei `flatMap`: Schritt 1 nur `flat` an
-  zwei Arrays, Schritt 2 `flatMap`, Schritt 3 `Object.values`, Schritt 4 alles zusammen.
-- **Beispielcode immer vollständig zeigen (Nutzer, 19.09.2026: „you have to show me full code always and not that I
-  have to scroll up“):** Jede Antwort mit Code zeigt das ganze lauffähige Beispiel samt allen Funktionen, die es
-  benutzt, nie nur den geänderten Teil mit Verweis nach oben. Kommentare hinter den Zeilen nennen das Ergebnis und
-  wann es erscheint („after one second, both together“), nie den Ablauf. Will er wissen, was Node tut, dann als
-  nummerierte Liste unter dem Code, Zeile für Zeile von oben nach unten (kam am 19.09.2026 gut an: „clear“).
-- **Verschärft (Nutzer, 18.09.2026 abends: „Your answer is still a little bit too long … patch it harder“; weiche
-  Regel, aber der Normalfall):** Vor dem Senden zählen: höchstens vier Sätze und höchstens ein Codeblock oder eine
-  Liste, nicht beides mehrfach. Antwort, Beleg, Empfehlung und Frage sind vier Stücke, nicht eine Antwort: erst die
-  Antwort auf die gestellte Frage, der Rest auf „weiter“. Verstoß: auf „why do we need objectRead, updateRead,
-  orderNewRead“ kamen Erklärung, Liste, Versuch mit 14 kaputten Anfragen, neue Codezeile, Erklärung von `as`,
-  Empfehlung und Frage in einer Antwort. Richtig wäre gewesen: zwei Sätze, wofür die drei da sind, dann „Questions?“.
-- **Gilt für jede Antwort, auch Berichte und Übergaben (Nutzer, 18.09.2026: „too much, paragraph should be SHORT
-  … chunking, if there is more then offer continue“):** kurze Absätze, nur das erste Stück zeigen, dann anbieten
-  weiterzumachen. Langes gehört in diese Datei, in den Chat nur der Hinweis darauf. Verstoß: eine Übergabe mit sechs
-  Abschnitten in einer Antwort.
-- **Weiche, aber sehr enge Obergrenze für jede Antwort (Nutzer, 18.09.2026 abends, zum wiederholten Mal: „your
-  answers are too long … Even your answer currently is too long“; danach: „not a hard limit but rather a soft limit
-  but really really tight“):** Richtwert etwa sechs kurze Zeilen Text und dazu höchstens ein kleiner Codeblock oder
-  eine kleine Tabelle; mehr nur, wenn die Sache es wirklich braucht, etwa ein Codeblock, den er ausdrücklich verlangt. Stellt er mehrere Fragen, nur die erste beantworten und die übrigen
-  in einer Zeile als „kommt danach“ nennen. Keine Begründungen, Nebenbemerkungen, Alternativen, wenn er nicht danach
-  fragt. Verstöße an diesem Abend: Antworten mit drei Überschriften, Tabellen mit acht Zeilen, Seitenbemerkung zu
-  Java-Backslashes, die eine halbe Stunde Verwirrung kostete.
-- **Nochmals enger (Nutzer, 20.09.2026: „the soft limit is getting harder, not hard limit, but still respected“):**
-  Die weiche Grenze gilt auch für Bauberichte. Die Dateitabelle darf stehen, dazu höchstens zwei Sätze;
-  Prüfergebnis, Startbefehle, Ausblick kommen erst auf „weiter“. Verstoß: der Bericht nach dem Umbau mit Tabelle,
-  Prüfabsatz, Befehlen, Ausblick in einer Antwort.
-- **Fertig ist eine Datei erst, wenn er es sagt (Nutzer, 20.09.2026, verärgert: „nobody said that page … ts is done.
-  Nothing is done which should change from the last commit to now“):** Claude erklärt nie eine Datei oder ein Stück
-  für erledigt, auch nicht nach Fragen dazu. Offen ist alles, was sich seit dem letzten Commit geändert hat, bis er
-  es abnimmt; Claude fragt, wo er weiterlesen will, und schlägt höchstens die nächste Stelle vor.
-- **Langsam, ein Thema je Antwort (Nutzer, 18.09.2026: „too much requests … we have to sort it out slowly
-  again“, „I don't know what you removed and what not“):** Beim ersten Lesen von `api.ts` stellte er in fünf
-  Nachrichten sieben Fragen; Claude antwortete auf alle zugleich und patchte nebenbei. Richtig: nur ein Thema je
-  Antwort, die übrigen Fragen in einer Zeile als „wartet“ nennen. Nach jedem Patch jede geänderte Zeile wörtlich
-  zeigen, Datei für Datei: Eine nur beschriebene Entfernung („the `Dinero` line“) verstand er falsch und ließ sie
-  zurückholen, obwohl er sie selbst wollte. **Auch der Patch-Bericht kommt in Stücken (Nutzer, 18.09.2026: „this is
-  too much to digest … you should explain this chunk by chunk“):** Stück 1 ist nur die eine Zeile, die das
-  Verhalten ändert, dazu ein Satz zum Testergebnis; danach je Antwort ein weiteres Stück (was entfernt wurde, was
-  sich im Test änderte). Verstoß: ein Bericht mit vier Abschnitten nach dem Menü-Patch.
-- **Was ankommt (16. bis 18.09.2026):** Konkretes aus dem Restaurant mit Cola und Red Bull, nummerierte Schritte,
-  die echte SQL-Folge (`BEGIN`, zwei `INSERT`, `COMMIT`), ein kleiner Versuch im Arbeitsspeicher, eine
-  Gegenüberstellung „heutiger Code“ gegen „anderer Weg“. Nicht angekommen: Abstraktes („SQLite weiß nicht, welche
-  Anweisungen zusammengehören“), „Phone A/B“, Spezifikation und Vorher/Nachher in einer Antwort. Erst die Funktionen
-  erklären, die einen Helfer benutzen, dann den Helfer (Nutzer, 16.09.2026). Bei Tests besonders kleinschrittig, der
-  Nutzer nennt sich dort „really unfamiliar“.
-- **„Überall“ heißt im ganzen Projekt (Nutzer, 17.09.2026):** Bei „everywhere“ alle Dateien unter `src/` und `test/`
-  durchsuchen, nicht nur die Datei, um die es gerade ging.
-- **Ein Wort, eine Bedeutung (16.09.2026):** „order“ hieß im ersten Bau der offene Vorgang, im Prototyp die Position;
-  der Nutzer verstand den Code deshalb nicht. „table“ ist im Code der Tisch; Datenbanktabellen im Chat immer „database
-  table“ nennen, bei Verwechslung auf Deutsch trennen, Tisch gegen Tabelle.
-- **Keinen Gegensatz behaupten, wo keiner ist (Nutzer, 20.09.2026, zu „Daten“ gegen „Dateien“: „nicht so tun, als
-  wären es völlig unterschiedliche Sachen“):** Eine Datei ist Daten unter einem Namen auf der Platte. Ein Wortpaar,
-  das nur in WokFlow als Abkürzung dient, ausdrücklich so einführen. Hier: „die Seite“ (liegt fertig im Ordner, wird
-  unverändert verschickt) gegen „die Antworten der API“ (baut unser Code je Anfrage aus der Datenbank).
-- **Eine Frage oder ein Wunsch ist kein Auftrag (Nutzer, 16.09.2026):** In Dateien nur auf ausdrückliche Anweisung
-  schreiben („patch“, „mach das“, „rename …“). Fragt der Nutzer, wo etwas ist oder woher etwas kommt, oder sagt er,
-  wie er etwas haben will („I want to do it above …“), nur antworten und den Code im Chat zeigen; er baut solche
-  Stellen oft selbst. Neue Dateien nur nach ausdrücklichem Ja.
-- **Stil des Nutzers erhalten:** Was er selbst schreibt oder korrigiert, etwa Code, Namen, Kommentare, nicht glätten,
-  nicht zurückbenennen, entfernte Wörter nicht wieder einsetzen. Vor Änderungen den aktuellen Stand lesen,
-  Anpassungen auf die betroffenen Angaben begrenzen.
-- Aufzählungsstil des Nutzers (15. und 16.09.2026): genau zwei Elemente mit `und`/`and` verbinden, etwa
-  `Reads and writes`; ab drei Elementen gleichmäßig, etwa `A, B, C`, `A-B-C`, `A oder B oder C`, ohne
-  abschließendes `und`/`and` und ohne ein nur beim letzten Element ergänztes `oder`/`or`. Gilt im Chat, in
-  Kommentaren, in der Dokumentation.
-- Gesprächsvorbereitungen und Checklisten nur kurz im Chat zeigen, nicht in CLAUDE.md ablegen (15.09.2026).
-  Unter Zeitdruck nur die wichtigsten Punkte.
-- TOUCHIT dient zum Vergleich von Abläufen und Schwächen, nie als Bauvorlage; keinen Hersteller-Code
-  kopieren. Vorschläge mit dem bisherigen Ablauf vergleichen und am tatsächlichen Restaurant begründen.
-- Mehrere Sessions schreiben parallel in diese Datei: vor Änderungen frisch lesen, gezielt bearbeiten, den gültigen
-  Stand festhalten; Überholtes ersetzen statt Verlauf anzuhängen.
-- Hilfswerkzeuge nur vorübergehend nutzen und eigene Hilfsdateien danach entfernen.
+**Good explaining comes before everything else (user, 21.09.2026: “You have to focus on good explaining. So this is
+likely more important than good product, good code … my skill is developing most if you explain good”):** His skill
+grows most through good explanations; that weighs more than a fast product or pretty code. Think every explanation
+through beforehand so he can grasp it “fast and good and structured and easygoing”. Check every word before sending:
+a word he probably does not know is explained first, in one sentence, at the restaurant or at his code, and only used
+afterwards. With HTML, CSS, browser he is a complete beginner, so explain the basics there too. Violation on
+21.09.2026: “screen”, “switch”, “page”, “reload”, “memory of the phone” unexplained in one answer.
 
-## Coden
+- **Chat language:** English preferred, German where needed, for example with Austrian technical terms, authorities,
+  taxes. This file is English.
+- **Answers stay very short (many times, 17. to 21.09.2026, hardest: “not a hard limit but rather a soft limit but
+  really really tight”):** about six short lines plus at most one small code block or one small table. One thought
+  per answer, then “Questions?” and wait. Answer, evidence, recommendation and question are four pieces, not one
+  answer: first the answer to the question asked, the rest on “next”. Several questions: answer the first, name the
+  others in one line as waiting. No reasons, side remarks or alternatives unless he asks. Applies to build reports
+  and handoffs too: the file table plus two sentences, test result and commands on “next”.
+- **Exception, lists complete right away (21.09.2026: “wenn vollständig verlangt ist, dann kannst du eben auch länger
+  antworten, aber sonst immer so kurz wie möglich”):** A list, table or comparison he asks for to check comes
+  complete and checked the first time. Everything else: one piece, the rest waits, “Dialog besser als quasi
+  Monolog”.
+- **The user dictates (20.09.2026: “I'm using voice and therefore not everything is getting correctly
+  transcribed”):** Read a nonsensical word as a dictation error first. So far: Vite as “WIT”, “Witt”, “Vita”,
+  “wird”; JSON as “Jason”; TypeScript as “krebs kripps”; Fable as “Faber”; once a whole message arrived in Korean.
+  If a rule or a patch hangs on an ambiguous sentence, ask first, do not guess.
+- **The user is a complete TypeScript beginner with Java experience.** Explain every new term at the concrete code,
+  basics too, gladly repeated. Java comparisons are welcome, for example the index signature
+  `{ [name: string]: Group }` like `Map<String, Group>`. **Never explain or compare with a term he does not know
+  yet**; explain the new thing itself first, at the simplest example.
+- **Explain library functions at the real call, never at the raw signature from a `.d.ts` file:** first his own call,
+  then a simplified rebuild next to the real signature with every deviation named (`?`, parameter name, return
+  type), otherwise he later takes the rebuild for the real thing. With overloads show all of them and say which one
+  his call uses.
+- **Build hard things from the ground up, with tiny examples (17.09.2026: “this explanation was good. So save it”):**
+  If an explanation does not land, do not add more words or comparisons, start again at the very bottom, one step per
+  answer. Every example a few lines, names from WokFlow (`"Cola"`), the result as a comment behind every line
+  (`// Article: Cola`), error texts verbatim as in IntelliJ and checked beforehand with `tsc` and `node` in a copy in
+  the scratchpad.
+- **Always show example code in full (19.09.2026: “you have to show me full code always and not that I have to scroll
+  up”):** including every function it uses, never only the changed part. Comments behind the lines name the result
+  and when it appears, never the flow. What Node does goes under the code as a numbered list, line by line.
+- **On request, quote before explaining, for rest of that chat (user, 21.09.2026: “sometimes I'm in bed, so I
+  don't see this”):** as soon as he asks for it, every explanation starts with file name and the lines it talks
+  about as a code block, before the first word of explanation. Holds until chat ends, also for single lines.
+- **One topic per answer (18.09.2026: “too much requests … we have to sort it out slowly again”):** other questions
+  named in one line as waiting. After every patch show every changed line verbatim, file by file; a removal that was
+  only described he understood wrongly. The patch report comes in pieces too: piece 1 is the one line that changes
+  the behaviour plus the test result.
+- **A file is finished only when he says so (20.09.2026: “nobody said that page … ts is done”):** Claude never
+  declares a file or a piece done. Everything changed since the last commit is open until he accepts it; Claude asks
+  where he wants to read on and at most suggests the next place.
+- **A question or a wish is not an order (16.09.2026):** Write into files only on an explicit instruction (“patch”,
+  “do that”, “rename …”). If he asks where something is or says how he wants it, only answer and show the code in the
+  chat; he often builds such places himself. New files only after an explicit yes.
+- **Keep the user's style:** What he writes or corrects himself, code, names, comments, is not smoothed out, not
+  renamed back; removed words are not put back in. Read the current state before changes and limit adjustments to the
+  affected entries.
+- **What lands:** concrete things from the restaurant with Cola and Red Bull, numbered steps, the real SQL sequence
+  (`BEGIN`, two `INSERT`, `COMMIT`), a small experiment in memory, a comparison “today's code” against “other way”.
+  What did not land: abstract sentences, “Phone A/B”, specification and before/after in one answer. Explain the
+  functions that use a helper first, then the helper. With tests in especially small steps, there he calls himself
+  “really unfamiliar”.
+- **One word, one meaning (16.09.2026):** “order” meant the open process in the first build and the position in the
+  prototype, so he did not understand the code. “table” is the table in the restaurant; always call database tables
+  “database table” in the chat, and separate them in German if they get mixed up, Tisch against Tabelle.
+- **Do not claim a contrast where there is none (20.09.2026 on “Daten” against “Dateien”):** a file is data under a
+  name on the disk. A word pair that is only WokFlow shorthand is introduced as such. Here: “the page” (lies finished
+  in the folder, is sent unchanged) against “the answers of the API” (our code builds them per request from the
+  database).
+- **The user's enumeration style:** join exactly two elements with `und`/`and`, for example `Reads and writes`; from
+  three elements on evenly, `A, B, C` or `A-B-C` or `A oder B oder C`, without a closing `und`/`and`. Applies in the
+  chat, in comments, in the documentation.
+- **“Everywhere” means the whole project:** search all files under `src/` and `test/`, not only the current file.
+- TOUCHIT serves to compare workflows and weaknesses, never as a build template; do not copy any manufacturer code.
+- Several sessions write into this file in parallel: read it fresh before changes, edit in a targeted way, replace
+  what is outdated instead of appending history. Helper files of Claude's own get removed afterwards.
 
-- So wenig Code, Dateien, Einstellungen und Bibliotheken wie nötig. Keine Vorratslösungen oder
-  auskommentierten Reste. Bei einem Konflikt gewinnt Lesbarkeit, sonst Kürze. Jede Funktion hat eine Aufgabe
-  (Nutzer, 17.09.2026).
-- **Nichts doppelt absichern, verbindlich (Nutzer, 18.09.2026 abends: „you are a little bit over engineering it“,
-  „waste of code waste of time“, „the evidence shows me that you didn't keep attention on clean code or short code“):**
-  Sorgfalt und gute Fehlertexte bleiben Pflicht, aber an genau einer Stelle, dort wo die Regel wohnt (bei
-  Bestellungen `orders.ts`). Vor jeder neuen Prüfung, jedem `try`, jedem Typ, jeder Funktion, jedem Feld einer
-  Antwort drei Fragen, und nur bei dreimal Ja bauen:
-  1. Fängt das heute noch keine andere Stelle ab? Nachsehen und mit einer kaputten Kopie im Scratchpad belegen,
-     nicht vermuten.
-  2. Braucht es ein Aufrufer, den es heute gibt? „Könnte das Handy später brauchen“ zählt nicht.
-  3. Ändert es ein Ergebnis, das jemand sieht (gespeicherte Daten, Anzeige, Protokoll)? Nur ein anderer Status oder
-     ein schönerer Text für einen Fall, der ein Fehler der eigenen Seite wäre, zählt nicht.
-  Beim Abgeben eines Moduls jede Funktion probeweise streichen: Bleiben alle Tests grün und das Verhalten gleich, ist
-  sie zu viel und kommt gar nicht erst in die Abgabe. Beleg vom 18.09.2026, alles von Claude gebaut und an einem
-  Abend wieder entfernt, `api.ts` von 176 auf 113 Zeilen: das `try` mit Status `400` (Fehler der eigenen Seite, `500`
-  mit Protokollzeile reicht), die offenen Bestellungen als Antwort des `POST` (niemand liest sie), die Formprüfung
-  `objectRead`/`updateRead`/`orderNewRead` (14 kaputte Anfragen enden mit und ohne sie gleich, `orders.ts` weist alles
-  ab). Für den Echtbetrieb nötige Härtung steht als Zeile unter „Sicherheitsrunde“, nicht vorab im Code.
-- **Erst einfach, Tempo später (Nutzer, 18.09.2026: „just try to code as easy as possible. And if the speed is
-  good, then we just let this be“):** zuerst den einfachsten Weg bauen und am echten Handy ausprobieren;
-  Zwischenspeichern, Cache-Einstellungen und ähnliche Feinheiten erst, wenn etwas spürbar langsam ist. Solche
-  Themen im Chat nicht vorab ausbreiten: Mit „was der Browser speichert und was nicht“ konnte er nichts anfangen.
-- **Ganze Module statt Zeile für Zeile (Entscheidung des Nutzers, 16.09.2026 abends, ersetzt die Regel „eine Zeile
-  je Schritt“):** Claude baut ein Modul komplett samt Tests, der Nutzer liest es danach und fragt, was er nicht
-  erklären kann (Warum-Liste). Ablauf, Schutz des Bestehenden, Tiefe der Fragen unter „Nächster Chat“ ab
-  „Arbeitsweise je Modul“.
-  Weiter gültig: Änderungen an bestehenden Dateien zuerst als Vorher/Nachher im Chat zeigen (Nutzer: „Show me the
-  code here first, if I understand it, then you patch it“). Lern- und Beispielcode nur im Chat, keine Beispieldateien
-  oder Beispielordner (14.09.2026).
-- Befehle wie `npm install`, `npm start`, Tests und Serverstart zuerst erklären und dem Nutzer geben;
-  nur auf ausdrücklichen Auftrag ausführen. Er möchte diese Schritte selbst lernen. Zur eigenen Kontrolle nach
-  Änderungen liefen am 16.09.2026 ohne Einwand eine Typprüfung und ein Ladeversuch, beide im Ordner `WokFlow`:
-  `node_modules/.bin/tsc.cmd --noEmit --allowImportingTsExtensions --module nodenext --target esnext --types node src/server/index.ts test/orders.test.ts`
-  (die Optionen braucht es ohne `tsconfig.json`, seit TypeScript 6 ist `types` standardmäßig leer) und
-  `node -e 'import("./src/catalog/menu.ts").then(m => console.log(Object.keys(m.menu)))'`.
-  Gründlich prüfen wie am 18.09.2026: Typprüfung, Tests, dazu absichtlich kaputte Kopien der Quelldatei im
-  Scratchpad; jeder eingebaute Fehler muss mindestens einen Test rot machen. Nie in den Ordnern des Nutzers
-  ausprobieren.
-- **Node 26 führt `.ts` direkt aus (Type Stripping):** kein Kompilieren, aber ein laufender Server liest Code nur
-  beim Start. Deshalb Typen immer mit `import type` importieren, sonst bricht Node beim Start ab („does not provide
-  an export named …“, zweimal passiert). Kein `enum` und kein `namespace` („not supported in strip-only mode“),
-  stattdessen Union-Typen wie `"pure" | "water"`.
-- Englisch: Namen von Variablen, Funktionen, Dateien, feste Werte im Code (Nutzer,
-  16.09.2026), dazu JSDoc. Deutsch: sichtbare Texte. Artikelnamen immer
-  deutsch und chinesisch, keine englischen Artikelübersetzungen. `name.de` und `name.zh` sind die einzige Quelle für
-  Taste, „Bestellt“, Rechnung, Druck; nichts aus Bezeichnern ableiten.
-- **Namensstil des Nutzers (16.09.2026):** camelCase, das Gemeinsame zuerst, dann das Unterscheidende, etwa
-  `buffetSmall`, `buffetBig`, `variantsBottle`, `variantPieces`. Gruppenschlüssel in `menu.ts` sind die Listennamen
-  (`soups`, `warmDrinks`). Er benennt oft selbst um (`variantsFull`, `menu.ts`); nicht zurückbenennen.
-  Funktionen und Typen ebenso, Substantiv zuerst, dann Verb oder Merkmal (Nutzer, 16.09.2026, ausdrücklich zum
-  Ausprobieren, Rückbau auf Wunsch): `orderbookCreate`, `orderAdd`, `orderRemove`, `ordersUpdate`, `ordersRead`,
-  `tableClose`, `databaseOpen`, im Test `databaseTest`, Typ `OrderNew`; Nachschlagen und Umwandeln mit `Of`
-  (`entryOf`, `orderOf`, Namen von ihm). Unüblich in TypeScript, schadet aber nicht; Namen aus
-  Bibliotheken bleiben, wie sie sind (`createServer` und `readFileSync`).
-- **Objekt oder Kennung (Nutzer, 17.09.2026, in `orders`):** Ist das Objekt gemeint, heißt es `article` bzw.
-  `variant`; ist der deutsche Name als Kennung gemeint, `articleId` bzw. `variantId`. In der Datenbanktabelle
-  `article_id` und `variant_id` wie `table_id`; `ordersRead` benennt sie mit `AS articleId` und `AS variantId` um.
-- **camelCase in TypeScript, Unterstrich nur in der Datenbank (Nutzer, 17.09.2026: „you should be consistent“):** im
-  Code `tableId`, nie `table_id`; Spalten in SQL `table_id`, weil SQLite Groß- und Kleinschreibung in Namen
-  ignoriert (`tableId` und `tableid` sind dieselbe Spalte, geprüft).
-- Ordner nach Aufgaben, Dateien nach Inhalt, keine Sammeldateien wie `types.ts` oder `types/` (15.09.2026):
-  `src/catalog/` Artikelbestand, `src/tables/` Tische und ihre Bestellungen, `src/server/` Server. Typen stehen bei
-  ihren Daten.
-- Typen ausdrücklich an Konstanten, Parametern und Rückgabewerten, zum Lernen erwünscht; `type` statt `interface`.
-  Eine Konstante, die eine Lambda hält, verdoppelt mit ausgeschriebenem Funktionstyp die Parameterliste (`const
-  errorRequest: (error: unknown) => void = (error: unknown): void => …`); das hat den Nutzer am 18.09.2026 sehr
-  gestört („the name is doubled“). Deshalb Lambdas ohne Namen direkt an der Stelle lassen, wie in `transaction` und
-  `serverCreate`; ob eine benannte Lambda den Typ links weglassen darf, ist nicht entschieden.
-  Doppelte Anführungszeichen und vier Leerzeichen Einrückung. Kurze verschachtelte Objekttypen in einer Zeile,
-  etwa `name: { de: string; zh: string; } | null;`.
-- **Formatierung über `WokFlow/.editorconfig`** (16.09.2026, jede Einstellung mit englischem `#`-Kommentar, Namen
-  in IntelliJ 2026.1 geprüft): vier Leerzeichen, Leerzeichen innerhalb `{ }` bei Objekten, Objekttypen, Imports,
-  bis zu zwei Leerzeilen, kein `max_line_length` (Nutzer, 17.09.2026). Fehlt noch etwas, dort ergänzen, nicht in
-  `.idea`. **Komma nach dem letzten Eintrag:** bei Listen über mehrere Zeilen ja (Arrays, Objekte, Imports,
-  Argumente, Parameter), bei einzeiligen nein, nie nach `...rest`; in `.editorconfig` als
+**Already explained, build on it, do not explain again** (keywords only):
+
+- Node and server: Node as runtime, npm and devDependencies, modules and imports, HTTP head and content,
+  `setHeader`/`end`/`write`, ports and localhost, UTF-8, inheritance, IntelliJ's separate checks for code and comment
+  links, `request.url`, `readFileSync`, relative paths from the start folder, `import.meta.dirname`.
+- TypeScript: `type`, object type, union type, index signature, `Record`, `Map`, `interface` (WokFlow uses `type`),
+  `import type`, `typeof`, `===`, narrowing, template literals, spread `...`, short form `{ tea }`, hoisting,
+  `const`/`let`, semicolons, comma after the last entry, shadowing, JSDoc tags, `//#region`, array instead of “list”,
+  Dinero options, Ctrl+click, Ctrl+P, `number` like Java's `double` (no `int`, only `bigint`).
+- Tests with `node:test`: `test(name, lambda)` instead of `@Test`, failing means throwing, `?` at the parameter,
+  `TestFn`, `t: TestContext`, lambdas with fewer parameters, return type `void` or `Promise<void>`, `undefined`
+  against `null`, the four overloads of `test`, `done`, functions as values, `interface` and `type` disappear when
+  running, `any` against `unknown`, `deepEqual` with and without `/strict`, `:memory:` and `databaseTest`,
+  `import * as`, `throws` with a search pattern, why tests at all.
+- SQLite: `StatementSync` with `run`/`get`/`all`, every single statement is already a transaction,
+  `BEGIN`/`COMMIT`/`ROLLBACK`, without `ORDER BY` no order is promised (like walking through a `HashMap`), SQL `AS`
+  against TypeScript `as`, `IS` against `=`, `!==` against `!=`, `COUNT` with `GROUP BY`, `LIMIT ?`, `IN (SELECT …)`.
+- Git: staging area, `-m`/`-M`, branch as a bookmark, `parent`, branching off, `origin/main`, `-u`, local against
+  global `.gitconfig`, `refs/heads/main`, push (`fetch first`, `non-fast-forward`), `fetch`, `merge`, `pull`,
+  fast-forward, blob-tree-commit, `HEAD`, detached HEAD. Open: conflict, practising collaboration for real.
+  Step-by-step animations with “Next” land very well; for basic ideas use letters A, B, C instead of commit ids.
+
+## Coding
+
+- As little code, as few files, settings and libraries as needed. No stock solutions, no commented-out leftovers. In
+  a conflict readability wins, otherwise brevity. Every function has one task.
+- **Never safeguard twice, binding (user, 18.09.2026: “you are a little bit over engineering it”, “waste of code
+  waste of time”):** Care and good error texts stay mandatory, but at exactly one place, where the rule lives (for
+  orders `orders.ts`). Before every new check, every `try`, every type, every function, every field of an answer,
+  three questions, and only build on three times yes:
+  1. Does no other place catch this today? Look and prove it with a broken copy in the scratchpad, do not guess.
+  2. Does a caller that exists today need it? “The phone might need it later” does not count.
+  3. Does it change a result someone sees (saved data, display, log)? Only another status or a nicer text for a case
+     that would be a bug on our own side does not count.
+
+  When handing over a module, try deleting every function: if all tests stay green and the behaviour is the same, it
+  is too much and does not go into the handover. Evidence from 18.09.2026, all built by Claude and removed again in
+  one evening, `api.ts` from 176 to 113 lines: the `try` with status `400`, the open orders as the answer of the
+  `POST`, the shape checks `objectRead`/`updateRead`/`orderNewRead`. Hardening that real operation needs is a line
+  under “Security round”, not code in advance.
+- **Simple first, speed later (user, 18.09.2026: “just try to code as easy as possible. And if the speed is good,
+  then we just let this be”):** build the simplest way first and try it on the real phone; caching and similar
+  finery only when something is noticeably slow. Do not spread such topics out in the chat beforehand.
+- **Whole modules instead of line by line (user, 16.09.2026):** Claude builds a module completely including tests,
+  the user reads it afterwards and asks what he cannot explain (why-list). Still valid: show changes to existing
+  files as before/after in the chat first (“Show me the code here first, if I understand it, then you patch it”).
+  Learning and example code only in the chat, no example files or folders.
+- Explain commands like `npm install`, `npm start`, tests and server start first and give them to the user; run them
+  only on an explicit order. He wants to learn these steps himself. For Claude's own check after changes: type check
+  and tests, plus deliberately broken copies of the source file in the scratchpad; every planted error must turn at
+  least one test red. Never try things out in the user's folders.
+
+  ```bash
+  node_modules/.bin/tsc.cmd --noEmit --allowImportingTsExtensions --module nodenext --target esnext --types node src/server/index.ts test/orders.test.ts
+  ```
+
+  The options are needed because there is no `tsconfig.json`; since TypeScript 6 `types` is empty by default.
+- **Node 26 runs `.ts` directly (type stripping):** no compiling, but a running server reads code only at start.
+  So always import types with `import type`, otherwise Node stops at start (“does not provide an export named …”,
+  happened twice). No `enum` and no `namespace` (“not supported in strip-only mode”), union types like
+  `"pure" | "water"` instead.
+- English: names of variables, functions, files, fixed values in the code, plus JSDoc. German: visible texts.
+  Article names always German and Chinese, no English article translations. `name.de` and `name.zh` are the only
+  source for button, “Bestellt”, bill, print; never derive anything from identifiers.
+- **The user's naming style:** camelCase, the common part first, then what distinguishes, for example `buffetSmall`,
+  `buffetBig`, `variantsBottle`. Group keys in `menu.ts` are the list names (`soups`, `warmDrinks`). Functions and
+  types likewise, noun first, then verb or feature: `orderbookCreate`, `orderAdd`, `ordersUpdate`, `tableClose`,
+  `databaseOpen`, type `OrderNew`; lookup and conversion with `Of` (`entryOf`, `orderOf`). Unusual in TypeScript, but
+  it does no harm; names from libraries stay as they are (`createServer`, `readFileSync`). He often renames things
+  himself; do not rename them back.
+- **Object or id (user, 17.09.2026, in `orders`):** if the object is meant it is called `article` or `variant`; if
+  the German name as an id is meant, `articleId` or `variantId`. In the database table `article_id` and `variant_id`
+  like `table_id`; `ordersRead` renames them with `AS articleId` and `AS variantId`.
+- **camelCase in TypeScript, underscore only in the database (user, 17.09.2026: “you should be consistent”):** in the
+  code `tableId`, never `table_id`; columns in SQL `table_id`, because SQLite ignores upper and lower case in names.
+- Folders by task, files by content, no collection files like `types.ts` (15.09.2026): `src/catalog/` articles,
+  `src/tables/` tables and their orders, `src/server/` server. Types stand with their data.
+- Types written out explicitly at constants, parameters and return values, wanted for learning; `type` instead of
+  `interface`. A constant holding a lambda doubles the parameter list with a written-out function type; that
+  bothered him a lot (“the name is doubled”), so leave lambdas unnamed at the place where they are used, as in
+  `transaction` and `serverCreate`. Double quotes and four spaces of indentation. Short nested object types in one
+  line, for example `name: { de: string; zh: string; } | null;`.
+- **Formatting via `WokFlow/.editorconfig`** (every setting with an English `#` comment): four spaces, spaces inside
+  `{ }` at objects, object types, imports, up to two blank lines, no `max_line_length`. If something is missing, add
+  it there, not in `.idea`. **Comma after the last entry:** yes for lists over several lines (arrays, objects,
+  imports, arguments, parameters), no for single-line ones, never after `...rest`; in `.editorconfig` as
   `ij_typescript_enforce_trailing_comma = whenmultiline`.
-- **Tests (Nutzer, 17. und 18.09.2026; das Muster ist `test/orders.test.ts`):**
-  - Aufbau, von ihm am ersten Test vorgemacht: `test(` allein, darunter der Name in eigener Zeile, darunter die
-    Lambda, dann `);`. Kurze Lambda in einer Zeile mit Klammern, `(): void => { deepEqual(…); }`; längere mit
-    Klammern über mehrere Zeilen. Nach der Lambda kein Komma, wie im Beispiel des Nutzers, obwohl die Komma-Regel
-    oben eins verlangt und Strg+Alt+L es einfügen würde; offen, was gilt.
-  - **Der Name eines Tests beginnt mit einem Großbuchstaben, ohne Punkt am Ende („the name of a test should start
-    big“):** `"Sending saves all orders or none"`.
-  - **So viele Tests wie nötig, so wenige wie möglich:** ein Ablauftest für den Hauptweg („much better to go through
-    all the send“), dazu je ein kurzer Test für jede Regel, die der Ablauf nicht zeigen kann („alle oder keine“,
-    „freier Tisch“). Kein eigener Test für einen Randfall, der schon in einem anderen Test mitgeprüft wird oder keine
-    eigene Regel ist. Der Nutzer liest die Testnamen und einen Test ganz, nicht jeden Testkörper.
-  - **Länge von Codezeilen, weich (Nutzer, 20.09.2026, ersetzt die harten 100 vom 18.09.2026):** Maß ist die
-    senkrechte Randlinie in IntelliJ. Er hat sie selbst ausgemessen (Zeile mit `d` bis zur Linie gefüllt): Sie sitzt
-    bei 120 Zeichen; einen harten Umbruch hat er nicht eingestellt („there is no hard wrap“, „a bit soft“). Eine
-    Signatur mit 101 Zeichen hat er deshalb wieder in eine Zeile gezogen, ebenso zwei Konstanten mit 104 und 107.
-    Also: bis etwa 105 in einer Zeile lassen, erst deutlich darüber umbrechen, nie wegen ein paar Zeichen über 100.
-    Prüfen: `awk 'length($0) > 110'` über `src/` und `test/`. Umbruch, wenn nötig, in seiner
-    Form: ein Objekt als letztes Argument aufklappen, je Property eine Zeile, Komma nach der letzten (`updateSend("14",
-    {` … `});`, auch in `throws((): void => orders.ordersUpdate(database, "14", {` … `}), /quantity/);`); hat ein
-    Aufruf kein Objekt, steht der Funktionsname allein und jedes Argument in eigener Zeile (`deepEqual(` … `);`); eine
-    zu lange Konstante bricht nach dem `=` um wie `entries` in `menu.ts`; eine zu lange Signatur je Parameter eine
-    Zeile unter dem ersten.
-  - **Kein eigener Name für einen Wert, der nur einmal gebraucht wird (Nutzer, 18.09.2026 abends, zu `pizza1`: „just
-    for one time use, we don't need the extra“):** Die Pizza steht in `api.test.ts` direkt im Aufruf.
-  - **Testbestellungen stehen einmal in `test/setup.ts`, als einzelne `export const colaBig1: Order = orderOf(…)`
-    (seine Entscheidung, 18.09.2026 abends, gegen Claudes Rat „keep“):** Jede Testdatei importiert neben
-    `databaseTest` nur die Namen, die sie braucht, ohne Präfix; **Ausnahme von der Importregel „ab vier Namen `import *
-    as`“, nur für Testdaten.** Durchprobiert und von ihm verworfen: ein Objekt `ordersTest`, dann `ot`, dann `odt`
-    („that's also not beautiful. So maybe just import those five“); der Präfix machte 13 Zeilen länger als 100
-    Zeichen. Die Importzeile in `orders.test.ts` hat er selbst in einer Zeile gelassen (104 Zeichen), nicht umbrechen.
-    **`{ add: […], remove: […] }` steht in einer Zeile, wo es unter 100 Zeichen passt („more beautiful“); aufgeklappt
-    nur in den drei `throws` von `orders.test.ts`. `deepEqual` nie umbrechen („I don't like that some deep equals are
-    inside it and some don't“), lieber kürzere Namen oder zwei `deepEqual`.**
-  - **`beforeEach` und `afterEach` bekommen genau eine `//`-Zeile direkt darüber (Nutzer, 18.09.2026 abends: „these
-    are important stuff here“, „just make a quick one line comment at most“):** groß beginnen, kein Punkt. Ein JSDoc
-    über einem Aufruf stellt IntelliJ nicht dar (von ihm geprüft), drei `//`-Zeilen wollte er auch nicht.
-    In `api.test.ts`: frische Datenbank und frischer Server, Port 0, `once`, `url`; `afterEach` schließt den Server,
-    sonst endet die Testdatei nie (geprüft: ohne `close` läuft `node --test` bis zum Abbruch).
-    Gebaut mit `orderOf`, keine festen Preise oder Steuersätze. Namen von ihm: Artikel, bei Cola die Größe, dann immer die Menge als Ziffer
-    (`colaSmall1`, `colaBig2`, `redBull0`, `redBull1`); keine Namen wie `colaLater` oder `colaTwo`, keine Konstante
-    ohne Ziffer.
-  - Frischer Zustand je Test (seine Entscheidung gegen Claudes Empfehlung, nicht zurückbauen): auf Dateiebene
-    `let database: DatabaseSync;` und `beforeEach((): void => { database = databaseTest(); });`, um den Block je zwei
-    Leerzeilen. Nie eine Datenbank über Tests teilen. `test/setup.ts` hält alles, was nur Tests brauchen;
-    `node --test` führt sie als eigene, bestandene Datei mit, das stört ihn nicht, deshalb kein Muster wie
-    `"test/*.test.ts"`.
-  - **Tests prüfen keine Fehlertexte („the wording can change so better to just see if something is thrown“):**
-    `throws(lambda)` ohne zweites Argument. Das Risiko, dass aus einem anderen Grund geworfen wird, deckt der
-    Ablauftest, der dieselben Funktionen ohne Fehler durchläuft.
-  - Eine Test-Lambda mit `(t, done)` ohne Aufruf von `done()` hängt ohne Zeitlimit ewig (geprüft).
-  - `node:test` gegen eine Datenbank im Arbeitsspeicher, keine neue Bibliothek, Start mit `node --test` im Ordner
-    `WokFlow`, kein Skript in `package.json`.
-- **Fehlertexte (Nutzer, 18.09.2026: „one time you put in the table ID, one time not … very shitty“):** in einer
-  Datei immer gleich aufgebaut. Ein Fehlertext nennt, was der Aufrufer nicht weiß (Artikel, Menge), nicht was er
-  selbst übergeben hat (`tableId`); `api.ts` protokolliert Zeit und Adresse mit dem Tisch dazu. Seine Texte: „…
-  needs a valid quantity of at least 1“, „Not enough ${order.articleId} to remove ${order.quantity}“, „No open
-  orders“.
-- **SQL im Code (Nutzer, 18.09.2026, selbst zurückgebaut, nicht wieder einführen):** keine benannte
-  `StatementSync`-Konstante; `database.prepare(…).run(…)` steht direkt an der Stelle, auch in der Schleife, wie in
-  `tableClose`. Schleife von ihm `portion = 1; portion <= order.quantity`. `ORDER BY` genau dort, wo die Reihenfolge
-  zählt. Nach jeder Änderung an `orderbookCreate` die echte `wokflow.db` anpassen und den Nutzer ans Neueinlesen
-  (Refresh) der Datenquelle im Datenbank-Fenster erinnern: IntelliJs SQL-Prüfung liest die Spalten von dort und
-  meldet sonst veraltete Fehler im Code. Die Datei lässt sich nicht löschen, solange IntelliJ sie offen hält
-  („Device or resource busy“); eine leere Tabelle dann mit `node:sqlite` per `DROP TABLE` entfernen und neu anlegen.
-- **Imports (Nutzer, 17.09.2026, für die Lesbarkeit):** Ab vier Namen aus einer eigenen Projektdatei und ab sechs
-  Namen aus einem externen Modul (Node oder Bibliothek) `import * as name from …` statt einzelner Namen.
-  Die Grenzen gelten je Quelldatei; Name wie die Datei, etwa `orders.ordersUpdate`. Drei Namen aus einer eigenen
-  Datei bleiben einzeln importiert, weil sie noch gut lesbar sind, etwa `{ menu, entryOf }` (Nutzer: `menu.menu` ist
-  hässlich).
-  Reguläre Imports stehen vor `import type`. Genau eine Leerzeile zwischen den Gruppen, wenn die Datei mindestens
-  drei reguläre Import-Anweisungen und mindestens zwei `import type`-Anweisungen enthält, **oder wenn die Gruppe der
-  `import type` mindestens drei Anweisungen hat (Nutzer, 18.09.2026, an `orders.ts` mit 2 regulären und 3
-  Typ-Imports: „has at least three, then split them with a single line too“)**; sonst stehen die Gruppen direkt
-  untereinander. **Eine Gruppe mit nur einer Anweisung bekommt nie eine trennende Leerzeile, egal welche (Nutzer,
-  18.09.2026: „single import or import type not gets blank line“);** `menu.ts` und `orders.test.ts` (je 4 und 1)
-  bleiben deshalb ohne. Kurz: Leerzeile genau dann, wenn beide Gruppen mindestens zwei Anweisungen haben und
-  mindestens eine Gruppe drei. Am 18.09.2026 über alle Dateien geprüft, alle stimmen.
-- **Aufbau in `src/catalog/`:** nach den Imports und um Regionen zwei Leerzeilen, sonst eine. Regionen als
-  `//#region Name` … `//#endregion Name`, ohne Leerzeichen nach `//` (sonst faltet IntelliJ nicht), verschachtelbar;
-  nur wo eine Datei mehrere Teile hat (`Typedefinitions` und `Typefactories` in `articles.ts`, `Variants` in
-  `food.ts` und `drinks.ts`). Ein `if` mit einer Anweisung darf ohne geschweifte Klammern stehen.
-- **Datendateien sehen aus wie Daten (Nutzer, 16.09.2026):** Hilfsfunktionen nur, wo sie viel Wiederholung sparen.
-  Eine Kette von Helfern für Getränke (`Serving`, `variantDrink`, `variantsSizes`) war dem Nutzer zu schwer lesbar
-  und ist zurückgebaut; Varianten stehen so ausgeschrieben, wie sie auf Taste und Rechnung erscheinen.
-- **JSDoc** englisch, ohne Beispiele oder Beispielwerte, nur über Deklarationen, nicht über Anweisungen; bei
-  Konstanten beschreibt er den Inhalt. Jede Funktion und jeder Typ bekommt einen, ebenso die Konstanten in
-  `menu.ts`. Die Listen in `buffet.ts`, `food.ts`, `drinks.ts` stehen ohne JSDoc, Name und Daten erklären sich selbst.
-  - Funktionen wie von IntelliJ generiert: Beschreibung, darunter `@param name - …` für jeden Parameter, sonst
-    meldet IntelliJ „Parameter is not described“.
-  - **`@throws` wie in Javadoc (Nutzer, 18.09.2026):** Jede Funktion, die wirft oder einen Fehler durchreicht,
-    bekommt nach `@param` und `@returns` genau eine Zeile `@throws {Error} - When …`, mit Bindestrich, ohne Punkt, so
-    kurz wie möglich, ohne Nebensatz; nichts wiederholen, was die Beschreibung schon sagt (sein Kürzen: „Error of the
-    work thrown again“ statt „…, thrown again after the ROLLBACK“). Kein Satz „Throws when …“ mehr in der
-    Beschreibung. `transaction` reicht durch: `@throws {unknown}`.
-  - **Aus seinen Korrekturen vom 18.09.2026:** Der Kommentar benutzt das Verb des Funktionsnamens (`orderRemove`:
-    „remove“, nie „take off“). `@returns` nennt den Typ als Link (`@returns {@link MenuEntry} with price and tax
-    rate`, nicht „Entry …“). Eine Beschreibung darf direkt mit dem Link beginnen, ohne „The“.
-  - **Namen und Form aus der früheren Fassung von `ordersUpdate` (Nutzer, 18.09.2026, selbst gepatcht):** Listen
-    als Parameter heißen `ordersToAdd`, `ordersToRemove` (Verb-Namen nur für Funktionen, kein `orderlist`; seit dem
-    Typ `OrdersUpdate` hat die Funktion diese Parameter nicht mehr, die Namensregel gilt weiter); eine Lambda direkt in
-    `transaction(database, (): void => { … });` statt einer inneren Funktion `work`; eine zu lange Signatur bricht
-    nach dem zweiten Parameter um, die Fortsetzung steht unter dem ersten Parameter. Neuere Form von ihm in
-    `requestHandle` (18.09.2026 abends, selbst umgebrochen, nicht zurückbauen): jeder Parameter in eigener Zeile
-    unter dem ersten, danach eine Leerzeile vor dem Funktionskörper.
-  - Objekttypen: ein JSDoc vor dem Typ, Properties als Liste `` - `name`: … ``, nur die erklärungsbedürftigen;
-    keine Kommentare an einzelnen Properties. In `.ts` gibt es dafür kein Tag, `@property` gehört zu `@typedef`
-    in JavaScript.
-  - Links nur als `{@link Name}`, ohne `|` und Linktext. Benutzte Bibliotheksfunktionen bei Bedarf so erklären,
-    Methoden über ihre deklarierende Klasse (`{@link Writable#end}` mit Import aus `node:stream`); dafür nötige
-    Imports sind erlaubt. IntelliJ prüft Kommentar-Links selbst und braucht dafür `@types/node`.
-  - **Kommentare in `api.ts`, vom Nutzer am 18.09.2026 abends selbst umgeschrieben („I want you to learn from your
-    mistakes, quoting me, making comments“); so schreibt er sie, so soll Claude sie schreiben:**
-    - Unter dem ersten Satz eine Stichpunktliste statt weiterer Sätze; Fortsetzungszeilen eingerückt unter dem Text.
-    - In Stichpunkten kein Artikel am Anfang: „Sends menu.“, „Sends open orders of the table.“ Sein „no need the …
-      just "sends menu"“ meinte das Wort „the“; Claude verstand es nicht und bot zwei falsche Lesarten an.
-    - Benutzte Funktionen als Stichpunkte mit Link und einem kurzen Satz, eigene wie fremde: `{@link createServer}:
-      Stores the lambda and calls it once per request, with a fresh request and response from Node.`, dazu
-      `{@link requestHandle}` und `{@link responseSend}`. Das Verhalten in einem Satz statt in drei Zeilen: „Answers
-      an error of requestHandle with status `500` without stopping the server.“ Beim zweiten Nennen kein Link mehr.
-    - Adressen in der Form der HTTP-Anfragezeile (`` `GET /api/menu`: Sends menu. ``), Statuscodes in Backticks.
-    - **Keine `//`-Kommentare im Funktionskörper (Nutzer, 18.09.2026 abends: „I just don't like these two comments“,
-      danach „thats clean“):** Lokale Konstanten, deren Inhalt nicht offensichtlich ist, stehen als Stichpunkt im
-      JSDoc der Funktion, Name in Backticks, wie `statusCode` und `end` in `responseSend`: `` - `address`: Path of
-      the url, without protocol, host, port. `` Die Konstanten selbst stehen nackt im Körper. **`if`-Kette von
-      `requestHandle`, Stand 20.09.2026, von ihm selbst umformatiert, als die zwei Zweige der Tischsperre dazukamen:**
-      nach jedem Zweig eine Leerzeile vor dem `} else if`. Ersetzt den Stand vom 18.09.2026 (damals hatte er die
-      Leerzeilen entfernt). Nicht zurückbauen. **Adress-Stichpunkte noch knapper (von ihm gekürzt, „learn off and out
-      of it“):** gar keine Artikel, auch nicht im Satz, und `/` für zwei Verben: „Sends open orders of table.“,
-      „Adds/removes orders of table.“, „Locks table for device in body.“ Claude hatte „Locks table for the device in
-      the body.“ geschrieben. Hinter `const match: RegExpMatchArray | null =` hat er selbst einen kurzen
-      `//`-Kommentar am Zeilenende gesetzt, der das Muster als Pfad zeigt (`// path /api/tables/:table/orders|lock`),
-      darunter eine Leerzeile vor `tableId`; seine Ausnahme von „keine `//` im Körper“, nicht entfernen.
-      **Claudes Patzer:** Ein `replace_all` mit Leerzeichen am Ende machte aus `=== "lock"` ein
-      `==="lock"`; nach jedem `replace_all` die Stellen mit Grep ansehen.
-    - Claudes Fehler, die er dabei korrigiert hat: zu lange Sätze, drei Zeilen für eine Aussage, Wiederholung dessen,
-      was die Funktion darunter ohnehin zeigt („should be as short as possible because the function below explains
-      this already“).
-  - **Ausnahme von „ohne Beispiele“ auf seinen ausdrücklichen Wunsch (18.09.2026):** Der JSDoc von `requestHandle`
-    in `api.ts` listet die drei Adressen in der Form der HTTP-Anfragezeile (`` `GET /api/menu`: Sends the menu. ``)
-    und zeigt darunter eine echte HTTP-Anfrage als Codeblock mit drei Backticks (erste Zeile, Kopfzeilen, Leerzeile,
-    Körper). Nur dort; anderswo weiter keine Beispiele, außer er verlangt sie.
-  - **Wörtliche Werte aus dem Code stehen im Kommentar in Backticks (Nutzer, 18.09.2026):** Statuscodes als
-    `` `400` ``, `` `404` ``, `` `500` ``, wie schon `closed` oder `BEGIN`. Testnamen sind schlichter Text und bleiben
-    ohne Backticks. Am 18.09.2026 überall umgesetzt (drei Stellen, alle in `api.ts`).
-  - **Verlinkbares immer verlinken (Nutzer, 17.09.2026: „if something is linkable, link it“, „take it
-    seriously“):** Nennt ein Kommentar einen Typ, eine Funktion oder eine Konstante, die in der Datei erreichbar ist,
-    steht dort `{@link Name}`, je Kommentar beim ersten Nennen; über Stern-Import mit Namensraum
-    (`{@link orders.Order}`, `{@link articlesDrink.lemon}`). Mehrzahl als `{@link Order}s`, außer die Mehrzahl ändert
-    das Wort (`categories`), dann ohne Link. Modulzeilen im Dateikopf und Datenbanknamen wie `orderbook` bleiben in
-    Backticks.
-  - **Form der Sätze (Nutzer, 18.09.2026, in `ordersRead` von Hand korrigiert: „there were a little bit flaws in the
-    comments. Learn from it“):**
-    - Jeder Satz endet mit einem Punkt, auch der letzte eines Blocks. Wer einen JSDoc anfasst, prüft alle seine
-      Zeilen, nicht nur die neue.
-    - Keine langen Kommentarzeilen, **Richtwert rund 75 Zeichen** (abgelesen an seinen Korrekturen). Weich gemeint
-      (Nutzer, 18.09.2026): 85 nimmt er im Einzelfall hin, 90 mag er nicht mehr, wichtig ist ihm nur, die senkrechte
-      Randlinie in IntelliJ nicht zu treffen. In `.editorconfig` steht kein `max_line_length`, es gilt IntelliJs
-      Standard von 120. Seine eigenen Zeilen deshalb nicht wegen ein paar Zeichen anmerken. **Umbruch dort,
-      wo ein Mensch beim Sprechen eine Pause macht (Nutzer, 18.09.2026, ausdrücklich korrigiert):** nicht mechanisch
-      vor „so“ oder „and“, sondern wenn die Zeile zu lang wird, an der Stelle, an der man beim Vorlesen natürlich
-      absetzt. Das ist oft nach einem Komma oder vor „so“, „and“, „with“, aber das Wort ist nicht die Regel, die
-      Sprechpause ist es. Satz vor dem Umbrechen halblaut lesen. Der Rest läuft in der nächsten Zeile weiter; jeder
-      Satz beginnt in einer neuen Zeile. Von ihm gebrochen: „Sorts the {@link Order}s by their oldest open portion,“
-      und „so a variant keeps its place while portions are sent or removed.“ Die Regel gilt für jede Kommentarzeile,
-      nicht nur für neue. Vorbild ist sein JSDoc von `orderOf`. Vor dem Abgeben prüfen:
-      `awk 'length($0) > 80 && /^\s*\*/'` über die geänderten Dateien.
-    - Ein Wort, eine Bedeutung gilt auch im Kommentar: Eine Zeile der Datenbanktabelle ist eine „portion“, ein
-      `Order` ist eine Variante mit ihrer Menge. Nie „order“ für beides in einem Satz.
-    - Ein Kommentar verspricht nur, was der Code heute tut („or removed“ kam erst in den Satz zur Reihenfolge, als
-      `ORDER BY id DESC` im `DELETE` stand).
-- **Kommentare in `commands.md` (Nutzer, 17.09.2026, von Hand gekürzt: „your commentary is shitty. Please learn from
-  your mistakes“):** eine englische Zeile über jedem Befehl, ohne Punkt: was der Befehl tut, danach mit Komma die
-  Optionen als `-x: Bedeutung`, etwa `# Run all tests from the WokFlow folder, --test: finds test files`. Keine
-  Beispiele (die JSDoc-Regel gilt auch hier), keine Bedienhinweise wie „stop with Ctrl+C“. Vor dem Schreiben die
-  Nachbarzeilen der Datei als Muster lesen und die Regeln hier prüfen, nicht aus dem Gedächtnis ergänzen.
-- **Dateikopf im Stil des Nutzers (16.09.2026, mehrfach von Hand korrigiert):**
-  - `## Titel`, darunter eine Beschreibung als Fließtext, keine Stichpunkte; sagt der Titel alles, keine
-    Beschreibung (`## Drinks`). Keine Zusätze in Klammern, keine Ebenenzahlen. Dateien ohne Imports beginnen
-    direkt mit dem JSDoc der ersten Deklaration: Zwei Kommentarblöcke vor derselben Deklaration gehen nicht, IntelliJ
-    stellt den ersten dann nicht dar. **Ist die erste Deklaration die Hauptsache der Datei, trägt ihr JSDoc den
-    Dateikopf (Nutzer, 20.09.2026, in `locks.ts` selbst geschrieben: „look at it and learn from it“):** `## Titel`,
-    Leerzeile, die Beschreibung als ganzer Satz mit dem Handelnden vorn, Leerzeile, die Property-Liste. Sein Wortlaut:
-    `## Table-lock`, „The device that has the table open holds a table-lock.“ Claudes Fassung davor, ohne Titel und
-    mit Doppelpunkt: „A lock of a table: The device that has the table open.“ Der Begriff heißt bei ihm „table-lock“
-    mit Bindestrich.
-  - **Beschreibung so kurz wie möglich (Nutzer, 18.09.2026, zu `api.ts`: „should be as short as possible because
-    the function below explains this already“):** in der Regel ein Satz, was die Datei tut. Nichts wiederholen, was
-    die JSDocs der Funktionen und Typen darunter schon sagen, etwa einzelne Adressen oder Abläufe.
-  - Module: je Modul eine Stichpunktzeile direkt unter der Beschreibung, ohne Überschrift `### Modules` (vom Nutzer
-    selbst entfernt). Das Modul in Backticks ohne Webadresse, dahinter, was das Modul macht, nicht was die
-    importierten Namen machen. **Dasselbe Modul hat in jeder Datei wörtlich dieselbe Zeile (Nutzer, 18.09.2026: „I
-    want everywhere the single same explanation“):** vor dem Schreiben mit Grep nachsehen, wie die Zeile in den
-    anderen Dateien lautet. Am 18.09.2026 geprüft: Alle mehrfach genannten Module stimmen überein.
-  - **Nur mit `import type` importierte Module bekommen keine Zeile (Nutzer, 18.09.2026, beim Lesen von `api.ts`:
-    „if something just with import type then dont need“):** Eine Modulzeile steht nur für Module mit mindestens
-    einem regulären Import. Der `import type` selbst bleibt, auch wenn ihn nur ein `{@link …}` braucht. Am
-    18.09.2026 in allen Dateien unter `src/` und `test/` umgesetzt. Gilt auch für die Namenszeilen in
-    `articles.ts`: `{@link Dinero}` ist ein reiner `import type` und hat dort keine Zeile mehr (vom Nutzer
-    bestätigt und selbst entfernt).
-  - Testdateien (Nutzer, 17.09.2026, „I don't think we have to list every module inside it“): keine Zeilen für die
-    eigenen Dateien unter `../src/`, die Node-Module bleiben. In `orders.ts` steht die Zeile zu `../catalog/menu.ts`
-    weiter.
-  - Ausnahme `articles.ts` und andere Dateien mit wenigen importierten Namen: je Name `` - {@link Name}: `` mit
-    Erklärung, was er ist und wofür die Datei ihn braucht; diese Erklärungen nie weglassen, außer der Name ist nur mit
-    `import type` importiert. Auch dort keine
-    Überschrift `### Modules` (Nutzer, 18.09.2026, in `articles.ts` selbst entfernt: „I don't want the modules
-    inside it“).
-  - Module und Properties stehen immer als Stichpunkt, auch einzeln; jede andere einzelne Angabe wird eine normale
-    Zeile, etwa „Start with `npm start`.“ in `server/index.ts`.
-  - Wortlaute des Nutzers bleiben, etwa in `articles.ts` „Defines the article type with its variants and stores
-    variant prices as Dinero amounts.“ und in `api.ts` (18.09.2026, von ihm selbst geschrieben) „Connects the
-    requests of the phones to the server, where the menu and the saved orders are.“ Die Modulzeile zu `./api.ts` in
-    `index.ts` hat er selbst angepasst: „Connects browser requests to the server.“
-- IntelliJ: `// noinspection DuplicatedCode` wirkt in `.ts` nicht (vom Nutzer geprüft).
-
-## Einstieg
-
-- Der Hauptordner ist `AsiaWok_Bonierungssystem_2026`. Diese Datei liegt in `WokFlow/`, im Ordner des Git-Repos:
-  Startet Claude im Hauptordner, wird sie nicht von selbst geladen und muss zuerst gelesen werden.
-- `WokFlow/` = das neue System. Neuer Code, Tests und das Git-Repo liegen nur dort.
-- `TOUCHIT/` = alles zum Altsystem, ca. 10 GB. Nur gezielt darin suchen, nie den ganzen Ordner durchsuchen.
-- Alles außerhalb des Hauptordners gehört nicht zum Projekt, auch `M:\NomWorkspace\CLAUDE.md` nicht.
-- **Restaurantunterlagen, vom Nutzer benannte Quelle:**
-  `M:/NomWorkspace/NomBusinessworkings/AsiaWokRestaurantGmbH/Kundeninformationen`.
-  Dort liegt die aktuelle `AsiaWok_Speisekarte_2026.pdf`, außerdem `AsiaWok_Plakate_2026.pdf` und
-  `AsiaWok_Speisensteller_2026.pdf`. Für Speisekarte, Gruppen, Namen und Varianten dort nachsehen;
-  die Originale sind Geschäftsunterlagen außerhalb des Code-Projekts. Nicht ungefragt verändern.
-
-## Ziel
-
-Das alte Kassensystem TOUCHIT wird durch ein neues, schlankes System ersetzt: **WokFlow**. Der Nutzer
-baut es mit KI-Hilfe neu (Fable 5.1 plus ein zweites Modell).
-Der alte Code dient nur zum Verstehen und wird **nie kopiert**, er gehört dem Hersteller.
-Die Analyse macht Schwächen und Verbesserungsmöglichkeiten sichtbar. Alte Gruppierungen,
-Konfigurationen und Bedienabläufe sind keine Vorgabe für WokFlow; das neue System wird aus den
-tatsächlichen Bedürfnissen des Restaurants heraus möglichst einfach gestaltet.
-
-## Manifest: WokFlow im Gesamtbild
-
-Stand 14.09.2026 abends, auf Wunsch des Nutzers: das ganze System in einem Stück, vom Bestellen bis zum
-Steuerberater. Einzelheiten und Quellen stehen unter „Entscheidungen“, „Buchhaltung“, „Korrespondenz“ und
-„rksv“. Widerspricht ein neuerer Eintrag dort diesem Abschnitt, gilt der neuere, und dieser Abschnitt wird
-nachgezogen.
-
-### 1. Wofür WokFlow da ist
-
-- Kassen- und Bestellsystem der ASIA WOK Restaurant GmbH (Messeplatz 1, Halle 10, Klagenfurt): Buffet mit
-  Wok, Speisekarte und Getränke. Buffet 11:30 bis 14:30 und 17:00 bis 21:30, Dienstag Ruhetag außer an
-  Feiertagen.
-- WokFlow ersetzt TOUCHIT, spätestens bis Mai 2027: Dann muss die rksv-Signaturkarte getauscht werden, und
-  TOUCHIT kennt die neue Karte vermutlich nicht. Grobe Schätzung vom 13.09.2026: 62 bis 96 Arbeitstage mit
-  KI-Hilfe, nebenbei 8 bis 12 Monate.
-- Leitregeln: Funktion zuerst, dann Einfachheit. Große, gut lesbare Tasten für Kellner zwischen 50 und
-  60 Jahren. Am Bildschirm nur, was im Moment hilft. So wenig Code wie möglich. TOUCHIT dient nur dem
-  Vergleich, nie als Vorlage.
-
-### 2. Der Betrieb in Zahlen
-
-- Rund 35 Tische, 9 Angestellte (Lohnsumme Mai 2026 ca. 21.500 € brutto), eine Person kassiert, mehr als
-  80 Rechnungen am Tag.
-- Kartenumsatz 30.09.2025 bis 31.08.2026: 481.669 € in 336 Tagen, also rund 520.000 € im Jahr,
-  29 Kartenzahlungen und 1.434 € pro Tag, 49 € je Zahlung.
-- Beispieltage: 02.09.2026 Umsatz 2.144,30 €, davon Karte 1.352,50 € (63 %). 13.09.2026 Umsatz rund
-  2.413 €, Karte rund 1.235 € (51 %), Bar 1.178,10 €, davon Buffet und Küche 1.846 €. Gesamtumsatz daraus
-  grob 0,9 Mio. € im Jahr (Schätzung, keine Buchhaltungszahl). Rund 80 % Speisen, 20 % Getränke; den
-  Standard-Steuersatz legt WokFlow je Hauptkategorie fest; abweichende Artikel stehen einmal in einer
-  Ausnahmeliste (siehe „Artikel und Gruppen“).
-
-### 3. Geräte und Technik
-
-- Ein Server: Lenovo-Mini-PC mit Linux an der Theke, daran Touch-Monitor (Kasse und Chef-Arbeitsplatz),
-  Lesegerät mit A-Trust-Signaturkarte (rksv), Zentraldrucker (Metapace T-3II) und eine USB-SSD.
-- 4 bis 5 Android-Handys der Kellner. WokFlow ist eine einzige Web-App, dieselbe Seite im Browser auf Handy
-  und Theken-Monitor. Der Chef schaltet jedes Handy einmal frei, Kellner brauchen keinen Code, der Chef am
-  PC einen Chef-Code.
-- Netz: FRITZ!Box mit Betriebs-WLAN (Server, Handys, Drucker, Kartengerät), Gäste-WLAN getrennt.
-- Kartenzahlung über Nexi: heute ein mobiles Terminal „Mobile Premium“ an der Theke, geplant zusätzlich die
-  Nexi-App (SoftPOS) auf dem Kassier-Handy Redmi Note 13 Pro 5G.
-- Software: TypeScript (Node auf dem Server), eine SQLite-Datei auf dem Server, Geld in ganzen Cent.
-  Sicherung laufend in die Cloud, stündlich auf die USB-SSD, nachts voll.
-- Kein Notbetrieb: Fällt der Server aus, wird mit dem Bonblock weitergearbeitet.
-
-### 4. Ablauf im Service
-
-1. Tischplan nach den Skizzen und Restaurantfotos vom 14.09.2026: **Innen oder Garten**.
-   Schlichte Rechtecke: 1–5 genauso groß wie 12–16, Tisch 6 so klein wie Tisch 7 (Nutzer, 16.09.2026), Tisch 20
-   kleiner. Keine gezeichneten Bänke.
-   Die 20er-Gruppe steht ganz links im Innenplan; 18/19 steht rechts senkrecht.
-   18, 19, 23, 24 bleiben einzeln buchbar, Nummer 25 entfällt. Der bisherige Raum mit den
-   30er-Tischen liegt über dem Garten auf dessen Seite; beide sollen auf einen Bildschirm passen.
-   Der Gartengang ist deutlich breiter; Tisch 17 liegt neben 19, die Abstände bei 21/22 und 24/23 sind angeglichen.
-   Frei: grau getönt ohne Rand. Belegt: rosé gefüllt ohne Rand (Nutzer, 16.09.2026).
-   **Keine Punkte, keine Belegt/Frei-Legende, keine Beträge oder Aufenthaltszeiten.**
-   **Tischsperre (Entscheidung des Nutzers, 18.09.2026):** Ein Tisch ist immer nur auf einem Gerät offen, der PC
-   zählt mit. Grund: Zwei Kellner im selben Tisch sind ein Durcheinander, und das System soll so einfach wie möglich
-   bleiben. Die Sperre hat ein Zeitlimit, das das Gerät verlängert, solange der Tisch offen ist; fällt ein Handy aus,
-   läuft sie von selbst ab. Sie liegt im Arbeitsspeicher des Servers und kommt mit dem Bildschirm-Modul. Unabhängig
-   davon speichert der Server jede Nachricht eines Handys ganz oder gar nicht (`ordersUpdate`).
-2. Tisch startet bei **Getränke**, daneben **Buffet** und **Speisen**. **Keine Schnellauswahl**.
-   Untergruppen am Betrieb ausrichten; die Gliederung darf von der Speisekarte abweichen.
-   Gewählt: kompakte gemeinsame Kopfzeile mit großer Tischnummer ohne „Tisch“, den Reitern
-   „Bestellen / Bestellt“. Die umrandete Tischnummer führt zum Tischplan zurück, eigene Taste „Tische“ entfällt.
-   Chinesisch jeweils unter den deutschen Reitern; diese erhalten den frei gewordenen Platz.
-   Getränke, Speisen starten immer in der Kategorienliste; keine Gruppe automatisch öffnen.
-   Kleiner Zurückpfeil zur Gruppenliste, darin kein zusätzlicher Rückweg „Zur Auswahl“.
-   Gruppen als Liste ohne Überschrift „Gruppen“.
-   Getränke in zwei Spalten mit Deutsch oben, Chinesisch darunter. Speisen als kompakte einspaltige
-   Tasten mit Deutsch und Chinesisch nebeneinander, bei Platzmangel vollständig umbrechen.
-   Ein Name je Artikel, gleich auf Taste, in „Bestellt“ und auf der Rechnung, keine eigenen Tastenbeschriftungen
-   (Nutzer, 16.09.2026, siehe „Ein Name je Artikel“ unter „Bildschirm und Bedienung“).
-   „Bestellt“ mit Namen in einer Zeile, jeweils einer Sprache; ein kleiner Sprachknopf „DE“/„CN“
-   unten rechts neben dem großen Rechnungsbutton, ohne eigene Kopfzeile.
-   Mengenfelder zeigen die unbezahlte Menge am Tisch; kleine Anzeige mit großer Tippfläche, keine Null.
-   Direktartikel lassen sich darüber um eine neue Portion verringern. Bei Artikeln mit Auswahl ist die Zahl
-   außen nur Anzeige; Entfernen erst im Menü an der konkreten Größe/Sorte. Neue Portionen ohne Rücknahmeleiste.
-   Auch bereits abgeschickte Portionen im Auswahlfenster korrigierbar, dort mit „Rückgängig“.
-   Neue Portionen derselben Variante werden zuerst verringert; andere Größen bleiben unberührt.
-   Eine Cola-Taste öffnet Cola/Zero/Light mit den passenden Größen oder der Flasche darunter.
-   Artikel deutsch/chinesisch ohne Preise. Mengen ebenfalls mit Punkt: `0.25`, `0.5`, `0.3 + Wasser`.
-   Buffet mit Plus/Minus für Erwachsene sowie 6–9 und 3–5, ohne Wort „Jahre“; unter 3 ohne eigenen Zähler.
-   Chinesisch für 6–9 „儿童“, für 3–5 „小童“. „Erwachsene“ bleibt beim Erfassen erhalten,
-   entfällt nur in „Bestellt“; Kinder dort in Klammern, etwa „Sonntagsbuffet (6–9)“, auf Chinesisch ebenfalls nur
-   das Alter.
-   Mittag, Abend, Sonntag, Feiertag sind vier getrennte Buffetarten; Sonntag/Feiertag preislich gleich,
-   beide von 11:30 bis 21:30.
-   Oben nur Buffetname mit Chinesisch, Zeitspanne rechts; die Kopfzeile klappt die vier Arten auf. **Eine Buffetart
-   je Tisch (Nutzer, 16.09.2026):** Antippen wechselt die Art, schon gezählte Personen wandern mit, weil je Tisch
-   nur nach einer Art abgerechnet wird. Die spätere Automatik soll den Tarif aus Datum, Wochentag und Feiertag
-   vorwählen, ohne die aktuelle Uhrzeit zusätzlich anzuzeigen; die Wahl bleibt, bis eine neue Zeit beginnt.
-3. **Absenden am Rückweg:** Die umrandete Tischnummer führt zum Tischplan zurück und schickt in der
-   Demo neue Positionen ab, wie vom TOUCHIT-Handy gewohnt; Escape ebenfalls. Kein eigener „Bonieren“-Knopf.
-   Getränke und À-la-carte auf einem gemeinsamen Bon am Zentraldrucker, keine getrennten Bons (Nutzer, 16.09.2026);
-   Buffet ohne Bon. Bereits Gesendetes nicht erneut drucken.
-   Im Backend erst nach bestätigter Übernahme erfolgreich zurückkehren; Fehler erkennbar lassen.
-4. Korrektur am offenen Tisch: Minus an der Getränk-/Speisenzeile; **versehentliche Entfernung
-   rückgängig machen können**. Name des entfernten Artikels plus „Rückgängig“, ohne
-   Zeitablauf bis zum Verlassen der Tischansicht, mehrere Schritte nacheinander rücknehmbar, getrennt je Tisch.
-   Der Rücknahmebereich bleibt außerhalb der scrollenden Bestellliste sichtbar. Kein zusätzliches
-   Bestätigungsfenster, kein Wischen. In „Bestellt“ nur Menge und Minus, auch beim Buffet;
-   dessen Plus/Minus steht beim Erfassen. Rücknahme zeigt nur deutschen und chinesischen Namen,
-   ohne „1 ×“, „entfernt“ oder entsprechende chinesische Zusätze.
-   Stornogründe und die Nachvollziehbarkeit schon übernommener Änderungen bleiben Backend-Themen.
-   Keine zusätzlichen Stornobons gewünscht.
-5. **Getrennt kassieren ist wichtig:** in der Rechnung Artikel und Mengen für eine Person auswählen,
-   diese Teilrechnung kassieren, nur die bezahlten Mengen abschließen; Rest bleibt offen am Tisch.
-   Danach direkt zur nächsten Person in derselben Auswahl zurückkehren, bis alles bezahlt ist.
-   Normalfall weiter direkt die ganze Rechnung. Nur nach Artikeln, nie nach frei eingetippter Summe.
-   Schieben auf einen anderen Tisch bleibt eine getrennte Funktion (siehe „Bildschirm und Bedienung“).
-6. Rechnung: WokFlow erstellt den Beleg, signiert ihn (rksv-Kette, Umsatzzähler, QR-Code) und druckt ihn.
-   Danach ist der Beleg unveränderbar. Jede Teilrechnung ist ein eigener Beleg. Die Zahlart steht nicht
-   auf dem Beleg.
-7. Bezahlen: Punkt 5.
-8. Fehler nach dem Bezahlen: nur der Chef am PC, nur die ganze Rechnung, mit signiertem Stornobeleg, Geld
-   aus der Kasse, danach neue Rechnung. Rabatt gibt ebenfalls nur der Chef am PC.
-
-### 5. Bezahlen ohne Umschalten (Plan des Nutzers, 14.09.2026)
-
-- **Karte ist nur, was Nexi bestätigt. Alles andere ist Bar.** Gutscheine werden ausdrücklich erfasst.
-  Im Normalfall stellt niemand „Bar“ oder „Karte“ um und tippt keine Beträge ab.
-- Karte: Der Kellner tippt „Karte“, WokFlow schickt den Rechnungsbetrag an das Nexi-Terminal oder die
-  Nexi-App am Handy. Das Trinkgeld wählt der Gast dort. Betrag, Trinkgeld und Transaktionsnummer kommen
-  automatisch zurück: Rechnungsbetrag als Kartenumsatz, Trinkgeld getrennt. Während die Zahlung läuft,
-  zeigt WokFlow „Warte auf Nexi“; fehlt die Rückmeldung, „Zahlung prüfen“, und der Tisch bleibt offen
-  (nicht als Bar werten, nicht erneut auslösen). Abgelehnt heißt: nichts gebucht.
-- Bar: „Bar kassieren“ öffnet den Barabschluss mit Rückgeldrechner (Nutzer, 15.09.2026).
-  „Abschließen“ geht ohne Eingabe; bei Bedarf gegebenen Betrag eintippen, Rückgeld sofort berechnen.
-  Bar-Trinkgeld wird nie erfasst, es geht direkt an den Kellner.
-- **Kein Modus „Gemischt“** (Nutzer, 14.09.2026): Gäste teilen eine einzelne Zahlung nicht zwischen Bar
-  und Karte. Ein Restbetrag nach einem Gutschein gehört in den Gutscheinablauf. Eigene Gutscheine mit
-  Nummer, Fremdgutscheine (Edenred, Nexi-Papier) mit Anbieter. Das getrennte Kassieren verschiedener
-  Gäste per Artikelauswahl bleibt ausdrücklich gewünscht und ist etwas anderes.
-- Solange es keine direkte Verbindung gibt: Beim Tagesabschluss liest WokFlow die Nexi-Zahlungen ein und
-  trägt die passenden Rechnungen als Karte ein, der Rest ist Bar. Zuordnung nur mit verlässlicher Referenz
-  (gleiche Beträge oder eine Tagessumme reichen nicht), alle Geräte und derselbe Zeitraum, erneutes
-  Einlesen bucht nichts doppelt. Sind Daten unvollständig oder unklar: „Zahlungen prüfen“, nie
-  stillschweigend Bar. Woher WokFlow die Nexi-Daten bekommt, ist offen (Antwort von Nexi).
-- Umschalten bleibt als Funktion für Ausnahmen (Wunsch des Nutzers): „Heute“ zeigt die Zahlart jeder
-  Rechnung und erlaubt eine Korrektur bis zum Tagesabschluss, mit Protokoll (alt, neu, Uhrzeit, Gerät,
-  Benutzer). Wer korrigieren darf, alle Kellner oder nur der Chef, ist offen.
-- Warum: Heute legt die Kasse die Zahlart beim Rechnungsdruck fest, Gäste entscheiden sich danach oft um,
-  die Kartensumme stimmt nicht, und die Chefin rechnet jeden Abend mit dem Nexi-Zettel von Hand. Nur Nexi
-  weiß sicher, ob mit Karte bezahlt wurde.
-- Rechtlich (mit Steuerberater und rksv-Session bestätigen): Karte vor Ort ist steuerlich Barumsatz, der
-  Beleg ist bei Bar und Karte gleich, die Zahlart ist ein protokollierter Vermerk, Kartenumsätze sind über
-  die Transaktionsnummer erkennbar (§ 131 und § 132a BAO, FAQ Arbeitskreis Kassensoftware 2.4.15).
-
-### 6. Tagesabschluss (Chef am PC, ein Knopf „Tag abschließen“)
-
-- WokFlow warnt bei offenen Tischen und aktualisiert die Nexi-Daten (Status sichtbar, beim Abschließen
-  nochmals).
-- Die Seite zeigt groß Umsatz, Karte und Bar, darunter nur Zeilen, die nicht 0 sind: Kartenumsatz plus
-  Karten-Trinkgeld gleich Nexi-Zahlbetrag, Gutscheine eingelöst und verkauft, Barausgaben, Stornos, Umsatz
-  je Warengruppe und je Steuersatz (netto, MwSt, brutto). Kein Kassa-Zählen.
-- Kassa: bar bezahlte Einkäufe mit Betrag und kurzem Text eintragen. **Zur Bank = Bar minus Barausgaben
-  minus ausgezahltes Karten-Trinkgeld.** Das Wechselgeld ist ein fester Bestand außerhalb der Kasse und
-  zählt nicht mit.
-- „Tag abschließen“ sperrt den Tag, druckt einen vollständigen Bon mit Warengruppen (zum Heften, solange
-  Chefin und Steuerberater Papier wollen), erzeugt PDF und Daten für den Monatsversand und startet das
-  Backup.
-- Zum Vergleich heute: Chef-Menü, zwei Berichte als Bons mit vielen Nullzeilen, Nexi-Zettel und
-  Handrechnung, pro Tag geheftet.
-
-### 7. Wohin das Geld fließt
-
-- Bar: täglich „Zur Bank“ aufs Firmenkonto einzahlen. Einkäufe bar mit Beleg, der Beleg bleibt Papier.
-- Karte: Nexi Germany zahlt jeden Montag aufs Firmenkonto, getrennt nach Kartenart und schon ohne das
-  Disagio (Kartengebühr in Prozent). Gerätemiete und 0,02 € je Zahlung kommen per Lastschrift. Kosten heute
-  zusammen ca. 0,76 % vom Kartenumsatz, rund 3.960 € im Jahr, Disagio im Schnitt 0,63 %.
-- Karten-Trinkgeld: kommt mit der Nexi-Auszahlung aufs Firmenkonto, die Kellner bekommen es am Abend bar
-  aus der Lade. Durchlaufender Posten, kein Umsatz.
-- Gutscheine: Verkaufte Geldgutscheine sind beim Verkauf 0 %, beim Einlösen normal versteuert. Verschenkte
-  Leistungsgutscheine (z. B. Buffet für 2) beim Einlösen Betrag 0. Fremdgutscheine normal versteuert und
-  beim Anbieter einzureichen, WokFlow führt dafür eine Liste. Gutscheine verkauft nur der Chef am PC.
-- An die Behörden (allgemeines Wissen, nicht geprüft, im Steuerkonto auf FinanzOnline nachsehen):
-  Lohnsteuer, Dienstgeberbeitrag und Zuschlag am 15. des Folgemonats ans Finanzamt (Mai 2026: 922 €,
-  591 €, 59 €), Sozialversicherung am 15. des Folgemonats an die ÖGK (Mai 2026: 7.482 €), Kommunalsteuer
-  3 % der Lohnsumme an die Stadt Klagenfurt (Mai 2026: 647 €), Umsatzsteuer am 15. des zweitfolgenden
-  Monats, Körperschaftsteuer-Vorauszahlung vierteljährlich. Die monatliche „Rechnung vom Finanzamt“ ist
-  also vor allem Umsatzsteuer und Lohnabgaben.
-
-### 8. Monat und Jahr
-
-- Monatsende, automatisch: rksv-Monatsbeleg (Beleg über 0 €), Export des rksv-Journals als eigene Datei,
-  die nie überschrieben wird (USB-SSD und Cloud), Monatsauswertung als PDF und Datei per E-Mail an den
-  Steuerberater, verschickt über das Postfach der Chefin. Dazu ein Knopf „An Steuerberater senden“.
-- Dezember: Jahresbeleg, mit der App des Finanzministeriums prüfen.
-- Steuerberater Mag. Helmut Allesch (Klagenfurt): Buchhaltung, monatliche Umsatzsteuer-Voranmeldung,
-  Lohnverrechnung, Jahresabschluss. Er bekommt Kassenauswertung, Kontoauszüge, Belege, Nexi-Abrechnungen
-  und Stundenzettel.
-- 7 Jahre aufbewahren: Belege, rksv-Journal, Tagesabschlüsse, Nexi-Abrechnungen. Ablage des Nutzers in
-  `M:\NomWorkspace\NomBusinessworkings\AsiaWokRestaurantGmbH` (Schema `Kategorie/Jahr/AsiaWok_Typ_JJJJMM.pdf`).
-
-### 9. Buchhaltung und Zugänge (Plan)
-
-- Jetzt: ID Austria für Li Vu und Kim Hong Vu, damit FinanzOnline- und USP-Zugang der GmbH (Steuerkonto,
-  Bescheide, Voranmeldungen, ÖGK-Beitragskonto) und ein Benutzer für den Nutzer. Unterlagen beim
-  Steuerberater anfordern (Mail unter „Korrespondenz“).
-- Unklar: wer im Firmenbuch Geschäftsführer ist; die Gewerbeberechtigung läuft laut GISA auf Li Vu
-  persönlich statt auf die GmbH. Beides klären.
-- Später, wenn WokFlow läuft: einige Monate Buchhaltung parallel zum Steuerberater, dann die laufende
-  Buchhaltung selbst. Lohn und Jahresabschluss bleiben beim Steuerberater (Empfehlung, nicht entschieden).
-
-### 10. Kartenzahlung in Ausbaustufen
-
-1. Start ohne direkte Verbindung: Nexi-Zahlungen beim Tagesabschluss einlesen und zuordnen (Punkt 5).
-2. Terminal gekoppelt (ZVT über WLAN, Nexi schaltet frei): Der Betrag geht automatisch ans Gerät, Zahlung
-   und Trinkgeld kommen sofort zurück.
-3. Nexi-App auf dem Kassier-Handy (App-zu-App-Schnittstelle): kein Laufen zur Theke mehr, das Terminal
-   bleibt Reserve. Ziel: zu den heutigen Vertragskonditionen, nicht zum Listenpreis von 1 %.
-
-Der Baustein „Kartenzahlung“ in WokFlow hat nur zwei Aufgaben: Betrag hinschicken, Ergebnis zurückholen.
-Damit bleibt der Anbieter austauschbar (Alternative hobex).
-
-Telefonat mit Nexi am 15.09.2026, laut Nutzer: Nexi will ein gutes Angebot machen, sucht ohnehin
-Kassenpartner. Das Angebot wartet, bis WokFlow weiter entwickelt ist; danach hält der Nutzer eine
-gemeinsame Lösung mit SoftPOS für möglich. Nexi bot außerdem ein Android-Gerät mit kleinem Kartenleser
-an, das keinen Bon druckt; Modell laut Nutzer „A27“ oder ähnlich, Name noch bestätigen. Idee des Nutzers:
-normal mit diesem Gerät kassieren, das heutige Terminal bleibt für Gäste, die unbedingt einen Terminalbon
-brauchen. Nicht entschieden.
-
-### 11. Umstieg und später
-
-- Probezeit neben TOUCHIT (Übungsbelege im Trainingsmodus), dann WokFlow bei FinanzOnline anmelden mit
-  Startbeleg, TOUCHIT noch ein paar Tage als Reserve, dann Schlussbeleg und Abmeldung.
-- Nach dem Start: Bestellen per QR-Code durch die Gäste.
-
-### 12. Offen, und wer dran ist
-
-- Nutzer: Antworten von Nexi und Steuerberater abwarten (Mails unter „Korrespondenz“), ID Austria.
-  Tischplanskizzen sind da; einzelne handschriftliche Nummern noch bestätigen.
-- Steuerberater: Unterlagen, Kassabuch, Wechselgeld, Trinkgeld, Gutscheine.
-- rksv-Session: Monats- und Jahresbelege, A-Trust-Karte unter Linux, Zahlart ohne Beleg bestätigen.
-- Bildschirm: wer Zahlarten korrigieren darf, Feiertage Josefstag und Volksabstimmung, Tischnummern 9, G15, G16
-  bestätigen.
-- Modul-Chats (seit 17.09.2026): je Chat ein ganzes Modul; Ablauf, Regeln, Reihenfolge, nächste Aufgabe unter
-  „Nächster Chat“. Katalog und Modul `tables` stehen, die Server-Schnittstelle ist in Arbeit, danach der Bildschirm.
-- Nutzer mit der Chefin: Zwischenrechnung, offene Kredite, Personalbuchung, Rechnungskopie, Rechnung mit
-  Kundenadresse (siehe „TOUCHIT-Abgleich“ unter „Entscheidungen“).
-- Technik: Weg zu den Nexi-Daten, Cloud-Anbieter, VESA-Halterung, Ersatzdrucker.
-
-## Nächster Chat: `api.ts` weiter durchgehen, dann `api.test.ts` (Übergabe vom 18.09.2026, spät abends)
-
-**Ende der Sitzung vom 20. auf den 21.09.2026 (bis tief in die Nacht). Abgenommen nach seinem Wort: `src/server/api.ts`,
-`src/server/page.ts` („finished completely“), `test/api.test.ts` („I think we're finished with the API test“; den
-ersten Test hat er selbst „A phone reads the index-page“ genannt). Verstanden und von ihm umgeschrieben, aber nicht
-ausdrücklich abgenommen: `index.ts`, `orders.ts`, `orders.test.ts`, `test/setup.ts`. Noch gar nicht gelesen:
-`vite.config.ts`, `package.json` (Skripte `build`, `watch`), `.gitignore`, `src/page/plan.ts`, `index.html`,
-`plan.css`. Nichts ist committet; `commands.md` führt er selbst nach (`npm run dev` raus, `npm run build` und `npm
-run watch` rein). Er hat die Seite noch nie laufen sehen: `npm run build`, `npm start`, `localhost:3000`.**
-
-**`resume()` in `pathSend`, Stand der Klärung (21.09.2026):** Claude hatte es vorsorglich eingebaut und falsch
-begründet („sonst endet die Testdatei nie“); nachgeprüft: ohne `resume()` laufen alle 41 Tests und enden normal,
-auch mit gebauter Seite. Die Node-Dokumentation zu `http.ClientRequest`, Ereignis `response`, verlangt es trotzdem:
-Wer auf `response` hört, muss den Körper verbrauchen (`read`, `data` oder `resume`), sonst feuert `end` nie und die
-ungelesenen Daten bleiben im Speicher. Bei winzigen Antworten in einem kurzen Test ohne sichtbare Wirkung. Claudes
-Empfehlung: drinlassen, mit dem richtigen Grund; seine Entscheidung steht aus. **Lehre:** keine Begründung nennen,
-die nicht nachgeprüft ist.
-
-**Reihenfolge im nächsten Chat:** (1) Entscheidung zu `resume`, siehe oben. (2) Seite
-bauen und ansehen. (3) `vite.config.ts`, dann `plan.ts`, HTML, CSS, je Antwort ein Stück. (4) Commit, macht er
-selbst. (5) Diese Datei kürzen, sein Wunsch vom 20.09., seither ist sie noch gewachsen. (6) Scheibe 2.
-
-**Merkliste, bewusst zurückgestellt (sein Wort: „put in a to-do list … maybe it's not worth it to learn this deeply
-now“):** Mock (`t.mock.method`, der Typ `Mock<…>` im Test „A failure gets status 500 …“) hat er nicht tief
-verstanden; erst wieder anfassen, wenn er danach fragt.
-
-**Stand 20.09.2026 abends, gilt vor allem darunter: Scheibe 1 des Bestellbildschirms, der Tischplan, ist gebaut, vom
-Nutzer erst zum Teil gelesen (`tablesRead` und der Zweig in `api.ts` sind verstanden), nicht committet.** Am selben
-Abend auf sein Wort „rebuild!“ umgebaut, siehe „Ein Server“ unten. Nächster Schritt: Er baut die Seite mit `npm run
-build`, startet `npm start`, öffnet `localhost:3000`; dann weiter Datei für Datei: `page.ts`, die Änderungen in
-`api.ts` und `index.ts`, die Tests, `vite.config.ts`, danach `plan.ts`, HTML, CSS. `commands.md` führt er selbst nach
-(`npm run dev` raus, `npm run build` und `npm run watch` rein). Danach Scheibe 2: einen Tisch öffnen (Sperre nehmen
-und verlängern, Bestellungen lesen, „besetzt“ anzeigen, Rückweg zum Plan fragt `GET /tables` neu).
-
-- **Ein Server, kein `/api` (Entscheidung des Nutzers, 20.09.2026, „rebuild!“):** Vite übersetzt nur noch (`vite
-  build` legt die fertige Seite nach `dist`, `npm run watch` wiederholt das bei jedem Speichern), unser Server gibt
-  `dist` aus und beantwortet die Adressen; ein Programm, Port 3000, beim Entwickeln wie im Restaurant („I don't want
-  complexity and otherness for the development and the discrepancy then to the restaurant“). Er lädt von Hand neu,
-  automatisches Auffrischen will er nicht. Damit entfallen der Vite-Server samt Proxy, Port 5173, `fs.allow`, und die
-  Adressen heißen `/menu`, `/tables`, `/tables/:table/orders|lock`: Das `/api` hatte nur die Proxy-Regel getragen,
-  in `dist` liegen nur `/index.html` und `/assets/…`, nichts kann mit einer Adresse zusammenfallen. **Lehre für
-  Claude:** Er fragte viermal „why do we need this“; Claude verteidigte erst den Vorsatz, statt die Annahme dahinter
-  (der Vite-Server) zu prüfen. Früher die einfachere Anordnung anbieten. Im Restaurant darf der Vite-Server ohnehin
-  nicht laufen: Er gab in der Kopie über `/@fs/…` jede Projektdatei aus, auch `wokflow.db` (geprüft, `200`).
-- **`src/server/page.ts` (neu):** `contentTypes` (Endung zu `Content-Type`, zugleich die Liste dessen, was überhaupt
-  ausgegeben wird) und `pageSend(response, path): void`: `/` ist `index.html`, `join` löst `..` auf, eine Prüfung
-  hält den Dateipfad im Ordner (siehe nächster Punkt), `no-store` wie bei `responseSend`, damit er nach einem Build
-  nie eine alte Seite sieht. **`pageSend` beantwortet beide Fälle selbst, Datei oder `404` ohne Körper (seine
-  Entscheidung, 20.09.2026: „this would be really clean“):** Claudes erste Fassung `else if (!pageSend(…))` fand er
-  „cringe“, zu Recht, eine Bedingung soll fragen, nicht handeln; der letzte Zweig von `requestHandle` ist jetzt ein
-  schlichtes `else { pageSend(response, path); }`. Der Aufruf steht in `requestHandle`, damit auch ein
-  Fehler beim Lesen bei `.catch` in `serverCreate` landet. Das Beispiel im JSDoc von `responseSend` zeigt deshalb
-  die `500`-Antwort, die `404` mit JSON-Körper gibt es nicht mehr. **Seine Wörter (selbst umbenannt):** in `api.ts`
-  `path` statt `address`, `pathMatch` statt `match`; in `page.ts` heißt der Dateipfad deshalb `file`. **Kommentare:**
-  das Ding beim Namen nennen statt „it“, wo es nichts kostet („so the answer has to name its type“); ein zweiter
-  Satz sagt, wofür etwas gebraucht wird, so allgemein, wie man es einem Anfänger sagen würde, „sent“ statt
-  „travels“. Erklärt und angekommen: Es reist keine Datei, nur ihr Inhalt als Zeichen, deshalb nennt jede Antwort
-  ihren Typ (Beispiel `<h1>14</h1>` mit `text/html` gegen `text/plain`).
-- **Der Ordner der Seite ist eine Konstante in `page.ts` (seine Entscheidung, 20.09.2026: „I don't want to keep
-  parameter … just because of the test, that's not clean code“):** `export const pageFolder`, gebaut wie der Pfad in
-  `database.ts`, `export` nur für die Tests (wie `locks`); Claudes Parameter durch `index.ts`, `serverCreate`,
-  `requestHandle`, `pageSend` ist wieder weg, `pageSend(response, path)`. Die Prüfung heißt jetzt
-  `relative(pageFolder, file).startsWith("..")`, damit es den Sonderfall Nachbarordner (`dist-old`) gar nicht gibt.
-  **Tests mit Attrappen (seine Idee: „the test can make dummies“):** `before` legt `dist/test/page.html` und
-  `page.css` an, ein `index.html` nur, wenn nichts gebaut ist; `after` räumt sie weg, den ganzen Ordner nur, wenn
-  die Tests ihn angelegt haben; ein gebautes `dist` bleibt unberührt (beides geprüft). Zwei Tests in `api.test.ts`;
-  `pathSend` schickt den Pfad mit `request` aus `node:http` wörtlich, weil `fetch` jedes `..` vor dem Senden
-  auflöst; außerhalb liegt `/../src/page/index.html`. 42 Tests grün, 5 von 5 kaputten Kopien gefangen. **Lehre:**
-  Einen Parameter, den nur die Tests brauchen, lehnt er ab, auch wenn er wie `database` aussieht; zuerst fragen,
-  wie die Tests sich selbst helfen können.
-
-- **Der Bildschirm wird in Scheiben gebaut (Nutzer einverstanden, 20.09.2026):** Für Browser-Code gibt es noch keine
-  Stilregeln; seine Korrekturen an Scheibe 1 werden die Regeln für den Rest. Innerhalb einer Scheibe baut Claude
-  alles ganz, danach wird langsam gelesen. **Gut statt schnell (Nutzer: „du musst nicht schnell bauen … clean, so kurz
-  wie möglich, so lang wie nötig, in meinem Stil“, „mehrere Iterationen“):** Nach dem Bau klar benennen, welche
-  Dateien geändert und welche neu sind, wie viel darin neu ist, als Tabelle (Datei, neu, was), und damit beginnen;
-  danach Datei für Datei jede geänderte Zeile wörtlich zeigen, TypeScript zuerst, CSS und HTML danach. **Die Liste
-  bleibt (Nutzer: „this is good that you show me. Don't make it away“):** Er sieht die Änderungen zwar in Git, kann
-  die Git-Ansicht aber noch nicht lesen. Claude hatte ein verstümmeltes Diktat als „Liste weglassen“ gelesen und als
-  Regel notiert; bei mehrdeutigem Diktat zuerst nachfragen. Installieren (`npm install -D vite`) bleibt seine Sache
-  („really good that you left it to me“): Claude trägt nur das Skript ein, die Zeile unter `devDependencies` schreibt
-  sein Befehl.
-- **Die Seite:** `vite.config.ts` (26 Zeilen: `root`, `outDir`, `emptyOutDir`, `sourcemap`), `src/page/index.html`
-  (103, der Plan aus dem Prototyp, je Tisch eine Zeile mit `data-table` und `grid-area`), `src/page/plan.css` (344,
-  aus den 98 Regeln des Prototyps, die der Plan wirklich benutzt, flach zusammengeführt), `src/page/plan.ts` (47:
-  `tablesShow`, `areaShow`). **Am Server dazu:** `orders.ts` (+16, `tablesRead`: `SELECT DISTINCT table_id … WHERE
-  closed IS NULL`, ohne `ORDER BY`, weil kein Aufrufer die Reihenfolge braucht; sein `@returns` von ihm gekürzt, kein
-  „none when …“ mehr, auch nicht in `ordersRead`), Zweig `GET /tables` in `api.ts`, `orders.test.ts` (+3) und
-  `api.test.ts` (+2), dort immer nur ein belegter Tisch im Vergleich, damit kein Test von einer nicht zugesagten
-  Reihenfolge abhängt. `package.json`: Skripte `build` und `watch`; `.gitignore`: `dist`.
-- **Geprüft in einer Kopie im Scratchpad, nie in seinem Ordner:** Typprüfung ohne Fehler, 42 Tests grün (mit rksv),
-  kaputte Kopien: bei `tablesRead` und seinem Zweig 6 von 7 gefangen (nicht gefangen: der Zweig nimmt auch `POST`,
-  harmlos), bei `page.ts` und dem letzten Zweig 8 von 8 (eine davon so, dass die Testdatei nie endet). Gegen den
-  laufenden Server: alle Adressen und Dateien richtig, 8 Versuche, `dist` zu verlassen (`/../wokflow.db`,
-  `/..%2f…`, `/..\…`, `/assets/../../…`), enden mit `404`. Seite im Browser bei 360 × 780 gegen den Prototyp
-  vermessen: alle Tische, Linien, Gang, Logo gleich, nur alles 1,8 px höher, weil die Kopftasten keinen
-  durchsichtigen Rand mehr haben. Passt auch bei 320 × 640 ohne Scrollen. Ohne Server erscheint der Streifen „Keine
-  Verbindung 无连接“ (neu, im Prototyp nicht vorhanden, Aussehen wie der Schieben-Streifen; Chinesisch von ihm zu
-  prüfen). Die gebaute Seite hat rund 165 KB.
-- **Stilkorrekturen des Nutzers beim Lesen (20.09.2026 abends, „I found it too long, learn from my style“), gelten
-  vor den älteren Regeln unter „Coden“:** In `requestHandle` hat er alle Stichpunkte zu lokalen Konstanten aus dem
-  JSDoc gestrichen (`address`, `match`, `tableId`, `tableResource`, dazu Claudes `pageSend` und „An unknown address
-  …“); was eine Konstante ist, steht jetzt als kurzes `//` am Zeilenende, groß begonnen, ohne Artikel (`// Path of
-  url, without protocol, host, port.`, `// Path /tables/:table/orders|lock`). Der JSDoc einer Funktion sagt nur noch,
-  was sie tut, plus die Adressliste. Eine Signatur mit vier Parametern bricht er nach dem zweiten um, zwei je Zeile,
-  die Fortsetzung unter dem ersten Parameter, ohne Leerzeile danach. **Stichpunkte zu benutzten Funktionen beginnen
-  mit dem Verb, das sagt, was die Funktion tut („joins and checks is also a description starting with what it
-  does“):** `{@link relative}: Resolves way from page folder to file, …`, nicht „Way from …“. In `pageSend` hat er
-  selbst das `if` mit `else` statt frühem `return` geschrieben, die Konstante `contentType` samt Prüfung auf
-  `undefined` gestrichen (ein vergessener Eintrag in `contentTypes` endet so als `500` mit Protokollzeile) und den
-  Zweck von `no-store` als `//` ans Zeilenende gesetzt. `page.ts` hat er danach nach eigenem Wort ganz verstanden.
-- **Promise sitzt noch nicht fest (Nutzer, 20.09.2026 spät, beim Wiederlesen von `await once(server, "listening")`:
-  „write in the handoff that I still had problem with the promise“):** Er wusste nicht mehr, warum `once` ein
-  Promise gibt und `server.on` nicht. Was trug: die drei Rollen als Tabelle (Autor der Klasse Promise baut im
-  Konstruktor `ready` und ruft `worker` sofort; der Ersteller eines Promise schreibt `worker`, in WokFlow die Autoren
-  von `once` und `fetch`; der Benutzer schreibt nur `await`, das ist er); `ready` als Knopf, der das Promise beendet;
-  `worker` mit Namen statt Lambda; das kleinste Beispiel mit `setTimeout(ready, 1000)`. Trennen: wer `ready` baut
-  (der Konstruktor) und wer `ready` ruft (wem `worker` den Knopf gibt: Timer oder Fach des Servers, also Node). Was
-  nicht trug: „hands us“, „we“ ohne zu sagen, wer gemeint ist, die Hilfsvariable `readyKept`, „worker is where we
-  decide when“. Beim nächsten Mal mit der Rollentabelle beginnen. Am Ende hat er die Skizze `onceSimple` selbst
-  richtig erklärt („we put the button into a slot of the server … the fulfillment button“): `worker` bestimmt, wer
-  den Knopf bekommt, der Halter bestimmt, wann er drückt. Claudes Patzer: „worker“ hieß in der Skizze die Funktion,
-  am 19.09. aber der eine Arbeiter von Node; zwei Bedeutungen für ein Wort. **Durchbruch in derselben Nacht, an
-  `pathSend` (`await once(raw, "response")` gibt ein Array):** Er hat den ganzen Nachbau selbst laut durchgespielt
-  und richtig beendet. Was trug: alle Lambdas als benannte Funktionen (`worker`, `inSlot`), verschiedene Namen für
-  verschiedene Dinge (`result` im Typ, `args` in der Funktion; Claudes doppeltes `values` hatte ihn aus der Bahn
-  geworfen), ein nachgebauter `EmitterSimple` mit `once` und `emit`, und vor allem `console.log` mit Nummern 1 bis
-  6 in jedem Schritt, daneben die echte Ausgabe. Sein eigener Merksatz: wissen, wann etwas nur gespeichert oder
-  weitergereicht und wann es ausgeführt wird (Name ohne Klammern gegen Name mit Klammern). Wer entscheidet was: die
-  Klasse Promise, wie beendet wird (`ready`), der Emitter, also Node, wann und mit welchen Werten (`emit`). Offen:
-  `resume` in `pathSend`.
-- **Alles Gerüst der API-Tests wohnt in `test/setup.ts` (seine Entscheidung, 21.09.2026 nach Mitternacht, nach
-  mehreren Anläufen; keine neue Datei: „setup is like a new file“):** `export let database` und `export let url`
-  (andere Dateien lesen sie, nur `serverStart` setzt sie; `url` ist je Test neu, weil der Port frei gewählt wird),
-  `serverStart`, `serverStop`, `pageDummyCreate`, `pageDummyRemove`, dazu `updateSend`, `lockSend`, `pathSend` mit
-  seinen Kommentaren wörtlich. `api.test.ts` hat nur noch vier gleich gebaute Hooks (`before(dummiesCreate);` …
-  `afterEach(serverStop);`, je mit seiner `//`-Zeile) und die Tests, 96 statt 175 Zeilen. Ein exportiertes `let`
-  ihm an zwei kleinen Dateien gezeigt (lesen geht, schreiben gibt TS2632); `locks` ist dagegen ein `const`, dessen
-  Inhalt sich ändert, Claudes Vergleich damit war schief. Seine eigene Zwischenfassung von `before` mit frühem
-  `return` legte bei gebauter Seite die CSS-Attrappe nicht an; ihm gesagt. Die zwei `404`-Tests hat er selbst zu
-  einem zusammengelegt. 41 Tests grün, mit und ohne gebautes `dist`. **Nur noch eine Attrappe (seine Entscheidung
-  nach langem Hin und Her):** `index.html` mit dem Text `pageDummy`, nur wenn keine Seite gebaut ist;
-  `pageDummyRemove` löscht sie nur, wenn ihr Inhalt die Attrappe ist (**seine Regel: ein Test stellt den Zustand
-  wieder her, den er vorgefunden hat**); ein leerer Ordner `dist` kann übrig bleiben. Die CSS-Attrappe samt Prüfung
-  des Typs `text/css` ist weg, weil Vite dem echten CSS je Build einen neuen Namen gibt und ihn die Ungleichheit
-  zur `index.html` störte; die kaputte Kopie „jede Datei als `text/html`“ fängt deshalb kein Test mehr, ein
-  falscher Typ zeigt sich beim Öffnen der Seite. Die Namen mit Fingerabdruck und `no-store` haben ihn sehr
-  verwirrt; nicht wieder aufmachen, für WokFlow gilt nur: `pageSend` und `responseSend` senden immer `no-store`.
-  `src/rksv/receipt.ts` steht in Git als geändert, nicht von Claude.
-- **Zu viele Kommentare in Claudes `setup.ts` (Nutzer, 21.09.2026: „you messed up a lot of comments … so much
-  unnecessary there“, er kürzt selbst):** Ein Kommentar sagt nur, was Name und Signatur nicht schon sagen; kein
-  JSDoc, der den Funktionsnamen in einen Satz umschreibt („Removes the dummy folder from the page folder“ über
-  `dummiesRemove`), keine zwei Zeilen, wo eine reicht, nichts doppelt mit der `//`-Zeile am Hook. **Artikel
-  weglassen, wo der Satz ohne sie lesbar bleibt, in allen Kommentaren, nicht nur in Stichpunkten („many the is not
-  really needed for readability“):** „Closes test server“ statt „Closes the test server“. Im nächsten Chat
-  zuerst seine gekürzte `test/setup.ts` lesen und die Kommentardichte dort als Maß nehmen.
-- **Für die Aufräumrunde notiert:** bei weiterem Wachstum die Seitentests nach `test/page.test.ts`; mit den
-  Bildschirm-Scheiben prüfen, welche API-Tests bleiben.
-- **Der Plan fragt nur, wenn er angezeigt wird, kein Timer (Entscheidung des Nutzers, 20.09.2026):** TOUCHIT frischt
-  den Handy-Tischplan auch nie von selbst auf (in `Bonieren_1a.aspx` und im dekompilierten Code geprüft); eine alte
-  Farbe kann nichts Falsches buchen, weil das Öffnen frisch liest und sperrt. Später bei Bedarf: neu fragen, wenn das
-  Handy entsperrt wird.
-- **Abweichungen vom Prototyp, alle ohne sichtbare Wirkung außer der ersten:** Tischpaare 19/18 und 24/23 haben
-  außen 12 px Rundung wie alle Tische (Prototyp 8 px, dort vermutlich beim Umstellen auf 12 px übersehen); englische
-  Klassennamen (`table`, `occupied`, `tab`, `selected` statt `t`, `b`, `g`, `on`); keine durchsichtigen Ränder; Logo
-  als CSS-Hintergrund, weil Vite beim Entwickeln ein `<img>` außerhalb von `root` nicht findet; keine `aria-label`
-  und kein `type="button"` (kein Formular auf der Seite); `large` entfällt (am Handy wirkungslos).
-- **Vite, am 20.09.2026 erklärt und angekommen:** die Seite gegen die Antworten der API; Vite übersetzt TypeScript
-  und gibt die Seite aus; läuft in Node wie unser Server, zwei Programme, Ports 5173 und 3000; Package als Bibliothek
-  (`dinero.js`) oder Werkzeug (Vite); die Seite reist einmal (rund 330 KB), danach nur Antworten; Einfärben passiert
-  am Handy mit dem Etikett `occupied` (CSS-Klasse, keine Java-Klasse); `vite` gegen `vite build`, `dist` ist nur ein
-  Ordnername; `/../../` am Beispiel `wokflow.db`. **Nicht angekommen:** „Daten“ gegen „Dateien“ als Gegensatz (Regel
-  unter „Zusammenarbeit“), `dist` und Caddy in einer Antwort mit zwei Wegen, eine Spezifikation mit fünf Punkten („zu
-  viel auf einmal“). Der Vite-Server mit Port 5173 ist seit dem Umbau erklärtes Wissen, nicht mehr der Aufbau. Was
-  ankam: eingefügte Zeilen mit ihren Nachbarn zeigen und mit „← new“ markieren („I understand this perfectly“). Noch
-  nicht erklärt und im neuen Code enthalten: `export default`, `defineConfig`, `join`, `extname`, `sep`,
-  `existsSync`, der `?:`-Ausdruck in `pageSend`, `request` aus `node:http` mit `resume`, `document.querySelectorAll`,
-  `classList.toggle`, `toggleAttribute`, `addEventListener`, CSS-Grid und `subgrid`.
-
-**Auftrag des Nutzers (18.09.2026):** (1) `src/server/api.ts` und `test/api.test.ts` Stück für Stück erklären und
-von ihm korrigieren lassen (Warum-Liste), (2) danach das nächste Modul, der Bestellbildschirm, samt Tischsperre.
-Er öffnet dafür neue Chats („every important thing right in the manifest and I will open new chats“).
-
-**Genau hier weitermachen:** in `requestHandle` die `if`-Kette mit ihren vier Zweigen (das große Bild kennt er:
-„Türsteher“, vier Antworten). Neu darin: `await json(request)` (den Körper lesen, deshalb `async`); das `try` mit
-Status `400` im `POST`-Zweig ist seit 18.09.2026 abends weg (siehe unten bei `api.ts`). Die Region `Tables` gibt es
-nicht mehr (siehe unten), `api.ts` ist bis `responseSend` durchgegangen; danach `api.test.ts`. Offen aus `serverCreate`: Schritt 3, warum dort ein
-normales `try`/`catch` nicht greift (die `async`-Funktion gibt sofort die Quittung zurück, der Fehler kommt später).
-
-**Am 18.09.2026 erklärt und angekommen (nicht wiederholen, nur anknüpfen):** das große Bild Handy, `api.ts`,
-`orders.ts`, Datenbank; was das Handy bekommt (Seite, Menü, Bestellungen) und dass das Handy die Seite baut;
-`createServer` merkt sich die Lambda, Node ruft sie je Anfrage mit frischem `request` und `response`
-(`addActionListener`, „Kellner zu Schichtbeginn einweisen“); `requestHandle` ist unsere eigene Funktion (eigene
-Namen Substantiv zuerst, Nodes Namen Verb zuerst); `async` gibt sofort eine Quittung (`Promise`) zurück, `.catch`
-hängt einen Zettel „wenn es scheitert“ daran und gibt es nur an einem `Promise`; `.catch` in `serverCreate` ist sein
-„global exception handler“; `console.error` landet im Terminal, später im Systemprotokoll von Linux; `request.url`
-ist nur der Pfad (Namen der Teile: protocol, host, port, path), `?? ""` wie `orElse("")`; `match`, Muster,
-`[A-Z0-9]+`, Klammern als Textmarker, `^` und `$`, `?.[1]`; Aufbau einer HTTP-Anfrage und einer HTTP-Antwort
-(erste Zeile, Kopfzeilen, Leerzeile, Körper); `responseSend` Zeile für Zeile; `JSON` wie `Math` in Java mit
-`stringify` und `parse`.
-
-**Stand (19.09.2026, nachts), am 20.09.2026 nachgezogen:** Typprüfung ohne Fehler, ohne rksv 16 Tests grün: 5
-`orders`, 4 `menu`, 4 `api`, 3 `locks`. Letzter Commit `6351f72` („lock updated after pull“, 20.09.2026, gepusht).
-Sophale arbeitet an rksv und pusht auf `main` (`src/rksv/`, `dep.ts`); am 20.09.2026 wurde deshalb ein Push des
-Nutzers abgelehnt, `git pull` machte den Merge-Commit `89fae5d`, ihm mit Buchstaben A, B, C, M erklärt (Bild mit zwei
-Linien kam an, der Satz „A, then C“ nicht). **rksv ist vorerst nicht Teil des Nutzers (20.09.2026: „this part is not
-for me currently“); in Modul-Chats nicht lesen, nicht anfassen.** Nicht committet (Git macht der Nutzer selbst): die
-Anbindung der Tischsperre in `api.ts` und `test/api.test.ts`, Kommentare in `test/locks.test.ts`, diese Datei.
-**Offen, fünf kleine Stilpunkte, gezeigt, nicht gepatcht:** `api.ts` Zeile 28 mit 85 Zeichen; „A HTTP-request from as
-the phone sends with headers:“ liest sich kaputt (Zwilling: „An HTTP-answer as the server sends it:“); „Tableid“
-statt „Table identifier“; `menu.test.ts` Zeile 4 mit 82 Zeichen; der Test „Unknown articles and variants are
-rejected“ prüft nur eine unbekannte Variante (`Cola 0.3`), keinen unbekannten Artikel.
-
-- **`orders.ts`, vom Nutzer Stück für Stück abgenommen und mitentworfen:** `ordersUpdate(database, tableId, update:
-  OrdersUpdate)` ist die einzige schreibende Tür neben `tableClose` und die einzige Stelle mit `transaction`.
-  **`OrdersUpdate = { add: OrderNew[]; remove: OrderNew[] }` liegt in `orders.ts` (Entscheidung des Nutzers,
-  18.09.2026):** Der Typ `Change` in `api.ts` war ihm zu vage und am falschen Ort, „change“ als Wort „a little
-  cringe“, `Orders` hätte dem Wort „orders“ eine zweite Bedeutung gegeben. Deshalb heißt alles „update“:
-  `ordersUpdate` (vorher `ordersChange` mit zwei Listen-Parametern), in `api.ts` `updateRead`, im Test
-  `updateSend`. Ein Aufruf liest sich `orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] })` und
-  sagt selbst, welche Liste was tut. Die Feldnamen `add` und `remove` hat er dabei gesehen und so gelassen. Darunter, ohne `export` und ohne eigene Transaktion, je eine Bestellung:
-  `orderAdd` (holt Preis und Steuersatz selbst mit `orderOf`, prüft die Menge, legt je Portion eine Zeile an) und
-  `orderRemove`. Alles, was vom Handy kommt, ist `OrderNew`; niemand von außen kann eigene Preise übergeben. Seine
-  Ideen: nur eine Transaktion, gleiche Typen für beide Listen, einzelne statt Listen-Funktionen, „add“ statt „send“
-  („send“ ist, was das Handy tut). **Erst entfernen, dann hinzufügen (seine Regel):** Ein Entfernen meint immer
-  Portionen von vor dieser Nachricht; noch nicht Gesendetes korrigiert der Kellner am Handy, Gesendetes im Reiter
-  „Bestellt“. So wirft „2 Cola dazu, 3 Cola weg“ bei nur 1 Cola am Tisch von selbst.
-- **`orders.test.ts`, 5 Tests (seit 18.09.2026 abends mit „Price and tax rate come from the menu“ aus `api.test.ts`), je Ursache eines Wurfs genau einer (sein Schnitt):** der Ablauf, „A quantity below 1
-  changes nothing“ (bucht erst `colaBig1`, dann `{ add: [colaBig2, redBull0], remove: [colaBig1] }`: der einzige
-  Test, in dem ein schon ausgeführtes Entfernen zurückgerollt werden muss; eine kaputte Kopie mit zwei getrennten
-  Transaktionen macht nur ihn rot). **Der Pizza-Test ist weg (Nutzer, 18.09.2026 abends: „in the menu test we already
-  test what happened if something isn't in the menu“):** Die Regel „nicht im Menü“ wohnt in `menu.ts` und wird in
-  `menu.test.ts` geprüft, nirgends sonst; Weiter:
-  „Only portions from before a change can be removed“ (hält die Reihenfolge fest), „A free table has nothing to remove
-  or to close“. **Jedes `throws` bekommt ein Stichwort als Muster (`/quantity/`, `/menu/`, `/remove/`, `/open/`), nie
-  den ganzen Text** (ersetzt „keine Fehlertexte prüfen“ vom Vortag): Ein nacktes `throws(lambda)` besteht bei jedem
-  Fehler, auch beim falschen; in einem Test darf nur eine Regel werfen können. Ob ein Test nötig ist, entscheidet
-  der Versuch mit kaputten Kopien (der Test „Removing takes all portions or none“ fing nichts Eigenes und ist weg).
-- **`api.ts`, von Claude neu geschrieben, der Nutzer geht sie seit 18.09.2026 mit Claude durch:** `GET /api/menu`,
-  `GET` und `POST /api/tables/:table/orders`; der `POST` bekommt ein `orders.OrdersUpdate` und ruft
-  genau einmal `orders.ordersUpdate`, `DELETE` gibt es nicht mehr. **Keine eigene Fehlerklasse (Entscheidung des
-  Nutzers, 18.09.2026: „we should be sparingly with types“, „yes much better“):** **Kein Status 400 mehr
-  (Entscheidung des Nutzers, 18.09.2026 abends: „this client shit … too much for me“, „We should program this that
-  the client never can make a mistake. So patch this“):** Das `try` im `POST`-Zweig ist weg, er sieht aus wie die
-  beiden `GET`-Zweige. Jeder Fehler landet in `serverCreate`: 500, „The server failed“, der Grund steht als Zeile im
-  Serverprotokoll. Gespeichert wird trotzdem nichts Falsches (`transaction`). Grund: Mit Tischsperre und einem
-  Bildschirm, der nur Vorhandenes entfernen lässt, ist ein solcher Fehler ein Fehler in der eigenen Seite, nicht des
-  Kellners. Das `try` kommt nur zurück, wenn der Bildschirm den Grund wirklich anzeigen muss. **Der `POST` antwortet
-  mit `200` und `null`, nicht mehr mit den offenen Bestellungen (Nutzer, 18.09.2026 abends: „why we have to respond …
-  if the phone already knows what it sent“, „just patch“):** Gesendet wird am Rückweg zum Tischplan, das Handy zeigt
-  danach keine Bestellungen; beim nächsten Öffnen fragt es mit `GET …/orders`. Im Ablauftest prüfen die `POST` nur
-  noch den Status, der Stand kommt aus dem `GET` am Ende. **Die Formprüfung ist weg (Nutzer,
-  18.09.2026 abends: „remove is better“):** Die Region `Tables` (`objectRead`, `updateRead`, `orderNewRead`) ist
-  entfernt, der `POST`-Zweig ruft `orders.ordersUpdate(database, tableId, await json(request) as
-  orders.OrdersUpdate)`; `api.ts` hat 113 Zeilen. Belegt mit 14 kaputten Anfragen (Menge als Text, fehlende Liste,
-  `null`, Liste statt Objekt, Menge -1 und 1.5 beim Entfernen) gegen eine Kopie mit und ohne Prüfung: beide Male `500`
-  und Tisch unverändert, weil `orders.ts` alles selbst abweist (`entryOf` mit `===`, `Number.isInteger`, `changes`,
-  `transaction`). Das Serverprotokoll bleibt verfolgbar: Zeit, Methode, Adresse, Fehlertext aus `orders.ts` („Cola
-  needs a valid quantity of at least 1“) samt Aufrufkette mit Datei und Zeile; bei falscher Form ein `TypeError` mit
-  Zeile in `orders.ts`. Für die Sicherheitsrunde vormerken: Prüfung an der Tür, und der gesendete Körper steht nicht im
-  Protokoll. Offen: `api.ts` hat nur noch die Region `Server`; nach seiner Regel (Regionen nur bei mehreren Teilen)
-  wären die Marken verzichtbar, ihm überlassen. Unbekannte Adresse oder Methode 404 direkt. `RequestError`,
-  `tableChange`, `bodyRead` sind entfernt. `node:http` bietet keine Fehlerklassen, nur `STATUS_CODES` (Exportliste geprüft).
-  Tischkennung nur Buchstaben und Ziffern; **kein `undefined`, wo ein leerer Text reicht (Nutzer, 18.09.2026: „this
-  is just not beautiful with the undefined“):** `const tableId: string = address.match(…)?.[1] ?? ""`, geprüft
-  wird mit `tableId !== ""`; sicher, weil das Muster mindestens ein Zeichen verlangt. **Muster mit vielen
-  Schrägstrichen als `new RegExp("^/api/tables/([A-Z0-9]+)/orders$")` statt zwischen Schrägstrichen (Nutzer,
-  18.09.2026: „readability higher“; die Kleinbuchstaben hat er selbst gestrichen, Tische heißen nur mit Ziffern und
-  Großbuchstaben, so können `g3` und `G3` nie zwei verschiedene Tische werden):** so steht der Pfad ohne `\/` da; falls IntelliJ die Literalform vorschlägt,
-  nicht zurückbauen. Erklärt und angekommen: `match` wie `contains`, das statt `true` das Gefundene in einer Liste
-  gibt und statt `false` `null`; das Begrenzungszeichen ist das Problemzeichen (`\/` zwischen Schrägstrichen, `\"`
-  in Anführungszeichen); in Anführungszeichen lesen zwei nacheinander (erst die Zeichenkette, dann das Muster),
-  deshalb dort `"\\d"`. Nicht angekommen war vorher: Array-Beispiele ohne diesen Unterbau, und der Satz „in Java
-  muss man den Backslash verdoppeln“ ohne Beispiel (sein eigenes `"M:\\NomWorkspace\\"` half). Die Adressen bleiben, wie sie sind (Nutzer, 18.09.2026, „ok keep
-  this“): eine Adresse `/api/tables/:table/orders`, die Methode entscheidet (`GET` liest, `POST` ändert); `/orders`
-  bleibt am Ende, weil Tischsperre und Rechnung daneben geplant sind (`…/lock`, `…/bill`). **`GET /api/menu` sendet `menu` roh, wie es in `menu.ts` steht
-  (Entscheidung des Nutzers, 18.09.2026, „patch the API as easy as possible“):** je Kategorie `tax`, `print`, `groups`; ein Preis kommt in der Textform
-  von Dinero an, `{"amount":310,"currency":{"code":"EUR","base":10,"exponent":2},"scale":2}`, das Handy liest
-  `price.amount`; in den Bestellungen bleibt `price` eine Zahl in Cent. Kein Umpacken mehr (`MenuResponse` samt
-  drei Funktionen entfernt), `api.ts` hat 144 Zeilen, davon rund 60 Code, und wird nicht aufgeteilt. Rechnen mit
-  Dinero kommt erst mit der Rechnung; das Menü hält die Preise weiter als Dinero, die Datenbank als Cent (Nutzer:
-  so lassen). Fehlertexte englisch wie in `orders.ts`. Die Regionen `Types` hat der Nutzer selbst entfernt, es gibt
-  in `api.ts` keinen eigenen Typ mehr.
-- **Erste Durchsicht von `api.ts` durch den Nutzer (18.09.2026), offen, ein Thema nach dem anderen klären:**
-  1. Erledigt: Menü roh senden, siehe oben. Das rohe Menü hat 28709 Zeichen (vorher 14609), im WLAN belanglos.
-  2. Dateikopf von `api.ts` auf einen Satz gekürzt (mit dem Menü-Patch). `orders.ts` ebenso, auf sein „patch“ am
-     18.09.2026 abends: „Stores the orders of the tables in SQLite, one row for each portion.“
-  3. Erledigt: `RequestError` ist weg, siehe oben.
-  4. Erledigt: `Change` ist als `OrdersUpdate` nach `orders.ts` gewandert, siehe oben bei `orders.ts`.
-  6. Ihm am Prototyp erklärt: Das Handy bekommt das Menü als Daten und baut den Bildschirm selbst, der Server
-     schickt kein fertiges HTML; Tippen muss ohne Anfrage an den Server gehen, gesendet wird erst am Rückweg.
-     Plan für die Seite (Nutzer einverstanden: „okay, then let's do this“): Schriften und Bilder hält der
-     Browser-Cache am Handy, sie reisen nur beim ersten Mal (seine Frage nach „installation time“); eine
-     installierbare Seite ist später möglich, jetzt nicht nötig. `GET /api/menu` genau einmal beim Start der
-     Seite, das Menü bleibt im Speicher des Handys, neu geladen wird es nur mit der Seite; beim Öffnen eines
-     Tisches nur `GET …/orders`. Ein veraltetes Menü am
-     Handy kann keine falschen Preise buchen, weil der Server Preis und Steuersatz selbst holt (`orderOf`).
-     Sorge des Nutzers: Nach dem Sperren des Handys lädt die Seite mal neu, mal nicht (kennt er vom TOUCHIT-Handy).
-     Vorschlag von Claude für das Bildschirm-Modul, nicht entschieden: Die Seite speichert bei jedem Tippen am
-     Handy (Browser-Speicher), welcher Tisch offen ist und was noch nicht gesendet wurde, und macht nach einem
-     Neuladen dort weiter; dann ändert ein Neuladen für den Kellner nichts. Früh am ältesten Kellner-Handy mit dem
-     Prototyp prüfen, ob der Browser schnell genug ist (Prototyp rund 330 KB mit Schriften, das Menü 15 KB).
-- **Bewusst weggelassen gegenüber der alten `api.ts`, für die Sicherheitsrunde vor dem Echtbetrieb vormerken:**
-  Größenlimit für den Körper (64 KiB), Prüfung des `Content-Type`, Status 405, Dekodieren der Tischkennung. Begründung:
-  Nur eigene Handys im Betriebs-WLAN sprechen mit dem Server. Offen für das Bildschirm-Modul: doppeltes Senden, wenn
-  die Antwort im WLAN verloren geht (Idee: Kennung je Nachricht, die der Server nur einmal annimmt).
-- **`api.test.ts`, 3 Tests statt 6 (Wunsch des Nutzers, 18.09.2026 abends: „reduce … but still cover all of the
-  necessary cases“), insgesamt 13 Tests:** (1) Ablauf über echte HTTP-Anfragen: Menü gegen
-  `JSON.parse(JSON.stringify(menu))`, Updates an Tisch 14 und G3, beide Tische zurücklesen; (2) „An unknown address
-  gets status 404“; (3) „A failure gets status 500 and the server keeps running“: ein gescheitertes Update und eine
-  geschlossene Datenbank, danach antwortet das Menü weiter, `console.error` per `t.mock.method` zweimal gezählt.
-  „Price and tax rate come from the menu“ steht jetzt in `orders.test.ts`, weil die Regel in `orders.ts` wohnt.
-  Entfernt, weil `orders.test.ts` und Test 3 dasselbe fangen: „A failed update …“, „A broken request …“. Beleg: 12
-  kaputte Kopien (Menü nur Getränke, `GET` sendet nichts, `GET` oder `POST` immer Tisch 14, `POST` speichert nicht,
-  `POST` schluckt den Fehler und antwortet `200`, `GET`-Zweig nimmt auch `POST`, 404 als 200, 500 als 200, kein
-  Protokoll, Status nie gesetzt, `orders.ts` glaubt dem Preis des Handys): die 3 fangen alle 12, die 6 alten
-  übersahen die beiden „immer Tisch 14“. `beforeEach` braucht `database` als eigene Variable, weil Test 3 sie
-  schließt (seine Kürzung `serverCreate(databaseTest())` ließ die Typprüfung scheitern, zurückgenommen). Server je
-  Test auf Port 0 an `127.0.0.1`, `afterEach` schließt ihn.
-- **Tischsperre, Regel gebaut am 20.09.2026 ohne Spezifikation (Nutzer: „build this without showing me the spec, but
-  as short as possible, but all what we need“); `src/tables/locks.ts` und `test/locks.test.ts` ist er am 20.09.2026
-  von oben nach unten durchgegangen, am Ende geprüft: Typprüfung ohne Fehler, 15 Tests grün, 8 kaputte Kopien gefangen.
-  Offen ist nur noch die Anbindung in `api.ts` (Vorher/Nachher zeigen, dann sein Ja).** Die Datei hat keine Imports, der JSDoc von `Lock` trägt
-  den Dateikopf `## Table-lock` (von ihm geschrieben). Inhalt: Typ `Lock = { deviceId, expires }`, Konstante
-  `lockDuration`, die Konstante `locks` (`Map<string, Lock>`, mit `export` nur für die Tests), `tableLock(tableId,
-  deviceId): boolean`, `tableUnlock(tableId, deviceId): void`. Dazu `test/locks.test.ts` mit 3 Tests, Geräte heißen
-  dort `"phone"` und `"pc"`.
-  - **Die `Map` wohnt in `locks.ts`, nicht beim Aufrufer (Idee und Entscheidung des Nutzers, 20.09.2026: „this is
-    really nice“):** wie `entries` in `menu.ts`, eine Konstante in der Datei. Gewinn: ein Parameter weniger, `api.ts`
-    braucht keine `Map`. Weil sich alle Tests einer Datei die eine `Map` teilen, leert die Testdatei sie vor jedem
-    Test: `beforeEach((): void => { locks.clear(); });` (seine Idee: „or we just refresh the map“, „locks clear is
-    good“); dafür trägt `locks` ein `export`, das sonst niemand benutzen soll, `api.ts` importiert nur `tableLock` und
-    `tableUnlock`. Tests in `api.test.ts`, die sperren, brauchen dasselbe `clear` im `beforeEach`. Verworfen: je Test
-    ein eigener Tisch (Claudes erster Stand), eine eigene `Map` der Tests als dritter Parameter (ein Parameter nur für
-    Tests, die echte `Map` bliebe ungetestet).
-  - **Import in `locks.test.ts`, von Claude entschieden, ihm gesagt:** vier einzelne Namen aus `locks.ts` statt
-    `import * as locks`, obwohl die Importregel ab vier Namen den Stern verlangt; sonst hieße es `locks.locks.clear()`,
-    und `menu.menu` fand er hässlich.
-  - **Lehre für Claude (Nutzer: „why don't you suggest me that previously“):** Claude hatte die `Map` hineingereicht
-    wie `database`, wegen „frischer Zustand je Test“, und sein eigenes Muster `entries` übersehen. Vor dem Bauen im
-    Code des Nutzers nach einem Vorbild suchen und die kürzere Fassung zuerst zeigen; weniger Parameter wiegen für ihn
-    schwerer als ein frischer Zustand je Test.
-  - **`lockDuration` ist 5000 (vom Nutzer selbst von 30000 geändert, 20.09.2026).** Folge für den Bildschirm: Die
-    Seite muss deutlich öfter als alle 5 Sekunden verlängern, etwa alle 2 Sekunden; gehen im WLAN zwei Verlängerungen
-    verloren, ist der Tisch frei. Ihm gesagt, Entscheidung bleibt seine.
-  - **Sein JSDoc von `tableLock`:** unter dem ersten Satz Stichpunkte statt weiterer Sätze, ohne Artikel am Anfang
-    („Lock of a device runs out by itself after …“), wie in `api.ts`. Gilt damit auch in `src/tables/`.
-    **Bedingung zuerst (Nutzer, 20.09.2026, zu Claudes „Renews the Lock, when the device has the table already.“):**
-    erst der Fall, dann was passiert: „If the device holds the {@link Lock} already, the lock is renewed.“
-    Claudes JSDoc von `locks` hat er auf eine Zeile gekürzt: „Table-locks in server memory, at most one {@link Lock}
-    for each table.“ („in server memory“ statt „in the memory of the server“): knappe Fügungen, eine Zeile, wo es passt.
-  - **Erklärt und angekommen (20.09.2026):** eine Sperre ist nur ein Zettel (Gerät, Ablaufzeit), `locks` das Notizbuch
-    mit höchstens einem Zettel je Tisch; `locks.get` gibt `undefined` ohne Zettel; `typeof` kennt zur Laufzeit kein
-    `Lock`, nur `object` und `undefined` (TS2367 gezeigt); `Date.now()` ist eine Zahl in Millisekunden seit 1970;
-    Verlängern ist ein erneuter Aufruf von `tableLock` (Zeile mit `locks.set`); das Verlängern sitzt am Handy, weil nur
-    das Handy weiß, ob der Tisch noch offen ist (mit einem Timer in `locks.ts` liefe die Sperre eines toten Handys nie
-    ab); kein eigener Arbeiter am Server, der Server vergleicht nur, wenn jemand fragt.
-  - **Die Leiter zu `t.mock.timers`, die trug (20.09.2026), je Antwort eine Stufe, jede Datei vorher ausgeführt:** (1)
-    `Date.now` von Hand tauschen wie gestern `console.error` (retten, überschreiben, zurückschreiben); (2) eigene Uhr
-    mit `let time`, `time += 4999`; (3) `t.mock.method(Date, "now", (): number => 0)`: die ersten zwei Argumente
-    nennen, was ersetzt wird, das dritte ist der Ersatz; (4) `timers` als Tabelle „von Hand / mit dem Werkzeug“; (5)
-    `enable` schaltet ein und startet bei 0 (als ISO-Text 1970), `apis` ist ein Union-Typ mit vier Namen (TS2322
-    gezeigt); (6) `"Date"` tauscht `Date.now()` und `new Date()`, nicht `new Date(zahl)`; (7) der echte Test mit dem
-    Uhrstand hinter jeder Zeile. **Claudes Fehler dabei: „mock“ für zwei Dinge benutzt** (den Ersatz und die Kiste
-    `t.mock`); gelöst mit einer nachgebauten Kiste `const mock = { method: methodSwap };`. Er: „I understand this for
-    now, not forever“.
-  - **Seine `//`-Kommentare im zweiten Test von `locks.test.ts` (20.09.2026, selbst geschrieben, von Claude auf sein
-    „patch it“ berichtigt):** hinter jeder Zeile der Uhrstand oder das Ergebnis, klein geschrieben, in seinen Worten:
-    `// clock 4999`, `// lock obtained (at 0)`, `// lock refused (5000 > 4999)`, `// lock renewed (at 4999)`. Der
-    Vergleich steht wie im Code, `expires > clock`. Nicht entfernen.
-  - **`tableUnlock` bleibt `void` (seine Frage, 20.09.2026):** Niemand läse die Antwort, der Kellner verlässt den Tisch
-    in beiden Fällen; derselbe Grund wie bei `null` im `POST …/orders`.
-  Claudes übrige Entscheidungen, vom Nutzer zu bestätigen:
-  - **Besetzt ist keine Ausnahme:** `tableLock` gibt `false` zurück, wenn ein anderes Gerät den Tisch hat, und wirft
-    nicht. Der Kellner muss das sehen, es ist kein Fehler der eigenen Seite; so braucht `api.ts` weder `try` noch
-    einen neuen Statuscode.
-  - **Nehmen und Verlängern sind dieselbe Funktion:** Dasselbe Gerät ruft `tableLock` einfach wieder auf.
-  - **Die Gerätekennung ist ein Text, den das Gerät selbst wählt.** Nicht die IP-Adresse: Hinter Vite kämen alle
-    Handys von derselben Adresse. Das Freischalten der Handys durch den Chef ist ein späteres Modul.
-  - **`tableUnlock` prüft das Gerät:** Ein Handy, dessen Sperre abgelaufen ist, darf beim Rückweg zum Tischplan nicht
-    die Sperre des nächsten Geräts löschen. Abgelaufene Einträge bleiben in der `Map` liegen (höchstens einer je
-    Tisch), kein Aufräumen.
-  - **`POST …/orders` prüft die Sperre nicht:** Die Seite verlängert vor dem Senden, danach hält sie den Tisch sicher
-    für `lockDuration`; gegen einen Fehler der eigenen Seite schützt weiter `ordersUpdate` (alles oder nichts). So bleibt
-    `OrdersUpdate` unverändert. Erst nachrüsten, wenn es am echten Handy schiefgeht.
-  - **Zeit im Test:** `t.mock.timers.enable({ apis: ["Date"] })` und `tick`, damit `tableLock` keinen Parameter nur
-    für Tests braucht. Neu für den Nutzer: `Map` mit `get`/`set`/`delete`, `Date.now()`, `t.mock.timers`.
-  - Beleg: 8 kaputte Kopien (anderes Gerät bekommt den Tisch, kein Verlängern, läuft nie ab, Verlängern verlängert
-    nicht, jeder darf entsperren, Entsperren tut nichts, eine Sperre für alle Tische, läuft eine Millisekunde zu spät
-    ab); jede macht mindestens einen Test rot, jeder der 3 Tests fängt mindestens einen Fehler allein.
-  - **Anbindung in `api.ts`, gebaut am 20.09.2026 auf sein Wort („you do it fast and i read it fast“, ohne
-    Vorher/Nachher), von ihm noch zu lesen:** `serverCreate` und die Signatur von `requestHandle` sind unverändert.
-    Neu: Modulzeile „`../tables/locks.ts`: Locks a table for one device.“, Import von `tableLock` und `tableUnlock`,
-    **ein Muster für beide Adressen (seine Idee, 20.09.2026: „it's about the same table“, „this is nice“):** `const
-    match: RegExpMatchArray | null = address.match(new RegExp("^/api/tables/([A-Z0-9]+)/(orders|lock)$"));`, daraus
-    `tableId` (`match?.[1] ?? ""`) und `tableResource` (`match?.[2] ?? ""`); die Zweige fragen `request.method ===
-    "POST" && tableResource === "lock"`. Claudes erster Stand mit zweitem Muster und `tableIdLock` ist weg. Namen: Er
-    fand `parts`/`tablePart` „weird“ und fragte nach den üblichen Wörtern: Das Ergebnis von `match` heißt „match“, die
-    `()` heißen „capture groups“, `orders`/`lock` in einer Adresse „resource“. Zwei Zweige: `POST /api/tables/:table/lock` antwortet `200`
-    mit `true` oder `false`, `DELETE` derselben Adresse entsperrt und antwortet `200` mit `null`; die Gerätekennung
-    steht als JSON-Text im Körper (`await json(request) as string`). In `api.test.ts` der Helfer `lockSend(method,
-    tableId, deviceId): Promise<boolean | null>`, der die Antwort schon als JSON liest (Typ von ihm gewählt statt
-    Claudes `unknown`: „makes more sense“; erklärt: der Körper ist nie leer, `true`/`false`/`null` als JSON-Text,
-    `response.json()` packt den Inhalt aus, deshalb kein `Response` wie bei `updateSend`), und ein Ablauftest mit vier Zeilen „A table is locked
-    for one device until it is unlocked“. Kein `locks.clear()` dort, weil nur dieser eine Test sperrt; ein zweiter
-    sperrender Test braucht es. Beleg: 4 kaputte Kopien von `api.ts` (sperren antwortet immer `true`, entsperren
-    entsperrt nicht, Gerät ignoriert, `DELETE`-Zweig nimmt jede Methode), jede macht den neuen Test rot. Die Seite
-    verlängert, solange ein Tisch offen ist (kommt mit dem Bildschirm).
-- **`orders.ts` geteilt (Wunsch des Nutzers, 18.09.2026: „for me its long somehow“, „orderbook is good“):**
-  `src/tables/orderbook.ts` (neu, 56 Zeilen) hält `orderbookCreate` und `transaction`, beide mit `export`, seine
-  Kommentare wörtlich übernommen. `orders.ts` (186 Zeilen) hält die Typen `Order`, `OrderNew`, `OrdersUpdate` und
-  die sechs Bestellfunktionen und importiert `transaction`; `orderAdd` und `orderRemove` bleiben ohne `export`,
-  damit `ordersUpdate` die einzige schreibende Tür bleibt (deshalb kein weiterer Schnitt). `index.ts` und
-  `test/setup.ts` holen `orderbookCreate` aus der neuen Datei. Modulzeile überall: „`…/orderbook.ts`: Creates the
-  database table of the orders.“ Keine eigene Testdatei dafür (Nutzer: „just one test is enough“), `orders.test.ts`
-  deckt beides. Verworfen: `orders.ts` plus `ordering.ts` plus `ordering.test.ts` (seine Zwischenidee), am 18.09.2026 abends
-  noch einmal gefragt (Typen nach `orderbook.ts`, `orders.ts` zu `ordering.ts`): Claude riet ab, weil die drei Typen
-  Ein- und Ausgabe der Funktionen in `orders.ts` sind und `api.ts` samt beiden Tests sonst zwei Imports bräuchten. Die
-  Regionen in `orders.ts` hat er selbst entfernt („we don't need region if we just have three methods“).
-- **Für die Aufräumrunde notiert, nicht jetzt:** Kommentarzeilen über 80 Zeichen in `orders.ts` (25, 41, 98, 149),
-  `articles.ts` (49), `menu.ts` (52), `database.ts` (16), `menu.test.ts` (4); die Datenbanktabelle heißt im SQL `orders`, im Kommentar und
-  in `orderbookCreate` `orderbook` (mit `orderbook` wäre der Name `orders` im Code frei).
-
-**Vorgehen im neuen Chat:** zuerst `orders.ts` und `orders.test.ts` lesen (sein Maßstab), dann `api.ts` und
-`api.test.ts`. Mit dem großen Bild beginnen (Handy, `api.ts`, `orders.ts`, Datenbank), dann Region für Region, je
-Antwort ein Stück mit Datei, Funktion, Zeilen, dann warten; er korrigiert Kommentare und Namen selbst, daraus Regeln
-machen. Reihenfolge von oben nach unten (Nutzer, 18.09.2026: „from the top to the bottom step by step“); die Imports
-überspringen und jeden Namen dort erklären, wo er benutzt wird. Wo es weitergeht, steht am Anfang dieses Abschnitts.
-Er wollte `responseSend` vor der `if`-Kette sehen („should we not go through response send first“); den Helfer
-zuerst zu erklären ist also in Ordnung, wenn er danach fragt.
-**Am 18.09.2026 abends war der Nutzer überfordert („i am sooooooooo overwhelmed“):**
-Claude hatte zu `serverCreate` hintereinander drei Umbauten gezeigt (eigene Funktion `errorSend`, benannte Konstante
-`errorRequest`, `try`/`catch` in `requestHandle` statt `.catch`). Lehre: nur die gestellte Frage beantworten, keine
-weiteren Entwürfe nachschieben; bei Überforderung sofort aufhören, offene Entscheidungen mit „bleibt, wie es ist“
-schließen, einen einzigen kleinen nächsten Schritt nennen. `serverCreate` steht unverändert im Original und läuft.
-Nicht entschieden und nur auf seine Nachfrage wieder aufgreifen: `try`/`catch` in `requestHandle` statt `.catch`
-(in einer Kopie geprüft, Typprüfung und 16 Tests grün; Preis: ein `try` im `try` im `POST`-Zweig).
-**Noch nicht erklaert und in `api.ts` enthalten:** `json` aus `node:stream/consumers`, `as orders.OrdersUpdate` im `POST`-Zweig; in `api.test.ts`: Port 0, `AddressInfo`, `deepEqual` mit `JSON.parse(JSON.stringify(menu))`.
-
-**`beforeEach` in `api.test.ts` und Promise, Stand der Erklärung (18. auf 19.09.2026, nachts):** Er will es wirklich
-verstehen („nope i want to understand“), drei Leseregeln reichten ihm nicht. Angekommen: `listen` wartet nicht
-(`server.address()` ist direkt danach `null`), der Server hat je Ereignisname einen „slot“ mit Lambdas wie die
-`ActionListener`-Liste eines Java-Buttons (sein eigenes Bild), `node:test` startet den Test erst, wenn `beforeEach`
-fertig ist, `Promise<void>` trägt nur den Zustand. Gescheitert: zwei Promises A und B in einer Liste, das neue Wort
-„slip“ ohne Erklärung (vorher „receipt“), zwei Schritt-Bilder mit Akteuren, Code und Text zugleich, Kommentare im
-Beispielcode, die den Ablauf statt das Ergebnis nennen, und die Regel „läuft, wo `()` hinter dem Namen steht“ (er:
-dann liefe auch `function hello()`; richtig ist: `function` davor oder `=>` dahinter mit Rumpf ist Definition, nur der
-nackte Name mit Klammern ist ein Aufruf, wie in Java `void hello() {}` gegen `hello();`).
-**Die Leiter, die trägt, je Antwort eine Stufe, immer die ganze Datei, ausgeführt, Ergebnis als Kommentar, darunter
-„was Node tut“ als nummerierte Liste mit Zeilennummern:** (1) `setTimeout` als Küchenwecker, Ausgabe A, C, B, klar;
-(2) `serverStart(ready)` mit `setTimeout(ready, 1000)`, gleich `listen(3000, lambda)` in `index.ts`, klar nach der
-Node-Liste; (3) alles, was den fertigen Server braucht, steht in der Lambda; beide `console.log` laufen zusammen nach
-einer Sekunde (Claudes Kommentare „one second later“ je Zeile las er als zwei Sekunden, „you lied to me“); (4) wozu
-`await`: nie nötig, nur gegen Lambda in Lambda in Lambda bei mehreren Wartedingen (Server, Menü, Bestellungen),
-klar; (5) flach mit `await wait(1000)` aus `node:timers/promises`, sein Einwand „you didn't show me the wait“; (6)
-Nachbildung `PromiseSimple` (Feld `state`, Konstruktor ruft `work` sofort und reicht „schalte auf finished“ hinein),
-in Einzelschritten: Lambda wird übergeben und läuft nicht, der Konstruktor baut die fehlende Lambda selbst, `work(…)`
-ruft unsere Lambda, dort heißt das Geschenk `ready`. **Durchbruch: Er schrieb die Nachbildung selbst mit Namen statt
-Lambdas um** (`function worker(ready)`, Methode `workarg`, `new PromiseSimple(worker)`) und sagte danach „ok den code
-check i jetz“. Zwei Korrekturen dabei: `this.workarg` statt `workarg`, und `workarg` als Feld mit `=>`, weil eine
-normale Methode ihr `this` verliert, wenn man sie ohne `()` weiterreicht (geprüft: Zustand bleibt pending). Lehre:
-benannte Funktionen zuerst, Lambdas erst danach. (7) Gezeigt, noch nicht bestätigt: dieselbe Datei mit dem echten
-`new Promise<void>(worker)`, `console.log(result)` zeigt `Promise { <pending> }`, nach `await result` `Promise {
-undefined }`. **Erledigt am 19.09.2026, die ganze Kette hat getragen:** `on` und `emit` als Fach mit Lambdas, von Claude
-nachgebaut und von ihm bestaetigt (`ServerSimple` mit `slots`, dann ein Array je Name, dann Ueberladungen);
-`createServer(lambda)` ist nur `on("request", lambda)`; Node ruft `emit` auf, `emit` prueft nichts, die aufrufende
-Stelle entscheidet den Namen; ein einziger Arbeiter, belegt mit zwei gleichzeitigen Anfragen und einer blockierenden
-Schleife (`start /b`, `ende /b`, `start /a`, `ende /a`); `...args: unknown[]` als Javas Vararg, samt Kontrast mit und
-ohne Punkte; `once` als Methode gegen `once` als freie Funktion aus `node:events`, nachgebaut mit `new Promise` und
-`ready` ins Fach; `ready` heisst offiziell `resolve`; `await` braucht `async`, weil die Funktion beim ersten `await`
-mit einer Quittung zurueckkommt (Fehlertext TS1308 gezeigt); inneres und aeusseres Promise sind verschieden (sein
-eigener Einwand, richtig); `fetch` gegen einen winzigen Server. `beforeEach` und `afterEach` sagt er selbst
-verstanden zu haben. **Was trug:** je Antwort eine kleine lauffaehige Datei, vorher wirklich ausgefuehrt, Ergebnis als
-Kommentar hinter der Zeile; Nachbildungen statt Worte; `listenerCount` vor und nach `emit` fuer „fliegt raus"; echte
-tsc-Fehlertexte als Beleg. **Was nicht trug:** zwei Zeilen Vergleich ohne lauffaehige Datei, und jeder Satz, der
-`on`, `once` und Promise in einem Zug nennt.
-
-**19.09.2026, zweiter Teil, `api.test.ts` durchgegangen:** `fetch` gegen einen winzigen eigenen Server (Client
-gleich Handy); warum `await` ueberall noetig ist, es gibt kein wartendes `fetch`, der eine Arbeiter darf nicht
-stehenbleiben; `updateSend` reicht das Promise von `fetch` nur durch, deshalb kein `async`, und ein `await` innen
-nimmt dem Aufrufer seines nicht ab (TS2740 gezeigt); `async` ist Pflicht bei `await` (TS1308), inneres und aeusseres
-Promise sind verschieden; `t.mock.method` von unten aufgebaut, zuerst ganz ohne Testrahmen (`console.error` in eine
-Variable retten, ueberschreiben, zurueckschreiben), dann `typeof console.error` ist `function`, dann eigener
-Fehlerdrucker, dann stdout gegen stderr mit `1>` und `2>`; drei Parameter von `mock.method`, ohne den dritten zaehlt
-er nur mit; der Weg ueber `t`, weil node:test den Mock am Testende selbst zuruecklegt; Sketch, wie `test` das `t`
-baut und erst beim Laufen hineinreicht, samt Ablage im Array und `await` in der Schleife (sein Einwand „warum extra
-speichern" war berechtigt, Claudes erster Satz dazu war falsch herum und wurde korrigiert: `async` startet nichts,
-nur sofortiges Aufrufen wuerde ueberlappen). **Der Typ von `logged`** in mehreren Anlaeufen: ein Mock ist eine
-Funktion (`typeof` ist `function`, `logged === console.error` ist `true`) mit Zusatzfeld `mock`
-(`MockFunctionContext` mit `callCount()` und `calls`); `Mock<F> = F & { mock: ... }`, `&` ist beides zugleich, `|`
-ist ein einziger Typ mit mehreren Formen; `T extends string` ist eine Einschraenkung, kein Erben, und
-`type Box<string>` ist verboten (TS2368: Type parameter name cannot be 'string'). Sein Fazit trug erst, als jede
-Antwort nur noch einen Satz und eine Zeile Code hatte.
-
-**Stand der Dateien am 19.09.2026:** `logged` hat jetzt einen ausgeschriebenen Typ, auf seinen ausdruecklichen
-Wunsch, dazu `Mock` im `import type` aus `node:test`:
-`const logged: Mock<((...data: any[]) => void) | (() => void)> = t.mock.method(console, "error", (): void => {});`
-Typpruefung gruen. Die zwei Tests, die aus seinen eigenen Aenderungen rot waren, hat er selbst repariert (20.09.2026
-geprueft, alle drei gruen): Test 1 vergleicht jetzt drei Status samt dem `GET`, Test 2 nimmt `deepEqual`.
-
-**Naechster Schritt (20.09.2026):** Er liest die Anbindung der Tischsperre in `api.ts` und `api.test.ts` (oben bei
-„Tischsperre“) und committet. Danach in einem frischen Chat diese Datei stark kürzen (sein Wunsch, 20.09.2026: 2.039
-Zeilen, davon 496 im Abschnitt „Nächster Chat“, großteils die abgeschlossene Durchsicht von `api.ts`; es bleiben
-Regeln, Entscheidungen mit einem Satz Grund, offene Punkte, Stand, nächster Schritt). Dann der Bestellbildschirm.
-Offen aus `api.test.ts`:
-`deepEqual` mit `JSON.parse(JSON.stringify(menu))`, Port 0 und `AddressInfo`; aus `api.ts`: `await json(request)`
-und `as orders.OrdersUpdate`. Im Frust wechselt er ins Deutsche, dann deutsch antworten.
-
-**Wie man ihm am 18.09.2026 etwas erklären konnte:** nicht mit SQL-Folgen und „Phone A/B“, sondern mit sechs
-nummerierten Schritten aus dem Restaurant („+1 Red Bull, −1 Cola“, Red Bull gespeichert, Cola schon weg, Handy bekommt
-„error“, Kellner sendet nochmal, 2 Red Bull auf der Rechnung). Fehler von Claude: Spezifikation, Vorher/Nachher und
-eine neue Idee in einer Antwort („I don't understand anything“). Behauptungen über Tests mit kaputten Kopien belegen
-und dabei zuerst prüfen, dass der unveränderte Code besteht (ein Versuch von Claude war selbst fehlerhaft, die
-gekürzte Testdatei lud nicht, alles schien „gefangen“).
-
-**Praktisches:** Die echte `wokflow.db` hat die Datenbanktabelle `orders` ohne `quantity`; nach jeder Änderung an
-`orderbookCreate` braucht IntelliJs Datenquelle ein Refresh. Prüfen nie in den Ordnern des Nutzers, sondern mit
-Kopien im Scratchpad; ein dort gestarteter Server auf Port 3000 muss wieder beendet werden (`netstat` zeigt auf dem
-deutschen Windows „ABHÖREN“, nicht „LISTENING“).
-
-### Arbeitsweise je Modul
-
-Entscheidung des Nutzers vom 16.09.2026: Claude baut ganze Module, nicht mehr Zeile für Zeile. Gründe: Vier Tage
-ergaben rund 500 Zeilen, in dem Tempo wird WokFlow nicht bis Mai 2027 fertig. Schreiben aus dem Leeren übt der Nutzer
-an der Uni (Java, Prüfungen); aus dem Projekt nimmt er das Bild im Kopf, das Urteil über Code, das Debuggen, ein
-fertiges Produkt. Studienlage (Anthropic 2026, Bastani 2025): Wer KI schreiben lässt und danach fragt „warum so“,
-lernt fast so viel wie von Hand; wer nur Code abholt, lernt wenig. Der Nutzer will Ultracode nutzen; das ist seine
-Wahl.
-
-1. Ein Modul je frischem Chat. Ein Modul ist ein Feature, das an einem Abend allein testbar ist. Module heißen
-   nach ihrer Aufgabe, nie nach einer Nummer, etwa Modul `tables` (Nutzer, 16.09.2026).
-2. Zuerst die Spezifikation: rund zehn Zeilen, was rein, was raus, was nie passieren darf. Claude schlägt sie vor,
-   der Nutzer korrigiert; erst nach seinem Ja wird gebaut.
-3. Dann der Plan: welche Dateien neu entstehen, welche bestehenden Dateien sich ändern, und dort jede Änderung als
-   Vorher/Nachher Zeile für Zeile. Erst nach dem Ja bauen.
-4. Claude schreibt das ganze Modul samt Tests (`node:test`, keine neue Bibliothek), führt Typprüfung und Tests aus,
-   zeigt das Ergebnis, gibt den Startbefehl.
-5. Der Nutzer startet es selbst und versucht, es kaputt zu machen.
-6. Fehler: der Nutzer sucht zuerst selbst, dann fragt er. Debuggen war in der Anthropic-Studie die größte Lücke.
-7. Warum-Liste: Der Nutzer liest jede neue Datei einmal und markiert jede Zeile, die er nicht erklären kann. Das
-   Modul ist erst fertig, wenn die Liste leer ist. Tiefe siehe unten.
-8. Eine Aufräumrunde am Ende, gemeinsam, einmal. Nicht vorher; Aufräumen vor dem Funktionieren ist Perfektionismus.
-9. Keine Pflicht-Übungsfunktion je Modul: Schreiben aus dem Leeren übt die Uni. Bleiben: Debuggen zuerst und
-   Warum-Liste.
-10. Kosten: frischer Chat je Modul, weil jede Nachricht den ganzen bisherigen Chat mitsendet. Mit Ultracode baut ein
-    Agent das Modul, weitere Agenten höchstens prüfen; nie mehrere Agenten gleichzeitig an bestehenden Dateien.
-
-### Wie tief das Warum geht
-
-- Stufe 1, jeder unbekannte Name, ein Satz: was er tut, warum er hier steht. Beispiel `readdirSync`: liest die Namen
-  in einem Ordner, wartet, bis es fertig ist, gibt eine Liste zurück.
-- Stufe 2, jede neue Idee, so tief wie nötig: `async`/`await`, Transaktion, Callback, Module und Imports, Typen.
-  Fertig, wenn der Nutzer sie erklären und vorhersagen kann, was bei einer Änderung passiert. Das ganze Projekt hat
-  vielleicht 15 solche Ideen. Zu jeder den Java-Gegenpart nennen: Der Nutzer kennt Java bis Generics, `ArrayList`,
-  Streams und `map` und will dieselbe Tiefe in TypeScript (16.09.2026); `T[]` wie `ArrayList<T>`, `array.map` wie
-  `stream().map`, `| null` wie `Optional`, Pfeilfunktion wie Lambda.
-- Stufe 3, nicht im Modul-Chat: wie Node etwas innen umsetzt, alle Optionen einer Bibliothek, Bibliotheksquelltext.
-  Im Projekt versteht man Bibliotheken über ihre Schnittstelle und ihre eine Idee (Dinero: Geld als ganze Cent plus
-  Währung). Java-Tiefe in TypeScript, bis in den Bibliothekscode wie bei `Stream`, ist ein eigenes Vorhaben mit
-  eigener Zeit (Quelltext, Buch, Übungen), nicht entschieden, nicht Aufgabe der Modul-Chats.
-- Stopp-Regel: Ändert die Antwort nichts daran, wie WokFlow-Code gelesen oder geschrieben wird, aufhören.
-
-### Schutz des Bestehenden (Nutzer, 16.09.2026: „don't destroy something which I coded already“)
-
-- Unangetastet, außer das Modul braucht es und der Nutzer hat die gezeigte Änderung bejaht: `src/catalog/*`,
-  `src/server/index.ts`, `src/server/database.ts`, `tmp/*`, `package.json`, `.editorconfig`, `commands.md`,
-  `icons/`, `fonts/`.
-- Neue Module in neuen Dateien, Ordner nach Aufgaben (`src/tables/`), keine Sammeldateien.
-- Stil der bestehenden Dateien nicht glätten, Namen nicht ändern. Alle Regeln unter „Coden“ gelten für erzeugte
-  Dateien genauso.
-- Jede Änderung an einer bestehenden Datei: erst die Liste „ändert sich / bleibt“, dann Vorher/Nachher, dann Ja.
-
-### Stand der Dateien (18.09.2026)
-
-Der Code ist die Wahrheit; hier steht nur, was er nicht selbst sagt. Die laufende Arbeit an `orders.ts`, `api.ts`,
-ihren Tests steht in der Übergabe am Anfang dieses Abschnitts.
-
-- `src/catalog/`: Artikelkatalog vollständig, siehe „Artikel und Gruppen“. `menu.ts` hat im `//#region Lookup` den
-  Typ `MenuEntry` (nur, was eine Bestellung braucht), die flache Liste `entries` mit einer Zeile je Variante,
-  `entryOf(articleId, variantId)`, das bei unbekanntem Namen wirft. Davor durchprobiert und verworfen, weil dem
-  Nutzer alles zu kompliziert war: `Map` mit Textschlüssel `"Cola|0.5"`, `Map` in `Map`, sofort aufgerufene Lambda,
-  eigene Funktionen `priceOf` und `taxOf`.
-- `src/tables/orders.ts` und `src/tables/orderbook.ts` (Datenbanktabelle und `transaction`, seit 18.09.2026 eigene
-  Datei) mit `test/orders.test.ts`: Modul `tables`, vom Nutzer abgenommen; Entscheidungen in der Spezifikation unten.
-- `test/menu.test.ts`: vier Tests für `entryOf` (Preis je Variante, Steuersatz der Kategorie, Leitungswasser,
-  unbekannte Namen); `orders.test.ts` importiert deshalb weder `dinero.js` noch `menu.ts`. Einwand des Nutzers zum
-  Preistest (17.09.2026): Der Testkörper läuft wie der Bau von `entries`, „duplicated code … seems to be useless“.
-  Das stimmt halb: Er fängt Vollständigkeit (fehlt eine Gruppe in `entries`, wirft `entryOf`) und einen Preis aus
-  der falschen Variante, aber keine doppelten deutschen Namen, weil `find` den ersten Treffer nimmt (gemessen: 200
-  Varianten, 0 Doppelte). Geplant, nicht gepatcht: zwei ehrlich benannte Tests über alle Varianten, „every variant
-  is found with its own price“ und „no two variants share the same name“ (braucht `Set`, vorher erklären).
-- `test/setup.ts`: `databaseTest` für eine frische Datenbank im Arbeitsspeicher.
-- `src/server/database.ts`: `databaseOpen()` öffnet `WokFlow/wokflow.db` mit `node:sqlite`, Pfad über
-  `import.meta.dirname`. `src/server/index.ts` öffnet sie beim Start, legt mit `orderbookCreate` die Datenbanktabelle
-  an, startet den Server aus `src/server/api.ts` auf Port 3000.
-- `src/server/api.ts` mit `test/api.test.ts`: aus einem anderen Chat, noch nicht auf dem Stand von `orders.ts`;
-  nächste Aufgabe, siehe Übergabe.
-- **Offen: `wokflow.db` steht nicht in `.gitignore`** (dort nur `.idea` und `node_modules`) und ist committet; `npm
-  start` ändert die Datei, und `git add .` nimmt sie mit. Vorschlag, nach Ja des Nutzers: `wokflow.db` in
-  `.gitignore` plus `git rm --cached wokflow.db` (Git verfolgt sie nicht mehr, die Datei bleibt liegen);
-  `.gitignore` allein reicht bei einer schon verfolgten Datei nicht.
-- Offen: die neuen Dateien gemeinsam durchgehen (Warum-Liste).
-
-### Modulreihenfolge (Vorschlag, der Nutzer ordnet um)
-
-1. `tables`: Bestellungen je Tisch in SQLite. Reine Logik und Speicherung, keine HTTP-Anbindung, kein Bildschirm.
-   Gebaut 16.09.2026, am 18.09.2026 auf eine Zeile je Portion umgestellt, Tests vom Nutzer abgenommen.
-2. Server-Schnittstelle: Katalog und Bestellungen als JSON über `node:http`, damit der Bildschirm sie holen kann.
-   Gebaut und mit dem Nutzer durchgegangen (18. und 19.09.2026).
-3. Tischsperre: `src/tables/locks.ts` und die Adresse `…/lock` in `api.ts` sind seit 20.09.2026 gebaut (siehe
-   „Tischsperre“ am Anfang dieses Abschnitts). Vorgezogen, weil sie entschieden ist, am Server wohnt, ohne Bildschirm
-   testbar ist. Es fehlt nur die Seite, die sperrt, verlängert, entsperrt.
-4. Bestellbildschirm am Handy mit dem echten Katalog, Gestaltung aus `tmp/screens.html`, in Scheiben. Scheibe 1,
-   der Tischplan mit den belegten Tischen vom Server, ist seit 20.09.2026 gebaut (siehe Anfang dieses Abschnitts);
-   Vite baut die Seite nach `dist`, unser Server gibt sie aus. Mit dem Bildschirm kommen die Sonderregeln für Zitrone und
-   Buffetpersonen; für Browser-Code gibt es noch keine Stilregeln. Das Schieben braucht eine Funktion in `orders.ts`.
-5. Danach nach dem Manifest: Rechnung, Zahlung, Druck, rksv, Tagesabschluss.
-
-### Modul `tables`, Spezifikation (gebaut 16.09.2026, Entscheidungen bis 18.09.2026)
-
-- Ein Tisch (Kennung als Text: `"14"`, `"G3"`, `"M"`) hat beliebig viele Bestellungen. Modul und Ordner heißen
-  `tables`, jede Position ist eine Bestellung, es gibt keinen eigenen Datensatz für den offenen Tisch (Namen nach
-  der Alltagssprache und dem Prototyp, Nutzer, 16.09.2026).
-- **Eine Zeile je Portion (Idee und Entscheidung des Nutzers, 18.09.2026, „patch it this way“):** Die
-  Datenbanktabelle `orders` hat keine Spalte `quantity`. Je Zeile: Tisch, deutscher Artikelname, Variantenname oder
-  null, Preis in Cent und Steuersatz zum Zeitpunkt der Buchung, `closed` (Zeitpunkt des Abschlusses, Name vom Nutzer
-  statt `closed_at`). Offen ist eine Portion, solange `closed` leer ist; ein Tisch ohne offene Portionen ist frei.
-  Die Menge wird gezählt, nie gespeichert: Das Handy schickt weiter `quantity`, das Senden legt so viele Zeilen an,
-  `ordersRead` zählt je Variante mit `COUNT(*)`; der Typ `Order` mit `quantity` bleibt für alle Aufrufer gleich.
-  Gründe: Mit Mengen je Zeile müsste das Entfernen mehrerer Portionen erst eine Bestellung leeren und dann die
-  vorige verringern. Jetzt haben alle Operationen dieselbe Form: n Zeilen einer Variante wählen, dann einfügen,
-  löschen, später als bezahlt markieren; getrennt kassieren heißt später n Zeilen markieren statt eine Zeile teilen.
-  Preis: mehr Zeilen (Schätzung rund tausend am Tag, für SQLite belanglos). Verworfen: eine Zeile je Tisch und
-  Variante mit hoch- und runtergezählter Menge; jede Operation würde ein Entweder-oder, und die nötige Eindeutigkeit
-  greift in SQLite nicht bei Variante `null`, weil `NULL`-Werte in einem eindeutigen Index als verschieden gelten.
-- **`Number.isInteger` in `orderAdd` bleibt (Frage des Nutzers, 18.09.2026):** `number` ist wie Javas `double`,
-  TypeScript hat kein `int`. Mit 1.5 legt die Schleife 2 Zeilen an, mit 0 oder -1 keine, jeweils ohne Fehler. Die
-  Prüfung ersetzt das frühere `CHECK (quantity > 0)` der Datenbank. Ganze Zahlen sind in `number` bis
-  9007199254740991 exakt, deshalb sind Cent und Mengen sicher.
-- **Bestellungen nur mit Namen (Entscheidung des Nutzers, 17.09.2026):** `OrderNew` ist `Omit<Order, "price" |
-  "tax">`, also `{ articleId, variantId, quantity }`, wie das Handy es schickt (`Omit` statt zweiter Feldliste).
-  `orderOf(orderNew)` macht daraus ein `Order`: holt einmal `entryOf`, setzt Preis und Steuersatz, wirft bei
-  unbekanntem Namen. Verworfen: ein einziger Typ mit `price?` und `tax?`, weil dann jede Stelle, die gespeicherte
-  Bestellungen liest, auf `undefined` prüfen müsste. Die Kategorie schickt das Handy bewusst nicht mit: Sie bestimmt
-  den Steuersatz, das Menü weiß sie schon. Offen: Der Name `OrderNew` passt für Entfernungen schlecht (JSDoc ergänzt,
-  Name nicht geändert).
-- **Kein Status, gespeichert wird erst beim Senden (Nutzer, 16.09.2026):** Die Datenbank kennt nur Gesendetes. Noch
-  nicht gesendete Bestellungen hält und korrigiert das Handy und schickt sie beim Rückweg zum Tischplan alle auf
-  einmal, ebenso die Entfernungen schon gesendeter Portionen (Nutzer, 18.09.2026); „Rückgängig“ passiert vorher am
-  Handy, der Server braucht dafür nichts. Stürzt das Handy vorher ab, sind sie weg und werden neu boniert; laut
-  Nutzer selten und vertretbar. Zwei gesendete Cola plus eine weitere lesen sich als „Cola 3“, getrennte
-  Bestellungen je Sendung gibt es nicht (Nutzer: „no newest order even needed“). **Der Bon druckt weiter Mengen
-  (Nutzer, 18.09.2026: „print should still print the qty“):** Gedruckt wird aus der Sendung, die `quantity` trägt,
-  nicht aus der Datenbank; die Rechnung bekommt ihre Mengen aus `ordersRead`.
-- **Reihenfolge ist zugesagt (Entscheidung des Nutzers, 18.09.2026, „Yeah, patch it“):** `ordersRead` sortiert nach
-  der ältesten offenen Portion jeder Variante (`ORDER BY MIN(id)`), und das `DELETE` in `orderRemove` nimmt mit
-  `ORDER BY id DESC` die neuesten Portionen zuerst, damit eine Variante ihren Platz behält, solange es sie gibt; am
-  Bildschirm „Bestellt“ springt dann keine Zeile. Ohne `ORDER BY` löschte SQLite die ältesten Zeilen, und „Cola
-  0.5“ rutschte unter „Cola 0.25“. Der Ablauftest sendet deshalb die große Cola zuerst und schlägt fehl, wenn die
-  Zeile im `DELETE` fehlt. Eine Datenbanktabelle hat kein Oben und Unten. Kostet nichts: `EXPLAIN QUERY PLAN` zeigt
-  mit und ohne dieselbe Suche im Index `tables_open`, ohne Sortierschritt.
-- Cola klein und groß im Ablauftest (Wunsch des Nutzers, 18.09.2026) fängt ein Entfernen, das die Variante
-  ignoriert. Ein Lesen ohne `variant_id` im `GROUP BY` fängt er nicht, weil klein und groß verschiedene Preise
-  haben; dafür bräuchte es zwei Varianten mit gleichem Preis.
-- `tableClose` setzt `closed`, die Portionen bleiben gespeichert. Katalogänderungen ändern gebuchte Bestellungen
-  nicht (Regel unter „Artikel und Gruppen“).
-- **Transaktionen:** Änderungen mit mehreren Anweisungen laufen als SQLite-Transaktion, alle oder keine. Mit einer
-  Zeile je Portion tragen sie mehr, nicht weniger: Eine Sendung von 2 Cola und 1 Red Bull sind drei `INSERT`, und
-  `orderRemove` löscht erst und prüft danach `changes` (3 Cola verlangt, 2 da: die 2 sind schon gelöscht, erst
-  `ROLLBACK` holt sie zurück). `transaction` ohne Generic (Nutzer, 16.09.2026): `work: () => void`, weil kein
-  Aufrufer einen Wert zurückbekommt; `<T>` erst wieder, wenn eine Transaktion etwas zurückgeben muss;
-  `catch (error: unknown)` hat der Nutzer selbst typisiert. **Offen (Nutzer, 17.09.2026):** Ihn stört, dass nicht
-  jede schreibende Funktion durch `transaction` läuft; `tableClose` ist ein einzelnes `UPDATE` und damit schon eine
-  Transaktion. Empfehlung von Claude: Regel „jede schreibende Funktion geht durch `transaction`, lesende nicht“,
-  kostet ein `BEGIN`/`COMMIT` ohne Wirkung. Nicht entschieden; mit `ordersUpdate` aus der Übergabe neu ansehen.
-- Zitrone und Buffetpersonen sind Bestellungen wie jede andere; ihre Sonderregeln kommen mit dem Bildschirm.
-- Nicht in Modul `tables`: HTTP, Bildschirm, Zahlung, Rechnung, rksv, Druck, Tischplan.
-- Offen (16.09.2026): Der JSDoc von `orderbookCreate` nennt die Datenbanktabelle `orderbook`, das SQL legt `orders`
-  an. Nachgefragt, ob die Tabelle `orderbook` heißen soll.
-
-### Was der neue Chat zuerst tut
-
-1. Diese Datei lesen, zuerst „Zusammenarbeit“ und „Coden“, dann den Anfang des Abschnitts „Nächster Chat“.
-2. `src/tables/orders.ts`, `src/tables/orderbook.ts` und `test/orders.test.ts` lesen, danach `src/server/api.ts`
-   und `test/api.test.ts`.
-3. Dem Nutzer `api.ts` dort weiter erklären, wo die Übergabe am Anfang dieses Abschnitts steht, danach
-   `api.test.ts`; Stück für Stück, sehr kurze Antworten, seine Korrekturen als Regeln festhalten.
-4. Danach das nächste Modul nach der Modulreihenfolge, zuerst die Spezifikation. Am Ende diesen Abschnitt wieder auf
-   das dann nächste Modul umschreiben.
-
-## Aktueller Stand
-
-Stand 18.09.2026. Planung im Manifest, Stand des Codes unter „Stand der Dateien“, die nächste Aufgabe am Anfang von
-„Nächster Chat“. Neuer Code nur in `WokFlow/`.
-
-- **Kurzstand:** Der Artikelkatalog ist fertig (laut Nutzer abgeschlossen). Modul `tables` ist gebaut und vom Nutzer
-  abgenommen, seit 18.09.2026 mit `ordersUpdate` als einziger schreibender Tür. Die Server-Schnittstelle (`api.ts`,
-  `api.test.ts`) ist neu geschrieben und grün, der Nutzer hat sie noch nicht gelesen. Danach kommt der
-  Bestellbildschirm.
-- Server: Start mit `npm start` (`node src/server/index.ts`, ohne `--watch`, nach Codeänderungen neu starten), Port
-  3000. Bei `EADDRINUSE` den alten Server mit Strg+C beenden. Relative Pfade zählen ab dem Ordner, in dem node
-  startet: IntelliJs Run-Knopf an `index.ts` startet in `src/server`, `npm start` in `WokFlow`. Dateipfade deshalb
-  mit `import.meta.dirname` bilden, dem Ordner der Datei selbst (16.09.2026).
-- `package.json`: `dinero.js` 2.0.2 (siehe „Geldbeträge“), als Entwicklungswerkzeuge TypeScript 7.0.2 und
-  `@types/node` 26; keine `tsconfig.json`. TypeScript prüft deshalb mit den Standardwerten, seit TypeScript 6 mit
-  `strict: true` samt `strictNullChecks`
-  ([Versionshinweise](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html#simple-default-changes)):
-  eine optionale Property `x?: number` darf fehlen (beim Lesen `undefined`), `null` ist nur mit ausdrücklichem
-  `| null` erlaubt.
-- **Bildschirmentwurf:** Es gibt nur einen Entwurf, `tmp/screens.html` mit `screens.css`, `screens.js`, Artikeldaten
-  in `preview-menu.js`, Schriften unter `fonts/`. Handyansicht mit `?vorschau=1#tables`, dieselben Bildschirme mit
-  Erläuterungen mit `?uebersicht=1`, Tagesabschluss des Chefs mit `?chef=1#closing`. Eine lokale Demo, keine echte
-  Kasse. Regeln unter „Bildschirm und Bedienung“. Der Nutzer reagiert auf sichtbare Beispiele.
-- **Auslieferung der Seite (Nutzer, 20.09.2026, ersetzt den Stand vom 16.09.2026 „nicht vom eigenen Server“):** Vite
-  baut die Seite nach `dist`, unser eigener Server gibt sie aus (`src/server/page.ts`), beim Entwickeln wie im
-  Restaurant; Begründung und die Prüfung gegen `/../../` am Anfang von „Nächster Chat“. Danach am Handy im WLAN mit
-  ein bis zwei Kellnern erproben.
-- **Git:** `origin` ist `git@github.com:UnathiCodex/WokFlow.git` per SSH (lokaler Schlüssel `id_ed25519`), `main`
-  folgt `origin/main`, das Repository ist privat. Git 2.54, Git Credential Manager 2.7.3, GitHub CLI `gh` nicht
-  installiert, systemweit `pull.rebase false`. Git macht der Nutzer selbst; `commands.md` hat über jedem Befehl
-  einen englischen Kommentar. Letzter bekannter Commit `bcf3cc2` (18.09.2026), gepusht.
-  - Offen: `touchit_bons_vergleich.html` mit echten Tagesumsätzen vom 02.09. und 13.09.2026, teils als Foto der
-    TOUCHIT-Berichte, liegt im Verlauf auf GitHub (unter `tmp/`, in `47c372d` unter `docs/`). Vor dem Einladen
-    anderer entscheiden, ob sie bleibt; Entfernen hieße Verlauf umschreiben. Auch diese `CLAUDE.md` liegt im
-    Repo-Ordner und enthält Geschäftszahlen, Kundennummern, Namen.
-  - Offen: `.git` wird bisher per Syncthing mitsynchronisiert; klären, ob das mit GitHub so bleibt.
-  - Lizenz vom Nutzer vorerst zurückgestellt. Wunsch: später vielleicht öffentlich, aber keine kommerzielle Nutzung
-    durch andere. Das ist source-available, nicht Open Source; Vorschlag PolyForm Noncommercial als `LICENSE`, lokal
-    committen. Noch zu besprechen: Beiträge anderer, eigene Nutzung im Restaurant.
-- Aufräumen: `Documents_2026-09-14*.zip` in Downloads darf der Nutzer entfernen, ebenso den Downloadklon
-  `emojitwo-source` unter `C:/Users/Vu/.codex/visualizations/2026/09/14/` (die Sammlung im Projekt ist vollständig).
-  `TOUCHIT/DECOMPILED/tools/` (2,8 GB) erst löschen, wenn alle vorgesehenen Dekompilierungsversuche abgeschlossen
-  sind; der M:-Papierkorb war dafür zu voll. Originale und Analysedateien nicht ungefragt löschen.
-
-## Entscheidungen
-
-Das Manifest beschreibt den Gesamtablauf; hier stehen ergänzende Details.
-Neuere Nutzerentscheidungen ersetzen ältere Vorschläge. Offene Punkte bleiben ausdrücklich offen.
-
-- **Startumfang:** Bonieren, Tischplan, zentrale Bons/Rechnungen, Zahlungen, Storno, rksv,
-  Tagesabschluss, Backup, getrennt kassieren, Tischwechsel, Deutsch/Chinesisch und Gutscheine.
-  Keine Zwischenrechnung oder offenen Kredite. Weitere Berichte noch offen; QR-Bestellung erst später.
-- **Artikel:** Produkte mit einer einheitlichen Variantenliste; jede bestellbare Variante trägt ihren Preis
-  (Nutzerentscheidung, 15.09.2026). Keine freien Zusatztexte wie „ohne Zwiebel“ oder Karten-IDs übernehmen.
-  TOUCHIT hat Artikel, Unterartikel und acht Preisstufen; WokFlow verwendet den kleineren Aufbau unten.
-- **Sprachen:** Artikel zeigen Deutsch und Chinesisch gleichzeitig. Erst mit Kellnern testen;
-  eine feste Sprache pro Handy ist nur eine mögliche Ausweichlösung bei Platzmangel.
-  TOUCHITs Sprachumschaltung verhält sich an PC und Handy unterschiedlich.
-- **Rechte:** Kellner ohne Code, einmalig freigeschaltete Geräte und normale Handy-Bildschirmsperre.
-  Chef-Code nur am PC für bezahlte Stornos, Rabatt, Gutscheinverkauf und Tagesabschluss.
-  Wer Zahlarten korrigieren darf, bleibt offen. TOUCHIT hat vier Stufen und über 100 Einzelrechte.
-- **Hardware:** Lenovo ThinkCentre Neo 50q G5 Tiny, i3-1315U, 8 GB, 256 GB, Linux (Preisstand
-  13.09.: ca. 464 €). Touch-Monitor mit USB, Glasfront/IP65 und VESA 100: iiyama T2234MSC-B7X,
-  21,5 Zoll/ca. 266 €, oder T1634MC-B1S, 15,6 Zoll/ca. 504 €. Halterung offen.
-  Kein Ersatz-PC oder Handy-Notbetrieb, vorerst keine USV. A-Trust unter Linux früh testen.
-- **Drucken:** ein Zentraldrucker Metapace T-3II für Rechnungen, Getränke und À-la-carte.
-  Kein Mobildrucker; kaputter Küchendrucker entfällt. Ersatzdrucker nur vorgeschlagen.
-- **SQLite:** eine lokale Datei, ausschließlich vom Server geöffnet. Jede Buchung als Transaktion,
-  `synchronous=FULL`; Modelltest: 1.000 Rechnungen mit je zehn Zeilen in 0,9 s.
-  Zeiten in festem Textformat. Treiber: `node:sqlite`, das Node 26 mitbringt (im Modul `tables` in Gebrauch).
-- **Backup:** verschlüsselt, laufend nach wenigen Sekunden in die Cloud, stündlich auf USB-SSD,
-  nachts vollständig in die Cloud mit EU-Rechenzentrum; Anbieter offen. Warnung bei mehr als einem Tag
-  ohne Sicherung, monatlich Wiederherstellung testen. Schlüssel/Zugänge auf Papier zu Hause.
-  rksv zusätzlich monatlich als nie überschriebene Datei. Modelljahr: 54.000 Rechnungen, 56 MB/14 MB
-  gepackt. TOUCHITs Kopie auf demselben PC schützt nicht gegen einen Plattenschaden.
-- **Storno:** offene Artikel per Minus mit Rücknahme; Gründe und Journal im Backend noch zu klären.
-  Bezahlte Rechnung nur vollständig durch Chef am PC mit Grund, signiertem Stornobeleg und neuer
-  Rechnung; Geld aus der Kasse. Keine privaten Rückgaben außerhalb der Buchung.
-- **Gutscheine:** Chef verkauft nummerierte Geldgutscheine, Restwert speichern; verschenkte
-  Leistungsgutscheine und Fremdgutscheine getrennt behandeln. Steuerliche Buchung vom Steuerberater
-  bestätigen lassen. Kein allgemeiner Zahlungsmodus „Gemischt“; Gutscheinrest ist ein eigener Ablauf
-  (im Entwurf umgesetzt, siehe „Bildschirm und Bedienung“). Gutscheineinlösung bleibt als eigene Zahlungsart
-  erfasst. Gutscheinnummern, Anbieter, Gültigkeitsprüfung, dauerhaftes Restguthaben noch nicht angebunden.
-- **Trinkgeld:** Bar direkt an Kellner, nicht erfassen. Karte am Nexi-Gerät wählen, separat übernehmen,
-  an Angestellte auszahlen. Steuerfreiheit und Nachweis mit Steuerberater klären; nicht pauschal auf
-  wesentlich beteiligte Geschäftsführer übertragen. Verteilung unter Kollegen nur nach Vereinbarung.
-- **Abschluss/Versand:** vollständiger Papierbon bleibt vorerst, PDF und Datendatei dazu.
-  Monatsversand über das Postfach der Chefin, zusätzlich Nachsendeknopf; bei Ausfall später wiederholen
-  und warnen. Verschlüsselung/Versanddetails offen. Keine Codex-Automation dafür anlegen.
-- **Zahlart und Beleg:** protokollierte Zahlart getrennt vom signierten Beleg; Kartenumsätze müssen
-  erkennbar bleiben. Recherchegrundlage: BAO § 131/§ 132a, rksv § 11 und FAQ Arbeitskreis Kassensoftware
-  2.4.15. Vor Umsetzung mit Steuerberater/rksv-Session bestätigen; nichts still überschreiben.
-- **Nexi-Vertrag:** Germany GmbH, Kundennummer 5905840, Vertragspartner 156469572. Mobile Premium an
-  der Theke: 16,90 € Miete/Monat, 0,02 € je Zahlung und 3,99 € Monatspauschale.
-  Disagio verhandelt, Mindestentgelt 0,25 €/Zahlung laut Preisblatt 01.08.2026; im August nicht auf
-  jede Zahlung angewandt (912 Mastercard-Zahlungen kosteten 221,87 €, weniger als 912 × 0,25 €).
-- **Nexi-Vertragskopie** (am 15.09.2026 erhalten, Ablage `Kartenzahlung/Nexi_Vertragsdokument_5905840.pdf`):
-  Concardis-Vertragsbestätigung vom 11.08.2021. Disagio 12.08.2021–11.08.2024: Mastercard, Visa,
-  Visa Electron 0,80 %; MC debit national, V PAY, Maestro 0,28 %; Diners 0,95 %; UnionPay, JCB 2,20 %;
-  jeweils mindestens 0,06 € je Zahlung. DCC (Bezahlen in der Heimatwährung ausländischer Karten) aktiv,
-  senkt dort das Disagio um 0,50 Prozentpunkte. Terminal 69065732: 60 Monate Laufzeit, also rechnerisch
-  bis August 2026, 16,90 € Miete, 0,02 € je Zahlung; keine Monatspauschale im Vertrag. Alle übrigen
-  Entgelte nach dem jeweils gültigen Preis- und Leistungsverzeichnis. Die Abrechnungen Mai–Juli 2026
-  kündigen neue Preise ab 01.08.2026 an; bei Widerspruch darf Nexi mit 14 Tagen kündigen.
-  Laufzeitende, Verlängerung, Kündigungsfrist des Terminals noch bei Nexi erfragen.
-- **Nexi-Zahlen:** 30.09.2025–31.08.2026: 481.668,54 € Kartenumsatz, 9.862 Zahlungen, Disagio
-  3.052,07 € = 0,63 %. Mastercard etwa 90 % des Umsatzes, im August ca. 0,48 %; Visa etwa 9 %,
-  ca. 1,5 %. Gesamtkosten rund 3.960 €/Jahr bzw. 0,76 %. Wöchentliche Auszahlung nach Kartenart,
-  Abrechnungsperioden vier/fünf Wochen.
-  Je Monat nachgerechnet (15.09.2026): Mastercard Oktober 2025 bis Juli 2026 0,54–0,58 %, August 0,48 %;
-  Visa durchgehend 1,32–1,64 %, in elf Monaten 1,52 % auf 42.672 €; Maestro, V PAY 0,38–0,57 %;
-  Diners 1,1–1,3 %. Visa zum Mastercard-Satz spart knapp 500 € im Jahr. Monatspauschale (Oktober 2025
-  3,95 €, seit November 3,99 €), Miete, Zahlungsentgelt kosten zusammen rund 450 € im Jahr.
-- **Nexi-Anbindung:** Ziel bestehende Konditionen für SoftPOS zusätzlich zum Terminal, eine Abrechnung.
-  Terminal kann laut Anleitung ZVT über WLAN; Nexi muss freischalten. App-zu-App-Schnittstelle
-  übergibt Betrag/Referenz und liefert Ergebnis; dafür wäre eine Android-Verpackung der Web-App nötig.
-  Karte liest immer Nexis Gerät/App. Kosten, Rückgabe von Trinkgeld/Referenz und Datenabruf sind offen.
-- **SoftPOS-Prüfstand 14.09.:** NFC, Android mindestens 10, Sicherheitsupdate jünger als zwölf Monate,
-  kein Huawei. Kassier-Handy Redmi Note 13 Pro 5G geeignet; alte Xiaomi/Huawei bleiben fürs Bonieren.
-  Listenpreis 1 € Lizenz und 1 %, Firmenkarten zusätzlich 1,49 %; erst Vertragsantwort abwarten.
-  Bei schlechteren Konditionen hobex prüfen. SmartPOS A920 und Handys mit Drucker verworfen.
-- **Umstieg:** neben TOUCHIT nur Übungsbelege; nach Anmeldung echte Rechnungen nur aus WokFlow.
-  TOUCHIT kurz als Reserve, dann Schlussbeleg/Abmeldung. Gemeinsamer PC/Drucker während Probezeit offen.
-
-### TOUCHIT-Abgleich, 15.09.2026
-
-Nutzerfrage: Fehlt in WokFlow eine TOUCHIT-Funktion, die das Restaurant öfter braucht? Geprüft am
-Handy-Programm (21 Seiten; Optionen Art.Transfer, Kell.Transfer, Separieren, Stornieren; Abschluss mit
-Bar, Card, Kredit, Bonus, Erlagschein, Konsumation, Personal, Kein Bon, Tip), an den Formularnamen des
-Hauptprogramms und an `touchit.ini`. Schon abgedeckt: Tischplan, Bonieren, Splitten, Storno, Zahlart
-korrigieren (TOUCHIT `Form_Zahlungsart_Korrigieren`), Barausgaben, Rückgeld, Gutscheine, Tagesabschluss,
-Verschieben (neu, siehe „Bildschirm und Bedienung“). Fehlt oder ist zu entscheiden:
-
-- **Rechnungskopie:** Beleg aus „Heute“ nochmals drucken, als Kopie gekennzeichnet; TOUCHIT hat dafür
-  die Belegauswahl. Nötig bei Papierende oder verlorenem Bon. Empfehlung: aufnehmen, Chef und Handy.
-- **Rechnung mit Kundenadresse:** ab 400 € brutto muss der Empfänger auf der Rechnung stehen
-  (Kleinbetragsrechnung nur bis 400 €, UStG § 11 Abs. 6); Firmen und große Gruppen fragen danach.
-  TOUCHIT hat eine Gästekartei (`UserControl_Bonieren_2_Adresse`). Empfehlung: Name und Adresse einmal
-  eintippen, nur am Chef-PC, keine Kartei.
-- **Zwischenrechnung und offene Kredite:** in TOUCHIT eingeschaltet, in WokFlow gestrichen. Mit der
-  Chefin prüfen, ob sie wirklich unbenutzt sind (Gruppen, die vorab die Summe sehen wollen; Gäste, die
-  später zahlen). Gestrichen lassen, wenn nein.
-- **Personal / Konsumation:** TOUCHIT bucht Personalessen und Eigenverbrauch als eigene Zahlart. Klären,
-  ob das genutzt wird; sonst nichts bauen.
-- **Kassenlade:** in TOUCHIT nicht angeschlossen (`Aktiv=False`). Soll sie sich künftig öffnen, gibt der
-  Metapace-Drucker den Impuls; sonst nichts.
-- **Berichte:** Artikel- und Uhrzeitstatistik hat TOUCHIT (33 Vorlagen), WokFlow nur Tag und Monat.
-  Später aus den gespeicherten Belegen erzeugbar, jetzt nichts bauen.
-- **Allergene:** TOUCHIT zeigt sie am Handy. In WokFlow bewusst nicht im Artikel; bei Bedarf später nur
-  die Kartenbuchstaben in der Auswahl anzeigen.
-- **Zwei Handys am selben Tisch:** TOUCHIT löst das über Revierschutz je Kellner. WokFlow hat keine
-  Kellnerkonten und sperrt stattdessen den Tisch, solange ein Gerät ihn offen hat (Entscheidung des Nutzers,
-  18.09.2026, Manifest Abschnitt 4 Punkt 1). Ersetzt den früheren Plan, gleichzeitige Zeilen zusammenzuführen.
-- Nicht gebraucht: Kellnertransfer, Tischnummer eintippen, Tischplan-Editor (Plan liegt im Code),
-  Abschluss „Kein Bon“ (Belegpflicht), Hotel, Waage, Schank, Bonuskarte.
-
-### Bildschirm und Bedienung
-
-Gültig ist der eine Entwurf in `tmp/screens.html` (Dateien unter „Aktueller Stand“): eine lokale
-HTML/CSS/JavaScript-Demo ohne Buchung, Zahlung, Druck, Buffetautomatik. Maße, Farben, Abstände stehen in
-`screens.css` und sind dort die Wahrheit; hier stehen die Entscheidungen des Nutzers mit ihrem Grund. Den Ablauf
-beschreibt das Manifest, Abschnitt 4 und 5. Aufbau des Entwurfs: HTML für die Bildschirme, CSS für die Gestaltung,
-JavaScript für die Bedienung, `preview-menu.js` für Artikeldaten; gemeinsame HTML-Vorlagen statt Kopien, keine
-Minifizierung, keine parallelen Layoutkopien oder Weiterleitungsdateien.
-
-**Gestaltung**
-
-- Hell, neutrale Grautöne, dunkle Schrift. Tasten, Kacheln, Tische grau getönt ohne Rand (Nutzer, 16.09.2026: „ohne
-  Umrandung ist schon moderner“). Sanftes Rosé statt Markenrot (`--accent: #cf6b74`, Füllung `#f3d5d8`), weil das
-  kräftige Rot Leuten mit schlechteren Augen zu sehr sticht und sich als Warnfarbe liest. Rosé ist nur Zustandsfarbe
-  für belegt, gewählt, Hauptknopf, Menge; mehr Akzentfarbe ist nicht gewünscht, keine satten roten Flächen (der
-  gefüllte rote Rechnungsknopf war zu knallig). Rosé-Flächen ohne Rand; der gestrichelte Rand beim Schieben bleibt
-  als Zustandsmarke.
-- Druckzustand je Fläche, reines CSS: Grau wird dunkler, Weiß wird grau, Rosé wird kräftiger (Nutzer: Grau über Rot
-  wirkt blöd). Plus und Minus gleich groß: gesperrt fast weiß mit blassen Strichen, nutzbar grau mit schwarzen
-  Strichen, damit Ältere den Unterschied ohne Rahmen sehen; die Striche sind geometrisch gezeichnet, keine
-  Schriftzeichen. Fenster kommen von unten, am Daumen. Die Scrollleiste ist dünn und hell, aber nicht ausgeblendet,
-  sonst fehlt die Orientierung, ob es weitergeht.
-- **Mengenfelder überall ohne Rand** (Nutzer: „we agreed on no border for this type of things“), nur rosé oder grau
-  gefüllt. Sichtbar klein, die Tippfläche bleibt 48 × 48 px und rechteckig, damit Tipps an den Ecken nichts
-  versehentlich hinzufügen. Sie zeigen sofort die unbezahlte Menge des Tisches; bei null verschwindet das Feld.
-- **Einheitlicher Rand (Nutzer, 16.09.2026):** ein Wert `--inset: 16px` links und rechts auf allen Bildschirmen.
-- Die Rückgängig-Leiste ist eine weiße schwebende Karte mit leichtem Schatten und grauem Knopf; eine dunkle Leiste
-  wie bei Gmail war dem Nutzer zu schwarz und zu betont für ältere Augen. In „Bestellt“ folgt sie der dort
-  gewählten Sprache, im Auswahlfenster bleibt sie zweisprachig.
-- Tippflächen mindestens 44 px. Die Gestaltung orientiert sich an den W3C-Hinweisen (WCAG 2.2) zu Farbe,
-  Textkontrast, Bedienelement-Kontrast, Touchzielen, Rücknahme; daraus keine vollständige Barrierefreiheit ableiten.
-- Vom Nutzer festgelegte Größen: **360 px ist die Standardbreite**, dort bricht keine Taste um. Deutsche
-  Getränkenamen 18 px, Speisennamen 18.5 px (größer als Getränke, aber so klein, dass „Gebackener Tintenfisch“ in
-  eine Zeile passt). Gruppennamen in beiden Gruppenlisten gleich groß, Deutsch 20 px, Chinesisch 17 px. Tischnummern
-  im Plan wie die Nummer in der Kopfzeile, 30 px mit Gewicht 600 (Nutzer: muss gleich groß sein), Gartentische
-  22 px. Buffetzähler groß (Nutzer: „can be much bigger“), Altersgruppen so groß wie der Buffetname. „Rechnung“ in
-  „Bestellt“ 20 px.
-- **Keine automatische Verkleinerung auf Tasten** (Nutzer: Namen bleiben gleich groß, im Notfall zweite Zeile, aber
-  melden). Nur in „Bestellt“ werden lange Namen passend zur Breite kleiner gesetzt, damit jede Zeile einzeilig
-  bleibt. Beim getrennten Kassieren dürfen lange Namen logisch umbrechen: Zusätze wie „+ Wasser“, „+ Zit“,
-  Stückzahlen bleiben zusammen, „mit“/„und“ bleiben beim folgenden Wort, nie mitten im Wort, keine
-  Schriftverkleinerung.
-
-**Bilder**
-
-- **Nur Emojis aus dem EmojiTwo-Paket, nie selbst gezeichnete Bilder** (Nutzer, 16.09.2026: „I strictly want emojis
-  from the emojis pack“, nach einer selbst gezeichneten Frühlingsrolle).
-  [EmojiTwo](https://github.com/EmojiTwo/emojitwo) steht unter CC BY 4.0: Urheberangabe, Lizenzlink, Kennzeichnung
-  der Anpassungen. Kleine farbige Bildsymbole nur in den Gruppenlisten, links in der Zeile, keine Bilder bei
-  Artikeln oder Buffet. Helle Formen bekommen eine sichtbare Kontur auf Weiß; kein Zuschneiden, alle SVGs behalten
-  die volle Zeichenfläche 64 × 64, Größe und Bildmitte richtet das CSS aus.
-- Angepasste Menügrafiken liegen in `icons/wokflow/`, die unveränderte Sammlung in `icons/emojitwo/` (2.789 SVGs mit
-  `LICENSE.md` und `README.md`, bezogen am 15.09.2026, Revision `311eff547b3ff4a61fdbae897dd09d41416048fc`). Für
-  Anpassungen Arbeitskopien verwenden, die Sammlung unverändert lassen. Quellen und Anpassungen stehen kurz auf
-  Englisch in `icons/sources.md`; die vollständige verlinkte Zuordnung jeder WokFlow-Grafik zu ihren
-  EmojiTwo-Originalen erhalten, nicht zugunsten der Kürze entfernen. Das Logo `icons/asiawok/logo.svg` ist laut
-  Nutzer KI-generiert, Eigentümer ASIA WOK Restaurant GmbH, in der Quellenliste so aufführen.
-- Snacks ist das unveränderte EmojiTwo-Baguette 1f956 (vom Nutzer gewählt; eine Frühlingsrolle gibt es weder in
-  EmojiTwo noch in Unicode), Reis 1f35a, Huhn & Ente das Huhn. Fleisch am Knochen für Rind hat der Nutzer verworfen,
-  ein Steak-SVG fehlt im Paket; passende Gerichte sind erwünscht, sonst Tiere als Rückfall. Vorläufig bis zur
-  Entscheidung: Suppen & Salate `starters`, Rind & Schwein `beef`; danach ungenutzte Bilder in `icons/wokflow/` samt
-  Zeilen in `icons/sources.md` löschen (Nutzerwunsch).
-
-**Bestellen**
-
-- Geld nur bei Rechnung, Zahlung, „Heute“, Abschluss, mit Punkt und Eurozeichen (`27.90 €`); beim Bestellen keine
-  Preise. **Getränkegrößen immer mit Punkt und ohne Literzeichen**: `0.25`, `0.5`, `0.3 + Wasser`, `0.5 + Soda`.
-  Fehlende Preise werden nie als null behandelt.
-- Kopfzeile „Bestellen / Bestellt“ ohne Artikelzahl, doppelte Überschrift, Statusfußleiste; kein Pfad „Getränke ›
-  Limonaden“; keine wechselnden Tastenpositionen. **Bestellansicht C gewählt:** volle Bestellfläche oder volle
-  Bestellliste über zwei Reiter; Gruppe und Scrollposition bleiben beim Hinzufügen und beim Reiterwechsel erhalten;
-  Buffet erscheint auch in „Bestellt“.
-- Auswahlfenster: Artikelname und schlichtes X, ohne „Variante / 规格“. Nach einer Buchung bleibt es offen (dreimal
-  dieselbe Cola-Größe ohne erneutes Öffnen), Mengen ändern sich sofort; X, Escape, Tipp außerhalb schließen, innen
-  tippen nicht. Tasten mit weiterer Auswahl zeigen den Pfeil rechts, direkte Buchungen keinen. Cola/Zero/Light: eine
-  Cola-Taste, drei Sortentasten oben im Fenster, darunter nur die passenden Varianten; Light nur als Flasche; die
-  Cola-Taste zählt alle drei Sorten. „Flasche 0.35“ als breite Zeile bei Cola, Cola Zero, Fanta, Sprite; keine
-  erfundenen Flaschensorten. Wortvarianten (Tee, Kaffee, Campari, Mineralwasser) als volle Zeilen mit der Menge
-  rechts, damit beim Antippen nichts wächst oder überlappt.
-- **Zitrone, vom Nutzer bestätigter Ablauf:** zuerst Größe/Wasser/Soda buchen, danach bei Bedarf einmal „+ Zitrone“
-  für das zuletzt neu gebuchte Glas. Keine Checkbox, keine Vorauswahl, kein Bestätigungsfenster. Kurzes Hervorheben
-  der Mengenzahl, 20 ms Vibration auf unterstützten Geräten, reduzierte Bewegung beachten. Im Auswahlfenster bleibt
-  nur die Gesamtmenge; mit und ohne Zitrone erscheinen als getrennte Positionen in „Bestellt“. Der nächste
-  Größenklick bucht wieder ohne Zitrone. Die Aktion ist vor der ersten Buchung, nach Anwendung, nach
-  Größenkorrektur der letzten Portion, Sortenwechsel oder erneutem Öffnen nicht verfügbar, bis neu gebucht wird.
-  Wiederholtes Tippen berechnet keinen zweiten Zuschlag; bereits abgeschickte Portionen bleiben unverändert. Direkt
-  gebuchte Getränke bekommen keine Zitronenabfrage. Extra-Eis ist zurückgestellt.
-- **Ein Name je Artikel (Nutzer, 16.09.2026):** derselbe Name auf Taste, in „Bestellt“, auf der Rechnung; keine
-  Langform, keine eigenen Tastenbeschriftungen (Umbrüche am Bildschirm stören, jede Rechnungszeile kostet Papier).
-  `menus` in `preview-menu.js` trägt dieselben Namen wie `src/catalog/` (Skriptvergleich ohne Abweichung). Passt ein
-  Name bei 360 px nicht, wird er gekürzt, in beiden Sprachen mit gleichem Schnitt: Meist bleibt der Anfang,
-  unterscheidende Wörter bleiben (Gegrillte und Gebackene Garnelen). Gebackener Tintenfisch 炸鱿鱼 bleibt lang
-  (Nutzer: der Verlust von „gebacken“ war schade). Getränke behalten ihre vollen deutschen Namen. Die Namen weichen
-  bewusst von der Speisekarte ab: ohne „Pago“, „Jiao Zi“, „Mini“. Nur die Anzeige der Zusätze wird gekürzt:
-  `serviceLabel` macht in „Bestellt“ und Rechnung aus „+ Zitrone“ „+ Zit“ und aus „Flasche 0.35“ „0.35 Fl.“.
-- **Eine Zeile je Name (Nutzer, 16.09.2026):** Getränketasten zeigen Deutsch und Chinesisch je in einer Zeile; dafür
-  sind lange chinesische Namen gekürzt (im Katalog). Bei Direktartikeln nutzt die deutsche Zeile die volle
-  Tastenbreite, nur die chinesische lässt dem Mengenfeld Platz. Die zweite Zeile der Sushi-Sets ist gewollt.
-- Sushi-Mengen nach Speisekarte Seite 5, nur im Entwurf, nicht im Katalog: klein 7 Sushi + 3 Maki, mittel 9 + 3,
-  groß 11 + 3, Lachs Sushi 8 + 3, als zweite Zeile wie „7 Sushi 寿司 + 3 Maki 卷“, jede Zahl nur einmal; Futo Maki
-  (10) und Maki im Set (18) in derselben Zeile.
-- „Bestellt“: fett gesetzte Menge ohne „×“, nur Minus, auch für Buffetpersonen. Ein kleiner Sprachknopf „DE“/„CN“
-  rechts neben „Rechnung“, jeweils eine Sprache. Die chinesische Ansicht enthält ebenfalls Größe,
-  Flaschenkennzeichnung, Zusätze, Maki-Stückzahl, Zusätze in derselben Plus-Schreibweise („可乐 0.3 + 水 + 柠檬“).
-- **Speisengruppen (Nutzer, 16.09.2026, endgültig):** 10 Gruppen, einspaltig, in dieser Reihenfolge: Suppen &
-  Salate 汤和沙拉 (2 Suppen | 4 Salate), Snacks 小吃 (Frühlingsrollen, Hummerchips, Gebackene Banane,
-  Knoblauchsauce), Sushi 4, Maki 6, Meeresfrüchte 5 (mit Gebackener Tintenfisch und Gebackene Garnelen), Gemüse 2,
-  Huhn & Ente 鸡肉和鸭肉 (8 | 1), Rind & Schwein 牛肉和猪肉 (4 | 2), Reis 米饭 5, Nudeln 面条 3. Die chinesischen
-  Gruppennamen sind die üblichen Wörter, nicht vorläufig.
-  - Warum so: Zusammengelegt nur, was zusammengehört, mit bekannten Wörtern statt Oberbegriffen („Geflügel“,
-    „Fleisch“, „Rind, Schwein, Ente“ verworfen). Sushi und Maki getrennt, sonst müsste man in der Gruppe scrollen.
-    Vier Gruppen Huhn, Ente, Rind, Schwein wären „goofy“ und unruhig; zwei Spalten verworfen. Reis und Nudeln
-    getrennt, Knoblauchsauce zu Snacks, Nachspeisen entfallen. Kleinere Tasten (52 statt 64 px) hat der Nutzer nicht
-    aufgegriffen.
-  - In zusammengelegten Gruppen trennt eine kleine graue Linie die Teile. Im Katalog sind die Teile eigene Gruppen
-    (`soups`, `salads`); der künftige Bildschirm legt sie zusammen, die Linie steht dort, wo eine Kataloggruppe endet
-    (`groupDividers` gibt es nur im Prototyp).
-- Getränkegruppen: Limonaden, Fruchtsäfte, Wasser, Bier, Weine, Warmes, Spirituosen. Kein zusätzlicher Einstieg
-  „Kaltgetränke“. Kurze Beschriftungen „Weine / 酒“, „Warmes / 热饮“; die Reihenfolge folgt der Speisekarte, offene
-  Weine bleiben daher vor warmen Getränken.
-- **Buffet:** Hauptfall, laut Nutzer gefühlt 99 %. Getränke oft zuerst, Buffetanzahl erst beim Kassieren. Eine
-  Buffetart je Tisch, siehe Manifest Abschnitt 4 Punkt 2.
-- **Buffettarife:** Mo/Mi–Sa mittags 11:30–14:30: Erwachsene 15.90 €, 6–9 Jahre 9.90 €, 3–5 Jahre
-  5.90 €; abends 17:00–21:30 sowie sonntags/feiertags ganztags 19.90/12.90/7.90 €.
-  Unter drei gratis; Dienstag geschlossen außer Feiertagen; kein eigener Freitagspreis.
-- **Buffetautomatik noch Vorschlag:** Serverzeit `Europe/Vienna`, lokal hinterlegte Kärntner Feiertage,
-  Tarif in Bonzeile festhalten. Außerhalb der Zeiten ausdrücklich wählen; bei unzuverlässiger Uhr oder
-  fehlendem Kalender keine Automatik. Offen: Josefstag/Volksabstimmung sowie Vormerken des Tarifs beim
-  ersten Bestellen, damit spätes Erfassen keinen Tarifwechsel verursacht.
-
-**Schieben und Mitnehmen**
-
-- **Schieben (Tischwechsel, Nutzer, 15. und 16.09.2026):** Taste, Streifen, Fenster heißen „Schieben“, nicht
-  „Verschieben“ oder „Umsetzen“ (kürzer, versteht jeder). In „Bestellt“ steht „Rechnung“ groß in der Mitte, links
-  die Schieben-Taste, rechts der Sprachknopf, beide quadratisch 56 px, unabhängig von der Sprache. **Die Taste ist
-  nur ein Pfeil „→“** für beide Sprachen, mit Linien gezeichnet wie Plus/Minus, weil Hyperreadable kein „→“ hat;
-  `aria-label` „Tisch schieben · 换桌“; bei leerem Tisch gesperrt. Sie führt zum Tischplan mit dem Streifen „14
-  schieben“ und „Abbrechen“, ohne Zusatzhinweis; der Quelltisch ist gestrichelt und nicht antippbar, Innen/Garten
-  bleiben wählbar. Ein Tipp auf den Zieltisch öffnet ein Bestätigungsfenster: „Tisch 14 auf Tisch 12 schieben?“;
-  bei belegtem Ziel nur „Tisch 14 mit Tisch 3 zusammenführen?“ mit „Zusammenführen“, ohne Satz „ist belegt“.
-  „Abbrechen“ lässt die Zielwahl offen, Escape schließt nur das Fenster. Geschoben werden alle Bestellzeilen und
-  Buffetpersonen, auch noch nicht abgeschickte. Kein Rückgängig: Der Nutzer wollte statt eines stehenbleibenden
-  Streifens die ausdrückliche Frage. Ein belegter Zieltisch ist erlaubt, weil Gäste sich zu Bekannten dazusetzen
-  (vom Nutzer offengelassen). Nur ganze Tische; einzelne Artikel schieben (TOUCHIT „Art.Transfer“) ist nicht gebaut
-  und ginge später über die Auswahl des getrennten Kassierens.
-- **Mitnehmen (Nutzer, 16.09.2026):** eine eigene Taste im Innenplan, mittig in der freien Fläche zwischen 24 und
-  18, nur das Wort „Mitnehmen“ ohne Chinesisch in 18 px (kommt selten vor), für Gäste an der Theke, die nur Essen
-  mitnehmen. Drinnen heißt sie „M“ (Nutzer: außen Mitnehmen, drinnen M, dann ist die Größe konsistent): Kennung `M`,
-  Kopfzeile „M“ wie eine Tischnummer, in „Heute“ „M“, in Rechnung und Fenster „Mitnehmen“. Sie öffnet die
-  Bestellung wie ein Tisch; der Reiter Buffet fehlt, weil Buffet nicht mitgenommen wird (Nutzer: nicht ausgrauen,
-  weglassen). Beim Schieben kann sie Quelle sein, aber kein Ziel.
-
-**Bezahlen**
-
-- **Getrennt kassieren:** Artikelauswahl mit Mengen, Rest bleibt offen, nach Teilzahlung zurück zur Auswahl, nach
-  der letzten Zahlung zum Tischplan; die ganze Rechnung bleibt der direkte Normalfall. Ausgewählte Zeilen in der
-  Akzentfarbe umranden; die Liste scrollt, Summe und Kassieren bleiben am Fuß. Nur die Summe der Auswahl, keine
-  Restbetrag-Zeile. Verfügbare Menge links, Plus/Minus kompakt rechts in derselben Zeile. Kopfzeile beim Aufteilen,
-  in Rechnung und Kartenabschluss mit „Tisch 9“ beziehungsweise „9号桌“; beim Bestellen bleibt die kompakte Nummer
-  ohne „Tisch“. Kein doppelter Einstieg „Getrennt kassieren“ auf der Zahlungsseite; „Zurück“ führt auch bei
-  gesamtem Rest zur Mengenauswahl.
-- **Sprache (Nutzer, 16.09.2026):** Der Sprachknopf steht nur in „Bestellt“; Rechnung, Getrennt, Bar, Karte,
-  Gutschein übernehmen die dort gewählte Sprache ohne eigenen Knopf. Deutsch ist beim Öffnen der Standard. Umstellen
-  verändert keine Auswahl, Beträge oder Eingaben und nicht die Sprache beim Bestellen: Die Reiter und die
-  Artikelauswahl bleiben zweisprachig. Buffetnamen in der Rechnung wie in „Bestellt“.
-- Rechnung: feste Spalten für Menge, Name, Betrag, Mengen ohne „×“, Beträge rechts ohne Umbruch, der Rechnungsbetrag
-  groß. Fester Fußbereich: ganz unten die großen Tasten „Bar“/„Karte“ nebeneinander, darüber „Gutschein“ und
-  „Getrennt“/„分开“ in zwei gleich breiten, sprachunabhängigen Feldern; zwei Tastenreihen statt drei, mehr Platz für
-  die Liste. Artikel scrollen nur im eigenen Bereich. „Bar“ öffnet den Barabschluss mit „Abschließen“, der
-  Kartenabschluss heißt „Fertig“.
-- **Gutschein:** öffnet ein kompaktes Betragsmenü mit denselben Zahlentasten wie Bar: Wert eintippen, verbleibenden
-  Zahlbetrag sofort sehen, „Anrechnen“. In der Rechnung steht dann der Restbetrag groß, der Gutscheinabzug über den
-  Zahlungstasten; Bar/Karte übernimmt nur diesen Rest. Bei voller Deckung ersetzt „Abschließen“ die
-  Bar-/Karte-Tasten. Gutschein erneut öffnen zum Ändern oder Entfernen; Schließen, Escape, Außentippen verwerfen nur
-  die noch nicht übernommene Eingabe. Übersteigt der Gutschein die Rechnung, erscheint „Gutscheinrest“, keine
-  Auszahlung als Rückgeld. Gleicher Ablauf für Teilrechnungen, ohne Übernahme in die nächste Auswahl oder an einen
-  anderen Tisch. „Heute“ kennzeichnet Gutschein, Bar + Gutschein, Karte + Gutschein. Im Entwurf keine echte Einlösung
-  oder Speicherung.
-- **Rückgeldrechner** im Barabschluss, kein separater Rechnerknopf neben „Bar“. Zuerst „Zahlbetrag“, mit der
-  Rechnungssumme abzüglich Gutschein vorausgefüllt: ohne Änderung übernehmen oder den Gastwunsch eintippen, etwa
-  59.70 → 60 €. „Übernehmen“ öffnet „Gegeben“; der Zahlbetrag bleibt darüber sichtbar und korrigierbar, das Rückgeld
-  wird sofort berechnet. „Abschließen“ geht jederzeit ohne Rückgeldberechnung, auch vor „Übernehmen“. Eigene große
-  Zahlentasten mit Dezimalpunkt und Rücktaste, Eingabefelder mit `inputmode="none"`, damit keine Handytastatur
-  aufgeht; normale Tastatur und Eingefügtes gehen auch, Komma wird zum Punkt. Kein Aufrunden-Knopf. Zu wenig gegeben
-  zeigt „Fehlt“; ungültige Beträge oder ein Zahlbetrag unter dem offenen Rechnungsbetrag verhindern den Abschluss.
-  Die Rechnung bleibt beim ursprünglichen Betrag; Bargeldtrinkgeld, gegebener Betrag, gewünschter Zahlbetrag werden
-  nie gespeichert. Rechnen in ganzen Cent. Schließen, Escape, Außentippen brechen ab; bei neuer Rechnung,
-  Tischwechsel, erneuter Teilzahlung werden die Eingaben verworfen. Gleich für ganze Rechnung und Teilrechnung.
-- „Heute“ am Handy: nur die Rechnungsliste, keine Summen für Bar/Karte, keine Rechnungsanzahl. Bar/Karte dort nur
-  lesbar, kein versehentliches Umschalten; wer später korrigieren darf, ist offen. Der Tagesabschluss ist nur für
-  den Chef, im Entwurf mit `?chef=1#closing`, ohne Einstieg vom Handy; dieser Parameter ist **keine echte
-  Rechteprüfung**. Der Erfolgstext „Von Nexi bestätigt“ ist entfernt; die bestätigte Zahlung bleibt fachlich nötig.
-- Navigationslinks „Heute“, „Zurück“ außerhalb des Zahlungsablaufs mit kleinem Chinesisch daneben; reine
-  Zurückpfeile in den Artikelgruppen ohne sichtbaren Text.
-
-**Werkzeuge und Prüfen**
-
-- `sed -i` zerstört in den CRLF-Dateien `screens.js`, `screens.css`, `preview-menu.js` die Zeilenenden; dort nur mit
-  dem Edit-Werkzeug ändern. Menüdatei, `screens.css`, `screens.js`, Bild-URLs tragen eine Versionskennung `?v=`
-  gegen veraltete Dateien im Cache, bei jeder Änderung hochzählen; der offene HTML-Tab muss neu geladen werden.
-- Auswahlbilder dem Nutzer als PNG schicken (mit Edge ohne Fenster gerendert); SVG-Auswahlblätter kamen nicht an.
-- Geprüft wurde bisher im lokalen Edge-Browser bei 320 bis 412 px Breite mit Screenshots und Messungen, nie am
-  echten Redmi. Offen am echten Gerät: Handygefühl der Vibration, Unterdrückung der Bildschirmtastatur unter Android.
-
-### Tischplan und Schrift
-
-- Zwei Bereichstasten Innen/Garten; der Raum als Abschnitt über dem Garten, zusammen auf einem Bildschirm. Auf Handy
-  und PC dieselbe Anordnung, der Plan passt immer auf eine Seite. Schlichte Rechtecke; keine Stühle, Bänke,
-  Buffet-Möbel, Beträge, Zeiten, Belegtpunkte, Frei/Belegt-Legende. Tische etwas länglich, keine Quadrate, weil an
-  den langen Seiten je zwei und am Kopf eine Person sitzen (Nutzer, 16.09.2026).
-- Die Überschrift „Tische“ entfällt (Nutzer: nicht nötig, man weiß, wo man ist). Die Kopfzeile trägt links
-  „Reservierungen 预订“ als vorbereiteten Knopf für Online-Reservierungen und das Markieren reservierter Tische
-  (Bildschirm folgt) und rechts „Heute“.
-- Innen oben 1/2/3/4/5/6; darunter 11/10/9/Gang/8/7, dann 12/13/14/Gang/15/16. 1–5 dieselbe Tastengröße wie 12–16;
-  Tisch 6 so klein wie Tisch 7, oben bündig mit 1–5 (Nutzer, 16.09.2026). Die 20er-Gruppe ganz links: 21/22 oben,
-  24 über 23 unter 21, Tisch 20 rechts daneben mit gleicher Unterkante wie 23. 19 über 18 senkrecht rechts unter 15,
-  17 auf Höhe von 19 daneben. Gleiche Abstände zwischen 21/22 und 24/23. 20 kleiner (1+1), 21/22 Vierertische, 12–16
-  Sechsertische, 1–6 und 7–11 gewöhnlich 2+2, 1–6 eng bis 3+3.
-- Vier graue Trennlinien markieren die Innenbereiche: zwischen 11/10/9 und 12/13/14, zwischen 8/7 und 15/16, unter
-  12/13/14 vor 21/22, unter 15/16 vor 19/17. Die Reihe 1–6 steht dichter an der Reihe darunter, weil sie
-  zusammengehören.
-- 18, 19, 23, 24 haben jeweils eine eigene Taste und eigene Bestellung. Keine Auswahl „Ganz“, keine gemeinsamen
-  Buchungsnummern 18/19 oder 23/24, keine Nummer 25. Für eine gemeinsame Gästegruppe wird eine der beiden Nummern
-  verwendet.
-- Raum: 33/34/30 über 32/31/35, gleiche Rechtecke. Garten: G12/G11, Gang/Haupteingang, G1/G2/G3/G4; unten G15/G16
-  links, G9 unter G2, G8 unter G3. G = Garten; der Gang als zwei schlichte Linien. Nummer 9 und G15/G16 sind
-  vorläufig, Nutzerbestätigung offen.
-- Das Logo unten rechts, höchstens 140 px breit, nicht in die Mitte zwischen die Tische gequetscht (Nutzerwunsch),
-  unverzerrt, ohne Rahmen oder Tippfunktion.
-- Aus den Fotos und Videos des Nutzers vom 15.09.2026 (WhatsApp, mit chinesischem Text): 18/19 ist ein langer Tisch
-  für zehn Personen (2+4+4), 20 ein Zweiertisch, 21/22 normale Tische, 23/24 zusammengestellt, 16/17 normalerweise
-  in einer Flucht. Empfehlung: schlichte Geometrie beibehalten, höchstens Proportionen angleichen (18/19 etwas
-  länger als 23/24). Der Tischplan ist danach noch nicht verändert; nichts entgegen der letzten Nutzeranordnung
-  verschieben.
-- **Schrift gewählt: Hyperreadable**, ausdrückliche Korrektur des Nutzers, nicht IBM Plex Sans. Quelle:
-  [Hyperreadable](https://github.com/MadSimple/hyperreadable), SIL OFL 1.1, kommerzielle Verwendung geprüft,
-  Copyright und Lizenz bei Weitergabe behalten. Die unveränderten Schnitte Regular/Medium/SemiBold samt OFL liegen in
-  `WokFlow/fonts/`, keine Systeminstallation. Chinesisch nutzt Ersatzschriften.
-
-### Geldbeträge: Dinero.js 2 (gewählt 14.09.2026)
-
-- Der Nutzer wollte eine moderne TypeScript-Bibliothek, die auch größere Programme verwenden, und beauftragte die
-  Auswahl. Gewählt ist **Dinero.js 2** (Stand 2.0.2 vom 13.03.2026, eigene TypeScript-Typen, Node >= 20):
-  Geldbeträge mit Währung, Berechnungen, Rundung, Ausgabe; passt zu Preisen in ganzen Euro-Cent. `decimal.js` ist
-  damit ersetzt und nicht zusätzlich nötig: Dinero stellt auch Bruchteile eines Cents als ganze Zahl mit `scale`
-  dar (3505 bei `scale: 3` für 3.505 €), Faktoren ebenso (`{ amount: 15, scale: 1 }` für 1.5). Quellen:
-  [Dinero.js](https://www.dinerojs.com/),
-  [Nachkommastellen](https://www.dinerojs.com/faq/can-i-multiply-by-a-decimal).
-- Ehrlich zur Verbreitung (Frage des Nutzers): kein Branchenstandard und kein belegter Spitzenplatz. `decimal.js`
-  hat deutlich mehr Downloads, ist aber allgemeine Dezimalrechnung; die Empfehlung beruht auf Geldfunktionen,
-  TypeScript-Unterstützung, belegter Nutzung (WooCommerce führt `dinero.js` 2.0.2 in seiner Abhängigkeitsdatei,
-  am 14.09.2026 gelesen).
-- Im Katalog `dinero({ amount: cents, currency: EUR })` ohne `scale`: Dinero nimmt dann den Exponenten der Währung,
-  bei EUR 2, also Cent. Nur `article` und `variant` in `articles.ts` rufen `dinero` auf. Rundungsregel und
-  Rundungszeitpunkt werden am Rechnungsablauf geklärt; noch keine Geldberechnungen angebunden.
-- In `commands.md` stehen Entwicklungswerkzeuge und Dinero getrennt: `-D` gilt für alle Pakete eines Aufrufs, und
-  Dinero wird auch im laufenden Kassensystem gebraucht.
-
-### Artikel und Gruppen
-
-Stand 18.09.2026, mit dem Nutzer gebaut in `WokFlow/src/catalog/`.
-
-- **Artikel stehen im Code, nicht in der Datenbank (Nutzer, 16.09.2026):** Preise ändern sich selten, der Nutzer
-  pflegt sie selbst; die Chefin bekommt keinen Bearbeitungsbildschirm. Begründung: kein zusätzlicher Code dafür,
-  IntelliJ prüft jeden Artikel über die Typen. In SQLite kommt, was im Betrieb entsteht, etwa Bestellungen,
-  Belege, Zahlungen. Eine Preisänderung braucht kein Kompilieren, der laufende Server aber einen Neustart.
-- **Dateien:**
-  - `articles.ts`: Typen `Article` (`name` mit `de` und `zh`, `variants: Variant[]`) und `Variant` (`name` mit `de`
-    und `zh` oder `null`, `price: Dinero<number, "EUR">`), dazu die Fabrikfunktionen `article(de, zh, variants)`
-    und `variant(de, zh, cents)`. `article` nimmt eine Variantenliste oder nur den Preis in Cent; eine Zahl ergibt
-    die eine Variante ohne Namen (Prüfung mit `Array.isArray`).
-  - `buffet.ts`, `food.ts`, `drinks.ts`: je logischer Liste ein `export const name: Article[]`, eine Zeile
-    `article(…),` je Artikel, Reihenfolge wie am Bildschirm. Gemeinsame Variantenlisten stehen oben:
-    `buffetSmall` und `buffetBig` in `buffet.ts`; `variantPieces(cents1, cents2)` für „6 Stück“ und „12 Stück“,
-    vom Nutzer geschrieben, in `food.ts`; `variantsFull`, `variantsBottle`, `variantsJuices`, `variantsWines` in
-    `drinks.ts`. `lemon` steht am Ende von `drinks.ts`.
-  - `menu.ts` (Nutzer: der Ordner bleibt `catalog`): `Category` mit `tax`, `print`, `groups`, `Menu` mit `buffet`,
-    `food`, `drinks`, die Konstante `menu`, dazu der Suchteil mit `entryOf` (siehe „Stand der Dateien“). **Die
-    Gruppen im Katalog sind die logischen Listen**, jede eine einfache Liste in Kurzschreibweise (`soups`, `salads`,
-    `snacks`; Nutzer, 16.09.2026: keine „Artikelmatrix“ `Article[][]`). Auch das Buffet hat eine Gruppe (`buffets`),
-    damit alle Hauptkategorien gleich aufgebaut sind.
-    **Was zusammen gezeigt wird, entscheidet der Bildschirm** (Nutzer, 16.09.2026, „much more elegant“): Er braucht
-    ohnehin eine Tabelle seiner Gruppen mit Namen in beiden Sprachen und Bildern; darin steht auch, welche
-    Kataloggruppen eine Bildschirmgruppe bilden, etwa Suppen & Salate aus `soups` und `salads`. Keine beliebig tiefe
-    Verschachtelung: Hauptkategorie, Gruppe, Artikel, Variante. Nicht gewählt (16.09.2026): Listen je
-    Bildschirmgruppe als `Article[][]` oder per Spread in `menu.ts` verbunden, Buffet ohne Gruppe mit `articles?`
-    neben `groups?` (dem Nutzer zu unordentlich), `menu` ohne geschriebenen Typ, die zusammengelegten
-    Bildschirmgruppen trennen (13 Speisengruppen passen nicht ohne Scrollen, Ente stünde allein).
-- **Umfang (am 18.09.2026 aus dem Code gezählt):** 102 Artikel (Buffet 4, Speisen 50, Getränke 48) mit 199 Varianten
-  in 21 Kataloggruppen (Buffet 1, Speisen 13, Getränke 7), am Bildschirm 18 Gruppen (Speisen 10); dazu `lemon` in
-  der Gruppe `extras`, zusammen 200 Varianten. Namen, Reihenfolge, Preise wie `tmp/preview-menu.js` und die
-  Speisekarte 2026; die Kinderpreise Sonntag/Feiertag stehen nicht im PDF, übernommen aus „Buffettarife“.
-- **Kennung eines Artikels ist sein deutscher Name** (Nutzer, 16.09.2026): alle eindeutig, Namen ändern sich
-  selten; eine Umbenennung zählt in Statistiken als neuer Artikel. Keine englische Konstante je Artikel, doppelte
-  Namen neben `name.de` störten den Nutzer; englische Bezeichner nur für Listen.
-- **Ein Name je Artikel**, Deutsch und Chinesisch, derselbe auf Taste, in „Bestellt“, auf der Rechnung (siehe
-  „Ein Name je Artikel“ unter „Bildschirm und Bedienung“). Nicht im Artikel: Allergene, Chili,
-  Lebensmittelhinweise, englische Namen, Karten-IDs, Kategoriepfade.
-- **Varianten:** Jeder Artikel hat mindestens eine Variante mit Preis (15.09.2026); ohne Auswahl ist ihr `name`
-  null, der Bildschirm zeigt dann keine Auswahl. `Variant[]` erzwingt keine Mindestlänge, `article` mit Preis
-  erzeugt genau eine. Eine einzelne Größe bleibt als Variante (Tsingtao 0.33, Hefetrüb 0.5, Cola Light
-  „Flasche 0.35“); Prosecco steht ohne Größe, weil „0.2“ nirgends gezeigt wird. Größen mit Punkt und ohne
-  Literangabe (`0.25`, `0.3 + Wasser`); Größen sind Text, weil Varianten auch Mischungen, Sorten, „6 Stück“
-  beschreiben. Preise als ganze Cent (`450` für 4.50 €). Jede Variante auf eigener Zeile, auch eine einzelne
-  (Nutzer: bessere Sichtbarkeit). Auf der Rechnung steht die gewählte Variante mit Menge und Preis.
-- **Buffet (15.09.2026):** Jede Buffetart ist ein Artikel (Mittagsbuffet, Abendbuffet, Sonntagsbuffet,
-  Feiertagsbuffet), die Altersstufen Erwachsene, 6–9, 3–5 sind seine Varianten; Mittag mit `buffetSmall`, die
-  anderen mit `buffetBig`.
-- **Gemeinsame Variantenlisten nur, wo die Preise gemeinsam wechseln** (Nutzer, 16.09.2026: Cola und Fanta ändern
-  ihre Preise immer gemeinsam). Kombiniert per Spread, etwa `[...variantsFull, ...variantsBottle]` für Cola, Cola
-  Zero, Fanta, Sprite (Spread erklärt wie `addAll` in Java). Ausgeschrieben stehen Bier (Villacher und Radler
-  kosten gleich, Preisänderung dann an zwei Stellen), Aloe Vera, Lycheesaft, Mineralwasser, Soda, Leitungswasser.
-  Offen: ob die Hauptspeisen zu 14.90 € gemeinsam ihren Preis ändern.
-- **Zitrone (16.09.2026):** ein Zusatz, keine Variante; eigener Artikel `lemon` (Zitrone 柠檬, 0.20 €). Seit
-  17.09.2026 in der Katalog-Gruppe `extras` unter Getränke, die der Bildschirm nicht als Gruppe zeigt, damit sie
-  nicht allein bestellbar ist. Soda hat deshalb keine eigenen Zitronen-Varianten mehr, sie kosteten genau 0.20 €
-  mehr. Wie eine Bestellzeile die Zitrone festhält, ist Bestelllogik und kommt mit dem Bildschirm.
-- **Druck an der Hauptkategorie (Nutzer, 16.09.2026):** `print` neben `tax`, Getränke und Speisen `true`, Buffet
-  `false`. Gemeint ist der Bestellbon; die Rechnung zeigt alles.
-- **Steuer nur an der Hauptkategorie:** Buffet 10 %, Speisen 10 %, Getränke 20 %. Die einzige Ausnahme steht seit
-  17.09.2026 fest im Bau von `entries` in `menu.ts`: Leitungswasser 10 (Nutzer: ändert sich fast nie); wird
-  Leitungswasser umbenannt, diese Zeile mitändern. `orderOf` fragt nur `entryOf` und weiß nichts von Ausnahmen
-  (Nutzer, 16.09.2026: Nachschlagen gehört ins Menü). Schlüssel bleibt der deutsche Name als Text: Eine Konstante
-  `tapWater` lehnte der Nutzer ab (keine Variable je Artikel). Verworfen: `tax?` am Artikel (eigene Property für
-  eine Ausnahme), Pflicht-`tax` an jedem Artikel (Wiederholung), eine Ausnahmeliste `taxExceptions`. Der Name bleibt
-  `tax`, nicht `vatRate`. Berechnetes Leitungswasser 10 % (Mineralwasser 20 %); Kaffee und Tee einschließlich
-  Cappuccino und Latte Macchiato 20 %. Quelle am 15.09.2026 geprüft:
-  [WKO: Umsatzsteuersätze für Restaurationsumsätze](https://www.wko.at/steuern/ermaessigte-umsatzsteuer-saetze).
-  Die neuen 4.9 % für bestimmte Grundnahrungsmittel gelten nicht für Restaurationsleistungen. Rechtsgrundlagen:
+- **Tests (the pattern is `test/orders.test.ts`):**
+  - Shape, shown by him at the first test: `test(` alone, under it the name on its own line, under it the lambda,
+    then `);`. A short lambda in one line with braces, `(): void => { deepEqual(…); }`; longer ones with braces over
+    several lines. No comma after the lambda, although the comma rule above would ask for one; open what applies.
+  - **A test name starts with a capital letter, without a full stop:** `"Sending saves all orders or none"`.
+  - **As many tests as needed, as few as possible:** one flow test for the main way (“much better to go through all
+    the send”), plus one short test per rule that the flow cannot show (“all or none”, “free table”). No own test for
+    an edge case that another test already covers. He reads the test names and one test completely, not every body.
+  - **Code line length, soft (user, 20.09.2026):** the measure is the vertical margin line in IntelliJ, which he
+    measured himself at 120 characters; he has set no hard wrap. He pulled a signature of 101 characters back into
+    one line, and two constants with 104 and 107. So: leave up to about 105 in one line, break only clearly above
+    that, never because of a few characters over 100. Check with `awk 'length($0) > 110'` over `src/` and `test/`.
+    Breaking in his form: an object as the last argument unfolds, one property per line, comma after the last one;
+    without an object the function name stands alone and every argument gets its own line; a too long constant breaks
+    after the `=` like `entries` in `menu.ts`; a too long signature gets one line per parameter under the first.
+  - **No own name for a value used only once (18.09.2026: “just for one time use, we don't need the extra”):** the
+    pizza stands in `api.test.ts` directly in the call.
+  - **Test orders stand once in `test/setup.ts`, as single `export const colaBig1: Order = orderOf(…)`:** every test
+    file imports only the names it needs, without a prefix; **exception from the import rule “from four names on
+    `import * as`”, only for test data.** Tried and rejected by him: an object `ordersTest`, then `ot`, then `odt`.
+    His names: article, at Cola the size, then always the quantity as a digit (`colaSmall1`, `colaBig2`, `redBull0`);
+    no names like `colaLater` or `colaTwo`, no constant without a digit. `{ add: […], remove: […] }` stands in one
+    line where it fits under 100 characters, unfolded only in the three `throws` of `orders.test.ts`. Never break
+    `deepEqual` (“I don't like that some deep equals are inside it and some don't”), rather shorter names or two
+    `deepEqual`.
+  - **`beforeEach` and `afterEach` get exactly one `//` line directly above (18.09.2026: “these are important stuff
+    here”, “just make a quick one line comment at most”):** starting capital, no full stop. IntelliJ does not render
+    a JSDoc above a call.
+  - Fresh state per test (his decision against Claude's advice, do not undo): on file level
+    `let database: DatabaseSync;` and `beforeEach((): void => { database = databaseTest(); });`, the block framed by
+    two blank lines each. Never share a database across tests. `test/setup.ts` holds everything only tests need;
+    `node --test` carries it along as its own passing file, which does not bother him.
+  - **Tests do not check error texts (“the wording can change so better to just see if something is thrown”):**
+    `throws(lambda)` without a second argument. The risk of throwing for another reason is covered by the flow test.
+  - A test lambda with `(t, done)` that never calls `done()` hangs forever without a time limit (checked).
+  - `node:test` against a database in memory, no new library, start with `node --test` in the folder `WokFlow`, no
+    script in `package.json`.
+- **Error texts (user, 18.09.2026: “one time you put in the table ID, one time not … very shitty”):** always built
+  the same way inside one file. An error text names what the caller does not know (article, quantity), not what he
+  handed over himself (`tableId`); `api.ts` logs time and address with the table. His texts: “… needs a valid
+  quantity of at least 1”, “Not enough ${order.articleId} to remove ${order.quantity}”, “No open orders”.
+- **SQL in the code (user, 18.09.2026, undone by himself, do not bring back):** no named `StatementSync` constant;
+  `database.prepare(…).run(…)` stands directly at the place, in the loop too, as in `tableClose`. His loop form
+  `portion = 1; portion <= order.quantity`. `ORDER BY` exactly where the order counts. After every change to
+  `orderbookCreate`, adjust the real `wokflow.db` and remind the user to refresh the data source in the database
+  window: IntelliJ's SQL check reads the columns from there and otherwise reports outdated errors. The file cannot be
+  deleted while IntelliJ holds it open (“Device or resource busy”); then remove an empty table with `node:sqlite` via
+  `DROP TABLE` and create it again.
+- **Imports (user, 17.09.2026, for readability):** from four names out of an own project file and from six names out
+  of an external module (Node or library) on, use `import * as name from …` instead of single names. The limits
+  apply per source file; name like the file, for example `orders.ordersUpdate`. Three names from an own file stay
+  single (`{ menu, entryOf }`, because `menu.menu` is ugly). Regular imports stand before `import type`. Exactly one
+  blank line between the groups when both groups have at least two statements and at least one group has three;
+  otherwise the groups stand directly under each other. A group with only one statement never gets a separating
+  blank line.
+- **Layout in `src/catalog/`:** two blank lines after the imports and around regions, otherwise one. Regions as
+  `//#region Name` … `//#endregion Name`, without a space after `//` (otherwise IntelliJ does not fold), nestable;
+  only where a file has several parts. An `if` with one statement may stand without braces.
+- **Data files look like data (user, 16.09.2026):** helper functions only where they save a lot of repetition. A
+  chain of helpers for drinks was too hard to read for him and was undone; variants stand written out as they appear
+  on button and bill.
+- **No articles where they are not needed, in every comment (user, 21.09.2026, twice in one chat: “why did you
+  put the the the the again there”):** holds for JSDoc, `//` lines, html comments and file headers alike.
+  “Shows occupied tables on the plan.”, never “Shows the occupied tables”; “Name of page, shown in browser
+  tab”. Not mechanical, he keeps an article where it reads wrong without it. Before handing over, read every
+  comment you touched once more and delete every article that carries nothing.
+- **JSDoc** in English, without examples or example values, only above declarations, not above statements; at
+  constants it describes the content. Every function and every type gets one, as do the constants in `menu.ts`. The
+  lists in `buffet.ts`, `food.ts`, `drinks.ts` stand without JSDoc, name and data explain themselves.
+  - Functions as IntelliJ generates them: description, under it `@param name - …` for every parameter, otherwise
+    IntelliJ reports “Parameter is not described”.
+  - **`@throws` like in Javadoc (18.09.2026):** every function that throws or passes an error on gets, after `@param`
+    and `@returns`, exactly one line `@throws {Error} - When …`, with a hyphen, without a full stop, as short as
+    possible, without a subordinate clause; no sentence “Throws when …” in the description any more. `transaction`
+    passes through: `@throws {unknown}`.
+  - **From his corrections:** the comment uses the verb of the function name (`orderRemove`: “remove”, never “take
+    off”). `@returns` names the type as a link (`@returns {@link MenuEntry} with price and tax rate`). A description
+    may begin directly with the link, without “The”.
+  - Lists as parameters are called `ordersToAdd`, `ordersToRemove` (verb names only for functions). A lambda goes
+    directly into `transaction(database, (): void => { … });` instead of an inner function `work`. His newer form in
+    `requestHandle` (18.09.2026, wrapped by himself, do not undo): every parameter on its own line under the first,
+    then a blank line before the function body.
+  - Object types: one JSDoc before the type, properties as a list `` - `name`: … ``, only those that need
+    explaining; no comments at single properties.
+  - Links only as `{@link Name}`, without `|` and link text. Explain used library functions this way when needed,
+    methods through their declaring class (`{@link Writable#end}` with an import from `node:stream`); imports needed
+    for that are allowed. IntelliJ checks comment links itself and needs `@types/node` for it.
+  - **Comments in `api.ts`, rewritten by the user himself (18.09.2026: “I want you to learn from your mistakes,
+    quoting me, making comments”); that is how he writes them, so Claude writes them the same way:**
+    - Under the first sentence a bullet list instead of more sentences; continuation lines indented under the text.
+    - No article at the start of a bullet: “Sends menu.”, “Sends open orders of table.”, “Adds/removes orders of
+      table.”, “Locks table for device in body.” No articles inside the sentence either, and `/` for two verbs.
+    - Used functions as bullets with a link and one short sentence, own ones like foreign ones:
+      `{@link createServer}: Stores the lambda and calls it once per request, with a fresh request and response from
+      Node.` The behaviour in one sentence instead of three lines. At the second mention no link any more. A bullet
+      about a used function starts with the verb that says what the function does: `{@link relative}: Resolves way
+      from page folder to file, …`.
+    - Addresses in the form of the HTTP request line (`` `GET /menu`: Sends menu. ``), status codes in backticks, as
+      already `closed` or `BEGIN`. Test names are plain text and stay without backticks.
+    - **No `//` comments inside the function body (18.09.2026: “I just don't like these two comments”, then “thats
+      clean”):** local constants whose content is not obvious stand as a bullet in the function's JSDoc, the name in
+      backticks. **His exception, and his newer rule from 20.09.2026 (see “Status”): what a constant is stands as a
+      short `//` at the end of its line**, starting capital, without an article (`// Path of url, without protocol,
+      host, port.`). **`if` chain of `requestHandle`, as he formatted it on 20.09.2026:** a blank line after every
+      branch before the `} else if`. Do not undo.
+    - **Claude's slip:** a `replace_all` with a trailing space turned `=== "lock"` into `==="lock"`; look at the
+      places with Grep after every `replace_all`.
+  - **Exception from “without examples” at his explicit wish (18.09.2026):** the JSDoc of `requestHandle` lists the
+    addresses in the form of the HTTP request line and shows a real HTTP request as a code block with three
+    backticks. Only there.
+  - **Link everything linkable (user, 17.09.2026: “if something is linkable, link it”, “take it seriously”):** if a
+    comment names a type, a function or a constant reachable in the file, `{@link Name}` stands there, once per
+    comment at the first mention; over a star import with the namespace (`{@link orders.Order}`). Plural as
+    `{@link Order}s`, unless the plural changes the word (`categories`), then without a link. Module lines in the
+    file header and database names like `orderbook` stay in backticks.
+  - **Shape of the sentences (18.09.2026, corrected by hand in `ordersRead`):**
+    - Every sentence ends with a full stop, the last one of a block too. Whoever touches a JSDoc checks all of its
+      lines, not only the new one.
+    - No long comment lines, **guide value about 75 characters**, soft: 85 he accepts in a single case, 90 he does
+      not like any more; what matters to him is not hitting the vertical margin line in IntelliJ.
+    - **Break where a human pauses when speaking (18.09.2026, explicitly corrected):** not mechanically before “so”
+      or “and”, but where you naturally stop when reading aloud, often after a comma. Read the sentence half aloud
+      before breaking it. Every sentence starts on a new line. Check before handing over:
+      `awk 'length($0) > 80 && /^\s*\*/'` over the changed files.
+    - One word, one meaning applies in comments too: a row of the database table is a “portion”, an `Order` is a
+      variant with its quantity. Never “order” for both in one sentence.
+    - A comment promises only what the code does today.
+    - **Comment over a three-slash line, not behind it (corrected by hand, 21.09.2026):**
+      `// Note for type checker only` stands on its own line above `/// <reference types="vite/client" />`.
+      Trailing `//` stays reserved for constants.
+- **Comments in `commands.md` (user, 17.09.2026, shortened by hand: “your commentary is shitty. Please learn from
+  your mistakes”):** one English line above every command, without a full stop: what the command does, then after a
+  comma the options as `-x: meaning`, for example
+  `# Run all tests from the WokFlow folder, --test: finds test files`. No examples, no operating hints like “stop
+  with Ctrl+C”. Read the neighbouring lines as the pattern before writing.
+- **File header in the user's style (corrected by hand several times):**
+  - `## Title`, under it a description as running text, no bullets; if the title says everything, no description
+    (`## Drinks`). No additions in brackets, no level numbers. Files without imports start directly with the JSDoc of
+    the first declaration: two comment blocks before the same declaration do not work, IntelliJ then does not render
+    the first one. **If the first declaration is the main thing of the file, its JSDoc carries the file header (user,
+    20.09.2026, written by himself in `locks.ts`: “look at it and learn from it”):** `## Title`, blank line, the
+    description as a whole sentence with the actor in front, blank line, the property list. His wording:
+    `## Table-lock`, “The device that has the table open holds a table-lock.” The term is “table-lock” with a hyphen.
+  - **Description as short as possible (18.09.2026, on `api.ts`: “should be as short as possible because the function
+    below explains this already”):** as a rule one sentence on what the file does. Nothing that the JSDocs of the
+    functions and types below already say.
+  - Modules: one bullet line per module directly under the description, without a heading `### Modules` (removed by
+    him). The module in backticks without a web address, behind it what the module does, not what the imported names
+    do. **The same module has literally the same line in every file (18.09.2026: “I want everywhere the single same
+    explanation”):** look with Grep how the line reads in the other files before writing.
+  - **Modules imported only with `import type` get no line (18.09.2026: “if something just with import type then dont
+    need”):** a module line stands only for modules with at least one regular import. The `import type` itself stays,
+    even when only a `{@link …}` needs it.
+  - Test files: no lines for the own files under `../src/`, the Node modules stay. In `orders.ts` the line for
+    `../catalog/menu.ts` remains.
+  - Exception `articles.ts` and other files with few imported names: one `` - {@link Name}: `` per name with an
+    explanation of what it is and what the file needs it for; never leave these out, unless the name is imported only
+    with `import type`. No heading `### Modules` there either.
+  - Modules and properties always stand as a bullet, single ones too; every other single statement becomes a normal
+    line, for example “Start with `npm start`.” in `server/index.ts`.
+  - The user's wordings stay, for example in `articles.ts` “Defines the article type with its variants and stores
+    variant prices as Dinero amounts.” and in `api.ts` “Connects the requests of the phones to the server, where the
+    menu and the saved orders are.”
+- IntelliJ: `// noinspection DuplicatedCode` has no effect in `.ts` (checked by the user).
+
+## Getting started
+
+- The main folder is `AsiaWok_Bonierungssystem_2026`. This file lies in `WokFlow/`, the folder of the Git repo: if
+  Claude starts in the main folder, it is not loaded by itself and has to be read first.
+- `WokFlow/` = the new system. New code, tests and the Git repo live only there.
+- `TOUCHIT/` = everything about the old system, about 10 GB. Search in it only in a targeted way, never search the
+  whole folder.
+- Everything outside the main folder does not belong to the project, `M:\NomWorkspace\CLAUDE.md` included.
+- **Restaurant documents, source named by the user:**
+  `M:/NomWorkspace/NomBusinessworkings/AsiaWokRestaurantGmbH/Kundeninformationen`. The current
+  `AsiaWok_Speisekarte_2026.pdf` lies there, also `AsiaWok_Plakate_2026.pdf` and `AsiaWok_Speisensteller_2026.pdf`.
+  Look there for menu, groups, names and variants; the originals are business documents outside the code project. Do
+  not change them unasked.
+
+## Goal
+
+The old POS system TOUCHIT is replaced by a new, lean system: **WokFlow**. The user builds it anew with AI help
+(Fable 5.1 plus a second model). The old code serves only for understanding and is **never copied**, it belongs to
+the manufacturer. The analysis makes weaknesses and possible improvements visible. Old groupings, configurations and
+workflows are no template for WokFlow; the new system is designed as simply as possible out of the restaurant's
+actual needs.
+
+## Manifest: WokFlow in the big picture
+
+The whole system in one piece, from ordering to the tax adviser. Details and sources are under “Decisions”,
+“Accounting”, “Correspondence” and “rksv”. If a newer entry there contradicts this section, the newer one applies and
+this section is brought up to date.
+
+### 1. What WokFlow is for
+
+- POS and ordering system of ASIA WOK Restaurant GmbH (Messeplatz 1, Halle 10, Klagenfurt): buffet with wok, menu
+  and drinks. Buffet 11:30 to 14:30 and 17:00 to 21:30, Tuesday closed except on public holidays.
+- WokFlow replaces TOUCHIT, at the latest by May 2027: then the rksv signature card has to be exchanged, and TOUCHIT
+  probably does not know the new card. Rough estimate from 13.09.2026: 62 to 96 working days with AI help, 8 to 12
+  months alongside other work.
+- Guiding rules: function first, then simplicity. Large, well readable buttons for waiters between 50 and 60. On the
+  screen only what helps in the moment. As little code as possible. TOUCHIT serves only for comparison.
+
+### 2. The business in numbers
+
+- About 35 tables, 9 employees (payroll May 2026 about 21,500 € gross), one person takes the money, more than 80
+  bills a day.
+- Card turnover 30.09.2025 to 31.08.2026: 481,669 € in 336 days, so about 520,000 € a year, 29 card payments and
+  1,434 € a day, 49 € per payment.
+- Example days: 02.09.2026 turnover 2,144.30 €, of that card 1,352.50 € (63 %). 13.09.2026 turnover about 2,413 €,
+  card about 1,235 € (51 %), cash 1,178.10 €, of that buffet and kitchen 1,846 €. Total turnover from that roughly
+  0.9 million € a year (estimate, not an accounting figure). About 80 % food, 20 % drinks; WokFlow sets the standard
+  tax rate per main category, articles that differ stand once in an exception list (see “Articles and groups”).
+
+### 3. Devices and technology
+
+- One server: Lenovo mini PC with Linux at the counter, with a touch monitor (POS and boss workplace), a card reader
+  with an A-Trust signature card (rksv), a central printer (Metapace T-3II) and a USB SSD.
+- 4 to 5 Android phones of the waiters. WokFlow is a single web app, the same page in the browser on phone and
+  counter monitor. The boss unlocks every phone once, waiters need no code, the boss at the PC a boss code.
+- Network: FRITZ!Box with an operating WLAN (server, phones, printer, card device), guest WLAN separate.
+- Card payment via Nexi: today a mobile terminal “Mobile Premium” at the counter, planned in addition the Nexi app
+  (SoftPOS) on the cashier phone Redmi Note 13 Pro 5G.
+- Software: TypeScript (Node on the server), one SQLite file on the server, money in whole cents. Backup running
+  into the cloud, hourly to the USB SSD, a full one at night.
+- No emergency mode: if the server fails, work continues with the paper order pad.
+
+### 4. Service workflow
+
+1. Table plan after the sketches and restaurant photos from 14.09.2026: **inside or garden**. Plain rectangles: 1–5
+   exactly as big as 12–16, table 6 as small as table 7, table 20 smaller. No drawn benches. The group of 20s stands
+   at the far left of the inside plan; 18/19 stands upright on the right. 18, 19, 23, 24 stay bookable singly, number
+   25 is dropped. The former room with the 30s tables lies above the garden on its side; both have to fit on one
+   screen. The garden aisle is clearly wider; table 17 lies next to 19, the gaps at 21/22 and 24/23 are evened out.
+   Free: grey tinted without a border. Occupied: filled rosé without a border. **No dots, no occupied/free legend, no
+   amounts or dwell times.**
+   **Table lock (decision of the user, 18.09.2026):** a table is only ever open on one device, the PC counts as one.
+   Reason: two waiters in the same table are a mess, and the system should stay as simple as possible. The lock has a
+   time limit that the device extends while the table is open; if a phone fails, it runs out by itself. It lives in
+   the server's memory and comes with the screen module. Independently of it the server saves every message of a
+   phone completely or not at all (`ordersUpdate`).
+2. A table starts at **Getränke**, next to it **Buffet** and **Speisen**. **No quick selection.** Align subgroups
+   with the business; the structure may differ from the printed menu. Chosen: a compact shared header with a large
+   table number without the word “Tisch”, with the tabs “Bestellen / Bestellt”. The framed table number leads back to
+   the table plan, an own button “Tische” is dropped. Chinese under the German tabs.
+   Getränke and Speisen always start in the category list; no group opens automatically. A small back arrow to the
+   group list, no additional way back inside it. Groups as a list without a heading.
+   Drinks in two columns with German on top, Chinese underneath. Food as compact single-column buttons with German
+   and Chinese next to each other, wrapping completely when space is short. One name per article, the same on the
+   button, in “Bestellt” and on the bill.
+   “Bestellt” with names in one line, one language at a time; a small language button “DE”/“CN” at the bottom right
+   next to the big bill button, without an own header.
+   Quantity fields show the unpaid quantity at the table; a small display with a big tap area, no zero. Direct
+   articles can be reduced by one new portion there. At articles with a selection the number outside is display
+   only; removing happens in the menu at the concrete size or sort. New portions without an undo bar. Portions
+   already sent can be corrected in the selection window too, there with “Rückgängig”. New portions of the same
+   variant are reduced first; other sizes stay untouched. A Cola button opens Cola/Zero/Light with the fitting sizes
+   or the bottle underneath. Articles German/Chinese without prices. Quantities with a dot: `0.25`, `0.5`,
+   `0.3 + Wasser`.
+   Buffet with plus/minus for adults as well as 6–9 and 3–5, without the word “Jahre”; under 3 without an own
+   counter. Chinese for 6–9 “儿童”, for 3–5 “小童”. “Erwachsene” stays while entering and is dropped only in
+   “Bestellt”; children there in brackets, for example “Sonntagsbuffet (6–9)”, in Chinese also only the age.
+   Mittag, Abend, Sonntag, Feiertag are four separate buffet kinds; Sonntag and Feiertag have the same price, both
+   from 11:30 to 21:30. At the top only the buffet name with Chinese, the time span on the right; the header unfolds
+   the four kinds. **One buffet kind per table (16.09.2026):** tapping switches the kind, people already counted move
+   along, because a table is billed by one kind only. The later automatic should preselect the tariff from date,
+   weekday and public holiday, without showing the current time; the choice stays until a new time starts.
+3. **Sending on the way back:** the framed table number leads back to the table plan and sends new positions, as
+   known from the TOUCHIT phone; Escape does the same. No own “Bonieren” button. Drinks and à la carte on one shared
+   ticket at the central printer, no separate tickets; buffet without a ticket. Do not print what was already sent
+   again. In the backend, return successfully only after a confirmed save; let errors stay visible.
+4. Correction at the open table: minus at the drink or food line; **it must be possible to undo an accidental
+   removal**. Name of the removed article plus “Rückgängig”, without a time limit until the table view is left,
+   several steps undoable one after another, separate per table. The undo area stays visible outside the scrolling
+   order list. No extra confirmation window, no swiping. In “Bestellt” only quantity and minus, at the buffet too;
+   its plus/minus stands while entering. The undo shows only the German and Chinese name, without “1 ×” or
+   “entfernt”. Cancellation reasons and the traceability of changes already saved stay backend topics. No additional
+   cancellation tickets wanted.
+5. **Paying separately is important:** in the bill select articles and quantities for one person, take the money for
+   this part bill, close only the paid quantities; the rest stays open at the table. Afterwards return directly to
+   the next person in the same selection, until everything is paid. The normal case stays the whole bill directly.
+   Only by articles, never by a freely typed sum. Moving to another table stays a separate function (see “Screen and
+   operation”).
+6. Bill: WokFlow creates the receipt, signs it (rksv chain, turnover counter, QR code) and prints it. After that the
+   receipt is unchangeable. Every part bill is an own receipt. The payment kind does not stand on the receipt.
+7. Paying: point 5.
+8. Mistakes after paying: only the boss at the PC, only the whole bill, with a signed cancellation receipt, money out
+   of the till, then a new bill. Discounts are given only by the boss at the PC too.
+
+### 5. Paying without switching (plan of the user, 14.09.2026)
+
+- **Card is only what Nexi confirms. Everything else is cash.** Vouchers are recorded explicitly. In the normal case
+  nobody switches “Bar” or “Karte” and nobody types amounts.
+- Card: the waiter taps “Karte”, WokFlow sends the bill amount to the Nexi terminal or the Nexi app on the phone. The
+  guest chooses the tip there. Amount, tip and transaction number come back automatically: bill amount as card
+  turnover, tip separately. While the payment runs, WokFlow shows “Warte auf Nexi”; if the answer is missing,
+  “Zahlung prüfen”, and the table stays open (do not count it as cash, do not trigger it again). Declined means:
+  nothing booked.
+- Cash: “Bar kassieren” opens the cash closing with a change calculator. “Abschließen” works without any input; if
+  needed type the amount given and the change is calculated at once. A cash tip is never recorded, it goes directly
+  to the waiter.
+- **No “mixed” mode (14.09.2026):** guests do not split a single payment between cash and card. A remaining amount
+  after a voucher belongs in the voucher flow. Own vouchers with a number, foreign vouchers (Edenred, Nexi paper)
+  with the provider. Paying separately for different guests by selecting articles is explicitly wanted and is
+  something else.
+- As long as there is no direct connection: at the day closing WokFlow reads the Nexi payments in and marks the
+  matching bills as card, the rest is cash. Matching only with a reliable reference (equal amounts or a day total are
+  not enough), all devices and the same period, reading in again books nothing twice. If data is incomplete or
+  unclear: “Zahlungen prüfen”, never silently cash. Where WokFlow gets the Nexi data from is open (answer from
+  Nexi).
+- Switching stays as a function for exceptions: “Heute” shows the payment kind of every bill and allows a correction
+  until the day closing, with a log (old, new, time, device, user). Who may correct, all waiters or only the boss, is
+  open.
+- Why: today the POS fixes the payment kind when the bill is printed, guests often change their mind afterwards, the
+  card total does not match, and the boss's wife works it out by hand every evening with the Nexi slip. Only Nexi
+  knows for sure whether a card was used.
+- Legally (to confirm with the tax adviser and in the rksv session): a card payment on site counts as cash turnover
+  for tax, the receipt is the same for cash and card, the payment kind is a logged note, card turnovers are
+  recognisable through the transaction number (§ 131 and § 132a BAO, FAQ Arbeitskreis Kassensoftware 2.4.15).
+
+### 6. Day closing (boss at the PC, one button “Tag abschließen”)
+
+- WokFlow warns about open tables and updates the Nexi data (status visible, again when closing).
+- The page shows turnover, card and cash in large type, under it only lines that are not 0: card turnover plus card
+  tip equals the Nexi payout amount, vouchers redeemed and sold, cash expenses, cancellations, turnover per goods
+  group and per tax rate (net, VAT, gross). No counting of the till.
+- Till: cash-paid purchases are entered with the amount and a short text. **“Zur Bank” = cash minus cash expenses
+  minus card tips paid out.** The float is a fixed stock outside the till and does not count.
+- “Tag abschließen” locks the day, prints a complete ticket with goods groups (to file on paper, as long as the
+  boss's wife and the tax adviser want paper), creates a PDF and data for the monthly sending and starts the backup.
+- For comparison today: boss menu, two reports as tickets with many zero lines, the Nexi slip and a hand
+  calculation, filed per day.
+
+### 7. Where the money flows
+
+- Cash: pay “Zur Bank” into the company account daily. Purchases in cash with a receipt, the receipt stays paper.
+- Card: Nexi Germany pays every Monday into the company account, separated by card kind and already without the
+  disagio (card fee in percent). Device rent and 0.02 € per payment come by direct debit. Costs today together about
+  0.76 % of the card turnover, around 3,960 € a year, disagio 0.63 % on average.
+- Card tip: comes with the Nexi payout into the company account, the waiters get it in cash from the drawer in the
+  evening. A pass-through item, not turnover.
+- Vouchers: sold money vouchers are 0 % when sold and taxed normally when redeemed. Given service vouchers (for
+  example buffet for 2) are booked with amount 0 when redeemed. Foreign vouchers are taxed normally and handed in at
+  the provider, WokFlow keeps a list for that. Vouchers are sold only by the boss at the PC.
+- To the authorities (general knowledge, not checked, look it up in the tax account on FinanzOnline): wage tax,
+  employer contribution and surcharge on the 15th of the following month to the Finanzamt (May 2026: 922 €, 591 €,
+  59 €), social insurance on the 15th of the following month to the ÖGK (May 2026: 7,482 €), municipal tax 3 % of the
+  payroll to the city of Klagenfurt (May 2026: 647 €), VAT on the 15th of the second following month, corporate tax
+  prepayment quarterly. So the monthly “bill from the Finanzamt” is mostly VAT and wage levies.
+
+### 8. Month and year
+
+- End of month, automatic: rksv monthly receipt (a receipt over 0 €), export of the rksv journal as an own file that
+  is never overwritten (USB SSD and cloud), monthly evaluation as PDF and data by e-mail to the tax adviser, sent
+  from the mailbox of the boss's wife. Plus a button “An Steuerberater senden”.
+- December: yearly receipt, check it with the app of the finance ministry.
+- Tax adviser Mag. Helmut Allesch (Klagenfurt): bookkeeping, monthly VAT return, payroll, annual accounts. He gets
+  the POS evaluation, account statements, receipts, Nexi settlements and time sheets.
+- Keep for 7 years: receipts, rksv journal, day closings, Nexi settlements. The user's filing in
+  `M:\NomWorkspace\NomBusinessworkings\AsiaWokRestaurantGmbH` (scheme `Kategorie/Jahr/AsiaWok_Typ_JJJJMM.pdf`).
+
+### 9. Accounting and access (plan)
+
+- Now: ID Austria for Li Vu and Kim Hong Vu, so that the GmbH gets FinanzOnline and USP access (tax account,
+  decisions, VAT returns, ÖGK contribution account) and the user gets a user of his own. Request the documents from
+  the tax adviser (mail under “Correspondence”).
+- Unclear: who is managing director in the company register; according to GISA the trade licence runs on Li Vu
+  personally instead of on the GmbH. Clarify both.
+- Later, when WokFlow runs: a few months of bookkeeping in parallel with the tax adviser, then the running
+  bookkeeping themselves. Payroll and annual accounts stay with the tax adviser (a recommendation, not decided).
+
+### 10. Card payment in stages
+
+1. Start without a direct connection: read the Nexi payments in at the day closing and match them (point 5).
+2. Terminal coupled (ZVT over WLAN, Nexi unlocks it): the amount goes to the device automatically, payment and tip
+   come back at once.
+3. Nexi app on the cashier phone (app-to-app interface): no more walking to the counter, the terminal stays a
+   reserve. Goal: at today's contract conditions, not at the list price of 1 %.
+
+The building block “card payment” in WokFlow has only two tasks: send the amount, fetch the result. That keeps the
+provider exchangeable (alternative hobex).
+
+Phone call with Nexi on 15.09.2026, according to the user: Nexi wants to make a good offer and is looking for POS
+partners anyway. The offer waits until WokFlow is developed further; after that the user thinks a joint solution with
+SoftPOS is possible. Nexi also offered an Android device with a small card reader that prints no ticket; model
+according to the user “A27” or similar, name still to be confirmed. Idea of the user: normally take the money with
+this device, today's terminal stays for guests who really need a terminal ticket. Not decided.
+
+### 11. Switch-over and later
+
+- A trial period next to TOUCHIT (practice receipts in training mode), then register WokFlow at FinanzOnline with a
+  start receipt, TOUCHIT a few more days as a reserve, then a closing receipt and deregistration.
+- After the start: ordering by QR code by the guests.
+
+### 12. Open, and whose turn it is
+
+- User: wait for answers from Nexi and the tax adviser (mails under “Correspondence”), ID Austria. The table plan
+  sketches are there; single handwritten numbers still to be confirmed.
+- Tax adviser: documents, cash book, float, tips, vouchers.
+- rksv session: monthly and yearly receipts, A-Trust card under Linux, confirm the payment kind without a receipt.
+- Screen: who may correct payment kinds, the public holidays Josefstag and Volksabstimmung, confirm table numbers 9,
+  G15, G16.
+- Module chats (since 17.09.2026): one whole module per chat; flow, rules, order, next task under “Next chat”.
+  Catalog and the module `tables` stand, the server interface is in work, after that the screen.
+- User with the boss's wife: interim bill, open credits, staff booking, bill copy, bill with a customer address (see
+  “TOUCHIT comparison” under “Decisions”).
+- Technology: the way to the Nexi data, cloud provider, VESA mount, spare printer.
+
+## Next chat: explain the page from the ground up, then read `plan.html` (handoff of 21.09.2026)
+
+**Order of the user (21.09.2026: “start again at the basics … then deduct from it, why, what travels when … and what
+is our architecture”):** The new chat first explains how the page is built, from the ground up, one rung per answer,
+and goes on only when he has understood the basics. He calls himself a complete beginner here. The ladder (rungs 1–6
+all went through on 21.09.2026 in the evening and landed, see the two landed blocks right below the ladder; kept here
+only as the map, do not walk it again):
+
+1. Who can run what: the browser on the phone understands only HTML (what stands on the page), CSS (how it looks),
+   JavaScript (what it does), no TypeScript. Node on the server PC runs TypeScript directly; `api.ts` and `orders.ts`
+   never leave the PC. Vite translates in between. `plan.ts` itself never travels, only its translation.
+2. What `npm run build` does before a phone is involved at all: out of `src/page` comes `dist`. In it an
+   `index.html` in which Vite has rewritten the lines to `router.ts` and `plan.css` to the built files under
+   `/assets/`, one JavaScript with all the TypeScript of the page and the text of `plan.html` as a string, one CSS,
+   fonts, logo. Only name the file names with a fingerprint, do not go deeper (they confused him a lot).
+3. What `npm start` does: one program, port 3000, two tasks: send out the page from `dist` unchanged, build the
+   answers per request from the database.
+4. What travels in which order when the waiter opens WokFlow: `GET /` brings `index.html`; the browser reads it and
+   fetches CSS and built code, the CSS fetches fonts and logo; the code puts `planHtml` into the `body`,
+   `planStart()` asks `GET /tables`. His knot: “index calls plan.ts, plan.ts travels from where”.
+5. What travels after that: only answers; the router takes the screens out of the built code.
+6. The possible architectures and their price, then ours: all screens hidden in one HTML file; separate pages per
+   screen (every switch is rung 4 from the start, the code restarts, its memory is gone); router (our build); his
+   variant “the plan stands in `index.html`” (costs no extra travelling, but the plan would be the one screen whose
+   HTML stands in no variable of our code). Landed: `plan.html` becomes a constant through the import, like
+   `static final String`; `index.html` the browser reads itself, once, before our code, and throws the text away.
+
+**Page and build mechanics, landed 21.09.2026 evening (do not repeat, only connect):** Rung 1 confirmed. The name
+`page` stays over `client`/`phone` (client is a role Chrome plays and we do not write Chrome; the same files run in
+desktop Chrome while building). `?raw` built from the ground up with two scratchpad builds he watched: without Vite
+`import planHtml from "./plan.html"` fails (`MISSING_EXPORT "default"` in a Vite build, `ERR_UNKNOWN_FILE_EXTENSION`
+in plain Node), because `import` only fetches a value from a code file and HTML hands out no value; `?raw` is Vite's
+order to read the file and hand its characters as one string, pasted into the built JS in place of the import (he saw
+the built line `var e=` … `;document.body.innerHTML=e`). Without Vite you read text at run time instead: Node
+`readFileSync` (the server does exactly this, out of `dist` only, via `pageFolder`), the browser `fetch`. Vite walks
+the tree from `index.html` (its two `href`/`src` lines), then the lines inside each reached file (`plan.css` names 3
+fonts + logo, `router.ts` names `plan.html` + `plan.ts`); everything reachable is built, nothing else even in the same
+folder; `root: src/page` only says where Vite starts. All CSS is glued to one file, all TS to one; fonts and logo stay
+own files (binary, not letters). The real build makes a `dist` of 7 files: `index.html`, 1 CSS, 1 JS, 3 fonts, logo.
+The browser does not know it received HTML by itself — the server's `Content-Type` header tells it (`page.ts`
+`contentTypes`): `text/html` show as page, `text/css` use for looks, `text/plain` would show tags as visible text.
+HTML loads first because the CSS address stands inside it; Chrome shows nothing until a head stylesheet has arrived. An
+`<a href>` is a jump, not a pull: the old page is thrown away and the JS restarts empty — that is exactly why we chose
+one HTML plus our own screen-swap. `document` is the tree Chrome builds from the characters of `index.html`; chain
+characters → tree → picture; `innerHTML = planHtml` hands Chrome characters, it makes tree parts and repaints. Inner
+room and garden are two `div.area` in the same `plan.html`, not separate screens; the tabs show one. Only `plan.html`
+sits in the JS today, `order.html`/`bill.html` do not exist yet.
+
+**Connections and timing, landed 21.09.2026 evening (do not repeat):** The 7 fetches do not go in sequence; the phone
+opens a few lines and pulls them in one or two waves, once at open, then none of the 7 travels again. Leitung = a TCP
+connection = an open phone call; the phone (client) builds it to PC port 3000, the PC (server) picks up, the server
+never calls first. Connection ≠ request: one connection carries several requests one after another, not one connection
+per request; the phone opens a few so several run at once. In Java: a `Socket` is the line (TCP), the text form on it
+is HTTP; `node http` opens the socket and speaks HTTP. Lifetime: no central decider, both sides run their own idle
+timer (Wecker), the shorter one wins, either side may hang up anytime; checked in `node http`: `keepAliveTimeout` =
+5000 ms (server closes a silent line after 5 s), `requestTimeout` = 300000 ms. Two separate roundtrips (Läufe): the
+handshake only opens the line (~one roundtrip), the question with its answer is its own roundtrip on top; line already
+open → 1 roundtrip, line closed → 2. Cost model (Hausnummern, local wifi, ~3 ms a roundtrip): for small JSON the
+roundtrip is almost the whole wait and the bytes are ~free (picture Bote/Zettel: the note adds no time, a 165 KB
+parcel does); tap with line open ~3 ms, line closed ~6 ms, open the page ~30–50 ms. So shrinking a small JSON saves
+nothing; Vite's packing only helps the 165 KB open. Real wifi to be measured once the server runs. The router saves
+screen-switching entirely (plan → order → bill is a local body-swap, no handshake, no data, the HTML is already in the
+loaded JS), but the live data (which tables are occupied, the menu, sending an order) still travels as JSON, one
+roundtrip per question.
+
+**Reading `plan.html`, landed 21.09.2026 evening (do not repeat, only connect):** built up the full one table-button
+line `<button class="table" data-table="1" style="grid-area: 1 / 1">1</button>` element by element. A tag is an
+open-and-close pair (`<button>` … `</button>`); the content between them (`1`) is the visible label. An attribute sits
+in the open tag as name=value. `class="table"` is a shared group label so one CSS rule paints all 41 buttons.
+`data-table="1"` is a per-button note our tap-code reads: one handler for all 41 (like a Java `ActionListener`) asks
+the tapped button which table it is; kept separate from the visible text because the takeaway button shows `M` while
+the code wants a clean key, and not put in a class (the identity is unique per button, a class would kill the shared
+group and force parsing the number out of `"tisch1"`); why not `id` was already settled. `style="grid-area: 1 / 1"`
+is one inline CSS line (row / column in the grid), inline because the position is unique per button while the shared
+looks live in the class. `grid-area` is CSS core, no framework; grid and flexbox are two built-in layout tools, we use
+grid for the plan, flexbox is not needed. His CSS fear addressed: no memorizing, only the few rules the page needs,
+one value at a time with the page open. Corrected his wrong model: `index.html` does not forward and does not point at
+`plan.ts`; it is the one page that stays, with an empty body, its head points at the router (the built JS), the router
+pulls in `plan.html` (as text) and `plan.ts` and fills the empty body.
+
+**Continue here (state at end of 22.09.2026, after midnight):** `index.html` and `router.ts` are read through and
+landed, he says so himself. `plan.html` is read as far as header, tabs, offline note and the five blocks; the tables
+themselves are still open. Next: the nesting inside `tables-indoor` (`table-pair`, `tables-front`, `divider`,
+`aisle`, `logo`), then `plan.css` with the page open, then `plan.ts`.
+
+**Explained on 22.09.2026 and landed (do not repeat, only connect):** the viewport line from the ground up, in this
+order, and every rung landed: a page is drawn on a sheet whose width the browser picks; phones fake 980 since the
+first iPhone 2007 so old desktop pages still fit; `width=device-width` refuses that; a css dot is normed to 1/96
+inch, about 0.26 mm, so 48 dots is a fingertip on every phone; the maker's ratio (1080 hardware, ratio 3, reports
+360) buys sharpness, never room; phones report 320 to 430, so widths flex and finger sizes stay fixed; Android calls
+the same thing `dp`; `initial-scale=1` says the same as `width=device-width` from the other end, scale 2 would mean
+180 dots across. Also landed: `rel` is the relationship, `href` points at a document that stays separate while `src`
+pulls content in; the six import forms as a table; `?raw` works because Vite writes the missing `export default`;
+a three-slash line is read only by the type checker and must stand before the first statement.
+
+**Written into the code on 22.09.2026 (nothing committed):**
+
+- `index.html`: one comment above every head element, his wording for the viewport line kept.
+- `plan.html`: the two header links became `<button ... data-screen="reservations">` and `data-screen="today"`, so
+  IntelliJ's “cannot resolve anchor” is gone; five block comments added.
+- `plan.html`, `plan.css`, `plan.ts`: 42 class words dropped, because place already says what the element is.
+  `.table` is now `.tables button`, `.tab` is `.tabs button`, `.header-button` is `.header button`, and
+  `.table-pair .table` had to become `.tables .table-pair button`, otherwise `.tables-indoor button` wins over it
+  and the table pairs lose their height. Only `selected`, `short`, `small`, `takeaway` stayed as classes. In
+  `plan.ts` both tab lookups now read `.tabs button`. Dead `color: inherit` and `text-decoration: none` removed.
+- `plan.css`: finger size 44 to 48 everywhere, his decision, Android is the target, Google says 48 dp and Apple 44.
+  The single `40px` in the garden columns stayed untouched.
+- `router.ts`: articles out of the JSDoc; he moved the `//` note above the three-slash line himself.
+- Checked, not guessed: position and size of every table, divider, aisle, pair and logo measured in the browser
+  before and after the slimming, identical to the pixel, and the tab switch tested.
+
+**Open after that session:** the header buttons still do nothing, the router has to listen for `data-screen`;
+undecided whether the two tabs `data-area` should be renamed `data-screen` (asked, not answered); two smaller
+shortening candidates left, the nested `div` around the indoor tables and `class="tables tables-indoor"`; the
+`vite/client` bullet in the JSDoc and the `//` line above the reference say the same thing twice.
+
+**After that:** `plan.html` and `index.html` in the agreed order (first one table row: tag, content, attributes, of
+those `class` and `data-table` explained, `style` open; then nesting; then the visible parts from top to bottom; last
+the ten browser lines of `index.html`). Then build and look (`npm run build`, `npm start`, `localhost:3000`; he has
+never seen the page, there is no `dist`). Then `plan.css` with the page open, then `router.ts` and `plan.ts` with the
+DOM functions one at a time. After that: commit (he does it), shorten this file, slice 2.
+
+**Status of the code (21.09.2026):** Last commit `978e97d`, containing everything from 20.09. including `resume()`
+in `pathSend`. Not committed: the router rebuild in `src/page` (new `plan.html` with the 88 plan lines unchanged; new
+`router.ts` with `/// <reference types="vite/client" />`, a default import of `./plan.html?raw`,
+`document.body.innerHTML = planHtml;`, `planStart();`; `index.html` with only the head and an empty `body`; in
+`plan.ts` the two start statements inside `export function planStart()`), `vite.config.ts` (his comments),
+`commands.md` (`build` and `watch` in, `dev` out), this file. From him, not from Claude: `AGENTS.md` deleted,
+`src/server/index.ts` changed. Checked in a copy in the scratchpad: build without errors, page correct in the browser
+(41 table buttons, 14, M, G3 rosé, tabs switch), type check of `router.ts` without errors, without the `reference`
+line TS2307. Deliberately not built: a function `screenOpen`, it comes with the second screen.
+
+**Open for slice 2:** how screens open each other without `plan.ts` and `router.ts` importing each other (the
+header buttons now carry `data-screen`, the router listens later; the old idea with the address behind `#` is
+dropped, it only works when every screen stands in the same document); moving the general
+part out of `plan.css` (colours, fonts, `body`, `button`) into a file of its own; building the 41 table buttons from
+a list (his idea, parked until the plan is read).
+
+**Accepted by his word:** `src/server/api.ts`, `src/server/page.ts` (“finished completely”), `test/api.test.ts`,
+`vite.config.ts`. Understood and rewritten by him, but not explicitly accepted: `index.ts`, `orders.ts`,
+`orders.test.ts`, `test/setup.ts`. Not yet read: `package.json`, `.gitignore`, everything under `src/page`.
+
+**Explained on 21.09.2026 and landed (do not repeat, only connect to it):** for-of with `const`; `vite.config.ts`
+completely (`root`, `outDir` counts from `root`, `emptyOutDir`, minifying stays, source map as a table “place in the
+built code to place in the `.ts`”); `defineConfig` returns the object unchanged and serves only the type check, like
+`OrdersUpdate` at `ordersUpdate`; `export default` is the export under the fixed name `default`, Vite reads
+`module.default`; all import forms as a table “normal `import` against `import type`” (TS1363, TS1361), a plain
+`import "./x.ts"` only runs the file, every file runs only once; HTML is text and can stand as a string in
+TypeScript, `?raw`.
+
+**Lessons for Claude from 21.09.2026:** Do not give the wording of a specification as the mechanics (“new variable
+each round”; he wants to know what the machine does, and he was right). Do not dig deeper than asked (the letters in
+`mappings` cost an hour; ask his question “do we really need to know this” earlier yourself). Count numbers before
+they stand in the chat (41 buttons, not 45). He wants Claude's honest recommendation on the learning order (“you just
+should tell me how I understand this best”) and reads nothing that is foreseeably going to be rebuilt.
+
+**`resume()` in `pathSend` (decided, he kept it):** Claude had justified it wrongly (“otherwise the test file never
+ends”; checked: the tests end without it too). The right reason stands in the Node documentation on
+`http.ClientRequest`: whoever listens for `response` has to consume the body, otherwise the unread data stays in
+memory. **Lesson: never name a reason that has not been checked.**
+
+**To-do list, deliberately postponed (his words: “maybe it's not worth it to learn this deeply now”):** mock
+(`t.mock.method`, the type `Mock<…>`) he has not understood deeply; touch it again only when he asks.
+
+- **One server, no `/api` (decision of the user, 20.09.2026, “rebuild!”):** Vite only translates any more (`vite
+  build` puts the finished page into `dist`, `npm run watch` repeats that on every save), our server sends out `dist`
+  and answers the addresses; one program, port 3000, in development as in the restaurant (“I don't want complexity
+  and otherness for the development and the discrepancy then to the restaurant”). He reloads by hand, he does not
+  want automatic refreshing. With that the Vite server, the proxy, port 5173 and `fs.allow` are gone, and the
+  addresses are `/menu`, `/tables`, `/tables/:table/orders|lock`: the `/api` had only carried the proxy rule, and in
+  `dist` there are only `/index.html` and `/assets/…`. **Lesson for Claude:** he asked four times “why do we need
+  this”; Claude first defended the intention instead of checking the assumption behind it. Offer the simpler
+  arrangement earlier. In the restaurant the Vite server must not run anyway: in the copy it served every project
+  file over `/@fs/…`, `wokflow.db` included (checked, `200`).
+- **`src/server/page.ts`:** `contentTypes` (extension to `Content-Type`, at the same time the list of what is sent
+  out at all) and `pageSend(response, path): void`: `/` is `index.html`, `join` resolves `..`, a check keeps the file
+  path inside the folder, `no-store` as at `responseSend`, so that he never sees an old page after a build.
+  **`pageSend` answers both cases itself, file or `404` without a body (his decision: “this would be really
+  clean”):** Claude's first version `else if (!pageSend(…))` he found “cringe”, rightly, a condition should ask, not
+  act; the last branch of `requestHandle` is now a plain `else { pageSend(response, path); }`. The call stands in
+  `requestHandle` so that an error while reading lands at `.catch` in `serverCreate`. **His words (renamed by
+  himself):** in `api.ts` `path` instead of `address`, `pathMatch` instead of `match`; in `page.ts` the file path is
+  therefore called `file`. **Comments:** name the thing instead of “it” where it costs nothing; a second sentence
+  says what something is needed for, as generally as you would say it to a beginner, “sent” instead of “travels”.
+  Landed: no file travels, only its content as characters, which is why every answer names its type.
+- **The folder of the page is a constant in `page.ts` (his decision: “I don't want to keep parameter … just because
+  of the test, that's not clean code”):** `export const pageFolder`, built like the path in `database.ts`, `export`
+  only for the tests (like `locks`); the check is `relative(pageFolder, file).startsWith("..")`. **Tests with
+  dummies (his idea: “the test can make dummies”):** `before` creates a dummy, `after` removes it, a built `dist`
+  stays untouched. **Lesson:** he rejects a parameter that only the tests need, even when it looks like `database`;
+  ask first how the tests can help themselves.
+- **Structure of the page from slice 2: router instead of hiding (decision of the user, 21.09.2026: “if that's
+  common and clean code, then go for it”):** many small files in the code (“modular”, his word), everything travels
+  once, Vite packs it together. `index.html` holds only the head and an empty container; every screen has its own
+  files (`plan.html`, `plan.css`, `plan.ts`, later `order.…`, `bill.…`). A router in TypeScript opens a screen by
+  taking the old one out of the container and putting the HTML of the new one in. Nothing is hidden, only one screen
+  ever stands in the document, so two screens never share the pot of `id`s. One order screen for all tables, the
+  table id comes as a parameter. Rejected: all screens in one HTML file with `hidden` (661 lines in the prototype),
+  and separate HTML pages per screen (every switch loads anew, menu and unsent things in the phone's memory would be
+  lost). **His fear: CSS and DOM (“I'm really afraid”, “hard and frickling”):** explain the few DOM functions one at
+  a time at `plan.ts`; read CSS only with the page open, change one value per rule, reload, look. **`data-table`
+  stays:** not the button text (text is for humans, “Mitnehmen” against `M`), not `id` (does not say “table”, and all
+  `id`s of a document share one pot).
+- **The screen is built in slices (user agreed, 20.09.2026):** for browser code there are no style rules yet; his
+  corrections to slice 1 become the rules for the rest. Inside a slice Claude builds everything completely, after
+  that it is read slowly. **Good instead of fast (user: “du musst nicht schnell bauen … clean, so kurz wie möglich,
+  so lang wie nötig, in meinem Stil”):** after building, name clearly which files changed and which are new, how much
+  in them is new, as a table (file, new, what), and start with that; after that file by file every changed line
+  verbatim, TypeScript first, CSS and HTML after. **The list stays (user: “this is good that you show me. Don't make
+  it away”):** he sees the changes in Git but cannot read the Git view yet. Installing (`npm install -D vite`) stays
+  his business (“really good that you left it to me”): Claude only enters the script.
+- **The page:** `vite.config.ts` (26 lines: `root`, `outDir`, `emptyOutDir`, `sourcemap`), `src/page/plan.html` (the
+  plan from the prototype, one line per table with `data-table` and `grid-area`), `src/page/plan.css` (344, out of
+  the 98 rules of the prototype that the plan really uses, flattened together), `src/page/plan.ts` (47: `tablesShow`,
+  `areaShow`). **At the server:** `orders.ts` (+16, `tablesRead`: `SELECT DISTINCT table_id … WHERE closed IS NULL`,
+  without `ORDER BY`, because no caller needs the order), branch `GET /tables` in `api.ts`, `orders.test.ts` (+3) and
+  `api.test.ts` (+2), there always only one occupied table in the comparison, so that no test depends on an order
+  that was not promised. `package.json`: scripts `build` and `watch`; `.gitignore`: `dist`.
+- **Checked in a copy in the scratchpad, never in his folder:** type check without errors, 42 tests green, broken
+  copies caught 6 of 7 at `tablesRead` and 8 of 8 at `page.ts`. Against the running server: all addresses and files
+  correct, 8 attempts to leave `dist` (`/../wokflow.db`, `/..%2f…`, `/..\…`) end with `404`. Page in the browser at
+  360 × 780 measured against the prototype: all tables, lines, aisle, logo the same, only everything 1.8 px higher.
+  Fits at 320 × 640 without scrolling too. Without a server the strip “Keine Verbindung 无连接” appears (new, Chinese
+  to be checked by him). The built page is about 165 KB.
+- **Style corrections of the user while reading (20.09.2026, “I found it too long, learn from my style”), they apply
+  before the older rules under “Coding”:** in `requestHandle` he deleted all bullets about local constants from the
+  JSDoc; what a constant is now stands as a short `//` at the end of its line, starting capital, without an article
+  (`// Path of url, without protocol, host, port.`). The JSDoc of a function says only what it does, plus the address
+  list. A signature with four parameters he breaks after the second, two per line, the continuation under the first
+  parameter, without a blank line after it. **Bullets about used functions start with the verb that says what the
+  function does.** In `pageSend` he wrote the `if` with `else` instead of an early `return` himself, deleted the
+  constant `contentType` with its `undefined` check and put the purpose of `no-store` as a `//` at the end of the
+  line.
+- **Promise has not settled yet (user, 20.09.2026, on re-reading `await once(server, "listening")`: “write in the
+  handoff that I still had problem with the promise”):** He no longer knew why `once` gives a Promise and `server.on`
+  does not. What carried: the three roles as a table (the author of the class Promise builds `ready` in the
+  constructor and calls `worker` at once; the creator of a Promise writes `worker`, in WokFlow the authors of `once`
+  and `fetch`; the user only writes `await`, that is him); `ready` as a button that ends the Promise; `worker` with a
+  name instead of a lambda; the smallest example with `setTimeout(ready, 1000)`. Separate who builds `ready` (the
+  constructor) and who calls `ready` (whoever gets the button from `worker`: timer or the server's slot, so Node).
+  What did not carry: “hands us”, “we” without saying who is meant, the helper variable `readyKept`. Start with the
+  role table next time. **Breakthrough the same night at `pathSend` (`await once(raw, "response")` gives an
+  array):** he played the whole rebuild through aloud himself and ended it correctly. What carried: all lambdas as
+  named functions (`worker`, `inSlot`), different names for different things, a rebuilt `EmitterSimple` with `once`
+  and `emit`, and above all `console.log` with numbers 1 to 6 in every step next to the real output. His own memory
+  sentence: know when something is only stored or handed on and when it is run (name without brackets against name
+  with brackets). Who decides what: the class Promise how it ends (`ready`), the emitter, so Node, when and with
+  which values (`emit`).
+- **All the scaffolding of the API tests lives in `test/setup.ts` (his decision, 21.09.2026; no new file: “setup is
+  like a new file”):** `export let database` and `export let url` (other files read them, only `serverStart` sets
+  them; `url` is new per test because the port is chosen freely), `serverStart`, `serverStop`, `pageDummyCreate`,
+  `pageDummyRemove`, plus `updateSend`, `lockSend`, `pathSend` with his comments verbatim. `api.test.ts` has only
+  four hooks built the same way and the tests, 96 instead of 175 lines. An exported `let` shown to him at two small
+  files (reading works, writing gives TS2632). **Only one dummy (his decision after a long back and forth):**
+  `index.html` with the text `pageDummy`, only when no page is built; `pageDummyRemove` deletes it only when its
+  content is the dummy (**his rule: a test restores the state it found**); an empty folder `dist` may stay behind.
+  The CSS dummy is gone, because Vite gives the real CSS a new name per build. The names with a fingerprint and
+  `no-store` confused him a lot; do not open that again, for WokFlow only this holds: `pageSend` and `responseSend`
+  always send `no-store`.
+- **Too many comments in Claude's `setup.ts` (user, 21.09.2026: “you messed up a lot of comments … so much
+  unnecessary there”, he shortens himself):** a comment says only what name and signature do not already say; no
+  JSDoc that rewrites the function name into a sentence, no two lines where one is enough, nothing that doubles the
+  `//` line at the hook. **Leave out articles where the sentence stays readable without them, in all comments (“many
+  the is not really needed for readability”):** “Closes test server” instead of “Closes the test server”. In the next
+  chat read his shortened `test/setup.ts` first and take the comment density there as the measure.
+- **For the cleanup round:** on further growth move the page tests to `test/page.test.ts`; with the screen slices
+  check which API tests stay. Comment lines over 80 characters in `orders.ts` (25, 41, 98, 149), `articles.ts` (49),
+  `menu.ts` (52), `database.ts` (16), `menu.test.ts` (4); the database table is called `orders` in the SQL and
+  `orderbook` in the comment and in `orderbookCreate`.
+- **The plan asks only when it is shown, no timer (decision of the user, 20.09.2026):** TOUCHIT never refreshes the
+  phone table plan by itself either (checked in `Bonieren_1a.aspx` and in the decompiled code); an old colour cannot
+  book anything wrong, because opening reads fresh and locks. Later if needed: ask again when the phone is unlocked.
+- **Deviations from the prototype, all without visible effect except the first:** table pairs 19/18 and 24/23 have 12
+  px rounding on the outside like all tables (prototype 8 px); English class names (`table`, `occupied`, `tab`,
+  `selected`); no transparent borders; logo as a CSS background, because Vite does not find an `<img>` outside `root`
+  during development; no `aria-label` and no `type="button"` (no form on the page); `large` is dropped (no effect on
+  the phone).
+- **Explained on 20.09.2026 and landed:** the page against the answers of the API; Vite translates TypeScript and
+  sends the page out; a package as a library (`dinero.js`) or a tool (Vite); the page travels once, after that only
+  answers; colouring happens on the phone with the label `occupied` (CSS class, not a Java class); `vite` against
+  `vite build`, `dist` is only a folder name; `/../../` at the example `wokflow.db`. **What did not land:** “data”
+  against “files” as opposites, `dist` and Caddy in one answer with two ways, a specification with five points. What
+  did land: showing inserted lines with their neighbours and marking them with “← new”.
+  **Not explained yet and contained in the new code:** `export default`, `defineConfig`, `join`, `extname`, `sep`,
+  `existsSync`, the `?:` expression in `pageSend`, `request` from `node:http` with `resume`,
+  `document.querySelectorAll`, `classList.toggle`, `toggleAttribute`, `addEventListener`, CSS grid and `subgrid`.
+
+**Decisions of the server modules, from the walkthrough of 18. and 19.09.2026 (the walkthrough itself is done):**
+
+- **`orders.ts`, accepted by the user piece by piece and designed with him:** `ordersUpdate(database, tableId,
+  update: OrdersUpdate)` is the only writing door besides `tableClose` and the only place with `transaction`.
+  **`OrdersUpdate = { add: OrderNew[]; remove: OrderNew[] }` lives in `orders.ts` (decision of the user,
+  18.09.2026):** the type `Change` in `api.ts` was too vague and in the wrong place for him. So everything is called
+  “update”: `ordersUpdate`, in `api.ts` `updateRead`, in the test `updateSend`. A call reads
+  `orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] })` and says itself which list does what. Under
+  it, without `export` and without an own transaction, one order each: `orderAdd` (fetches price and tax rate itself
+  with `orderOf`, checks the quantity, creates one row per portion) and `orderRemove`. Everything coming from the
+  phone is `OrderNew`; nobody outside can hand over own prices. **Remove first, then add (his rule):** a removal
+  always means portions from before this message; what has not been sent yet the waiter corrects on the phone.
+- **`orders.test.ts`, 5 tests, exactly one per cause of a throw (his cut):** the flow, “A quantity below 1 changes
+  nothing” (the only test in which an already executed removal has to be rolled back), “Only portions from before a
+  change can be removed”, “A free table has nothing to remove or to close”, “Price and tax rate come from the menu”.
+  **Every `throws` gets a keyword as a pattern (`/quantity/`, `/menu/`, `/remove/`, `/open/`), never the whole
+  text** (this replaces “do not check error texts”): a bare `throws(lambda)` passes on every error, also on the wrong
+  one; in one test only one rule may be able to throw. Whether a test is needed is decided by the try with broken
+  copies.
+- **`api.ts`:** `GET /menu`, `GET` and `POST /tables/:table/orders`, `POST` and `DELETE /tables/:table/lock`,
+  `GET /tables`; everything else `404`. **No own error class and no status 400 (decision of the user, 18.09.2026:
+  “this client shit … too much for me”, “We should program this that the client never can make a mistake”):** every
+  error lands in `serverCreate`: `500`, “The server failed”, the reason as a line in the server log. Nothing wrong is
+  saved anyway (`transaction`). With the table lock and a screen that only lets existing things be removed, such an
+  error is a bug on our own side, not the waiter's. **The `POST` answers with `200` and `null`, no longer with the
+  open orders (“why we have to respond … if the phone already knows what it sent”).** **The shape check is gone
+  (“remove is better”):** the `POST` branch calls
+  `orders.ordersUpdate(database, tableId, await json(request) as orders.OrdersUpdate)`. Proven with 14 broken
+  requests against a copy with and without the check: both times `500` and the table unchanged, because `orders.ts`
+  rejects everything itself.
+  **No `undefined` where an empty text is enough (18.09.2026: “this is just not beautiful with the undefined”):**
+  `?.[1] ?? ""`, checked with `!== ""`. **Patterns with many slashes as
+  `new RegExp("^/tables/([A-Z0-9]+)/(orders|lock)$")` instead of between slashes (“readability higher”; he deleted
+  the lower-case letters himself, tables have only digits and capitals, so `g3` and `G3` can never become two
+  tables).** One pattern for both addresses (his idea: “it's about the same table”), out of it `tableId`
+  (`pathMatch?.[1] ?? ""`) and `tableResource` (`pathMatch?.[2] ?? ""`). Words: the result of `match` is called
+  “match”, the `()` are “capture groups”, `orders`/`lock` in an address is a “resource”.
+  **`GET /menu` sends `menu` raw, as it stands in `menu.ts` (18.09.2026, “patch the API as easy as possible”):** per
+  category `tax`, `print`, `groups`; a price arrives in the text form of Dinero, the phone reads `price.amount`; in
+  the orders `price` stays a number in cents. Calculating with Dinero comes only with the bill.
+- **Deliberately left out, note it for the security round before real operation:** size limit for the body (64 KiB),
+  check of the `Content-Type`, status 405, decoding of the table id. Reason: only our own phones in the operating
+  WLAN talk to the server. Open for the screen: double sending when the answer is lost in the WLAN (idea: an id per
+  message that the server accepts only once). Also: a check at the door, and the sent body does not stand in the log.
+- **`api.test.ts`:** (1) flow over real HTTP requests: menu against `JSON.parse(JSON.stringify(menu))`, updates at
+  table 14 and G3, both tables read back; (2) “An unknown address gets status 404”; (3) “A failure gets status 500
+  and the server keeps running”; (4) the table lock flow; (5) two tests for `pageSend`. Proof: 12 broken copies, the
+  3 old tests caught all 12 while the 6 even older ones missed two.
+- **Table lock, `src/tables/locks.ts` with `test/locks.test.ts`:** type `Lock = { deviceId, expires }`, constant
+  `lockDuration`, the constant `locks` (`Map<string, Lock>`, with `export` only for the tests),
+  `tableLock(tableId, deviceId): boolean`, `tableUnlock(tableId, deviceId): void`.
+  - **The `Map` lives in `locks.ts`, not at the caller (idea and decision of the user: “this is really nice”):** like
+    `entries` in `menu.ts`. Gain: one parameter less. Because all tests of a file share the one `Map`, the test file
+    empties it before every test: `beforeEach((): void => { locks.clear(); });`. Rejected: an own table per test, an
+    own `Map` of the tests as a third parameter. **Lesson for Claude (“why don't you suggest me that previously”):**
+    look for a model in the user's own code before building and show the shorter version first; fewer parameters
+    weigh more for him than a fresh state per test.
+  - **`lockDuration` is 5000 (changed by him from 30000).** Consequence for the screen: the page has to renew clearly
+    more often than every 5 seconds, about every 2 seconds; if two renewals are lost in the WLAN, the table is free.
+  - **Occupied is not an exception:** `tableLock` returns `false` when another device has the table and does not
+    throw. **Taking and renewing are the same function.** **The device id is a text the device chooses itself**, not
+    the IP address. **`tableUnlock` checks the device**, so a phone with an expired lock does not delete the lock of
+    the next device; expired entries stay in the `Map`, no cleaning up. **`tableUnlock` stays `void`**, nobody would
+    read the answer. **`POST …/orders` does not check the lock:** the page renews before sending, after that it holds
+    the table safely for `lockDuration`.
+  - **His `//` comments in the second test of `locks.test.ts` (written by himself):** behind every line the clock
+    reading or the result, in lower case, in his words: `// clock 4999`, `// lock obtained (at 0)`,
+    `// lock refused (5000 > 4999)`. Do not remove.
+  - **Explained and landed (20.09.2026):** a lock is only a note (device, expiry), `locks` the notebook with at most
+    one note per table; `locks.get` gives `undefined` without a note; `typeof` does not know `Lock` at runtime;
+    `Date.now()` is a number in milliseconds since 1970; renewing is another call of `tableLock`; the renewing sits
+    on the phone, because only the phone knows whether the table is still open. Also `t.mock.timers`:
+    `enable({ apis: ["Date"] })` and `tick`, so `tableLock` needs no parameter only for tests.
+- **`orders.ts` split (wish of the user, 18.09.2026: “for me its long somehow”, “orderbook is good”):**
+  `src/tables/orderbook.ts` holds `orderbookCreate` and `transaction`, both with `export`. `orders.ts` holds the
+  types `Order`, `OrderNew`, `OrdersUpdate` and the six order functions and imports `transaction`; `orderAdd` and
+  `orderRemove` stay without `export`, so `ordersUpdate` remains the only writing door. No own test file for it
+  (“just one test is enough”). The regions in `orders.ts` he removed himself (“we don't need region if we just have
+  three methods”).
+- **When he is overwhelmed (18.09.2026: “i am sooooooooo overwhelmed”):** Claude had shown three rebuilds of
+  `serverCreate` in a row. Lesson: answer only the question asked, do not push further drafts; on overload stop at
+  once, close open decisions with “it stays as it is”, name one single small next step.
+- **Practical:** the real `wokflow.db` has the database table `orders` without `quantity`; after every change to
+  `orderbookCreate` IntelliJ's data source needs a refresh. Never test in the user's folders, only with copies in the
+  scratchpad; a server started there on port 3000 has to be stopped again (`netstat` shows “ABHÖREN” on German
+  Windows, not “LISTENING”).
+- **Git:** Sophale works on rksv and pushes to `main` (`src/rksv/`, `dep.ts`). **rksv is not the user's part for now
+  (20.09.2026: “this part is not for me currently”); do not read it and do not touch it in module chats.** Git is
+  done by the user himself. In frustration he switches to German, then answer in German.
+
+### Way of working per module
+
+Decision of the user from 16.09.2026: Claude builds whole modules, no longer line by line. Reasons: four days gave
+about 500 lines, at that speed WokFlow will not be finished by May 2027. Writing from nothing he practises at
+university; from the project he takes the picture in his head, the judgement about code, the debugging, a finished
+product.
+
+1. One module per fresh chat. A module is a feature that can be tested alone in one evening. Modules are named after
+   their task, never after a number, for example module `tables`.
+2. First the specification: about ten lines, what goes in, what comes out, what must never happen. Claude proposes
+   it, the user corrects; building starts only after his yes.
+3. Then the plan: which files are new, which existing files change, and there every change as before/after, line by
+   line. Build only after the yes.
+4. Claude writes the whole module including tests (`node:test`, no new library), runs the type check and the tests,
+   shows the result, gives the start command.
+5. The user starts it himself and tries to break it.
+6. Errors: the user searches himself first, then he asks. Debugging was the biggest gap in the Anthropic study.
+7. Why-list: the user reads every new file once and marks every line he cannot explain. The module is finished only
+   when the list is empty.
+8. One cleanup round at the end, together, once. Not before; cleaning up before it works is perfectionism.
+9. Costs: a fresh chat per module, because every message sends the whole chat so far along.
+
+### How deep the why goes
+
+- Level 1, every unknown name, one sentence: what it does, why it stands here. Example `readdirSync`: reads the names
+  in a folder, waits until it is finished, returns a list.
+- Level 2, every new idea, as deep as needed: `async`/`await`, transaction, callback, modules and imports, types.
+  Finished when the user can explain it and predict what happens on a change. The whole project has maybe 15 such
+  ideas. Name the Java counterpart for each: he knows Java up to generics, `ArrayList`, streams and `map` and wants
+  the same depth in TypeScript; `T[]` like `ArrayList<T>`, `array.map` like `stream().map`, `| null` like `Optional`,
+  arrow function like lambda.
+- Level 3, not in a module chat: how Node does something inside, all options of a library, library source code. In
+  the project libraries are understood through their interface and their one idea (Dinero: money as whole cents plus
+  currency).
+- Stop rule: if the answer changes nothing about how WokFlow code is read or written, stop.
+
+### Protection of what exists (user, 16.09.2026: “don't destroy something which I coded already”)
+
+- Untouched, unless the module needs it and the user has said yes to the shown change: `src/catalog/*`,
+  `src/server/index.ts`, `src/server/database.ts`, `tmp/*`, `package.json`, `.editorconfig`, `commands.md`, `icons/`,
+  `fonts/`.
+- New modules in new files, folders by task (`src/tables/`), no collection files.
+- Do not smooth the style of existing files, do not change names. All rules under “Coding” apply to generated files
+  just the same.
+- Every change to an existing file: first the list “changes / stays”, then before/after, then the yes.
+
+### Status of the files
+
+The code is the truth; only what it does not say itself stands here.
+
+- `src/catalog/`: article catalog complete, see “Articles and groups”. `menu.ts` has in `//#region Lookup` the type
+  `MenuEntry` (only what an order needs), the flat list `entries` with one line per variant, `entryOf(articleId,
+  variantId)`, which throws at an unknown name. Tried and rejected before, because it was all too complicated for
+  the user: `Map` with the text key `"Cola|0.5"`, `Map` in `Map`, an immediately called lambda, own functions
+  `priceOf` and `taxOf`.
+- `src/tables/orders.ts` and `src/tables/orderbook.ts` with `test/orders.test.ts`: module `tables`, accepted by the
+  user.
+- `test/menu.test.ts`: four tests for `entryOf` (price per variant, tax rate of the category, tap water, unknown
+  names); `orders.test.ts` therefore imports neither `dinero.js` nor `menu.ts`. Planned, not patched: two honestly
+  named tests over all variants, “every variant is found with its own price” and “no two variants share the same
+  name” (needs `Set`, explain it first).
+- `src/server/database.ts`: `databaseOpen()` opens `WokFlow/wokflow.db` with `node:sqlite`, the path over
+  `import.meta.dirname`. `src/server/index.ts` opens it at the start, creates the database table with
+  `orderbookCreate`, starts the server from `src/server/api.ts` on port 3000.
+- `src/server/api.ts` and `src/server/page.ts` with `test/api.test.ts`, `test/setup.ts`: accepted by the user.
+- `src/page/`: `index.html`, `router.ts`, `plan.html`, `plan.css`, `plan.ts`; not read yet, see the handoff above.
+
+### Module order
+
+1. `tables`: orders per table in SQLite. Built 16.09.2026, accepted.
+2. Server interface: catalog and orders as JSON over `node:http`. Built and gone through (18. and 19.09.2026).
+3. Table lock: `src/tables/locks.ts` and the address `…/lock` in `api.ts`, built 20.09.2026. Only the page that
+   locks, renews and unlocks is missing.
+4. Order screen on the phone with the real catalog, design from `tmp/screens.html`, in slices. Slice 1, the table
+   plan with the occupied tables from the server, is built; slice 2 is opening a table (take and renew the lock, read
+   orders, show “besetzt”, the way back asks `GET /tables` again). With the screen come the special rules for lemon
+   and buffet persons. Moving to another table needs a function in `orders.ts`.
+5. After that by the manifest: bill, payment, printing, rksv, day closing.
+
+### Module `tables`, specification
+
+- A table (id as text: `"14"`, `"G3"`, `"M"`) has any number of orders. Module and folder are called `tables`, every
+  position is an order, there is no own record for the open table.
+- **One row per portion (idea and decision of the user, 18.09.2026, “patch it this way”):** the database table
+  `orders` has no column `quantity`. Per row: table, German article name, variant name or null, price in cents and
+  tax rate at the time of booking, `closed` (time of closing, name by the user instead of `closed_at`). A portion is
+  open as long as `closed` is empty; a table without open portions is free. The quantity is counted, never stored:
+  the phone still sends `quantity`, sending creates that many rows, `ordersRead` counts per variant with `COUNT(*)`;
+  the type `Order` with `quantity` stays the same for all callers. Reason: now all operations have the same shape,
+  select n rows of a variant, then insert, delete, later mark as paid; paying separately later means marking n rows
+  instead of splitting one row. Price: more rows (about a thousand a day, irrelevant for SQLite). Rejected: one row
+  per table and variant with a counted quantity; the needed uniqueness does not work in SQLite at variant `null`,
+  because `NULL` values count as different in a unique index.
+- **`Number.isInteger` in `orderAdd` stays:** `number` is like Java's `double`, TypeScript has no `int`. With 1.5 the
+  loop would create 2 rows, with 0 or -1 none, each without an error. The check replaces the former
+  `CHECK (quantity > 0)` of the database. Whole numbers are exact in `number` up to 9007199254740991, so cents and
+  quantities are safe.
+- **Orders only with names (decision of the user, 17.09.2026):** `OrderNew` is `Omit<Order, "price" | "tax">`, so
+  `{ articleId, variantId, quantity }`, as the phone sends it. `orderOf(orderNew)` makes an `Order` out of it:
+  fetches `entryOf` once, sets price and tax rate, throws at an unknown name. Rejected: one single type with `price?`
+  and `tax?`. The category the phone deliberately does not send: it decides the tax rate, and the menu knows it
+  already. Open: the name `OrderNew` fits removals badly (JSDoc added, name not changed).
+- **No status, saving happens only at sending (user, 16.09.2026):** the database knows only what was sent. Orders not
+  sent yet the phone holds and corrects and sends all at once on the way back to the table plan, removals of portions
+  already sent as well; “Rückgängig” happens before that on the phone. If the phone crashes first, they are gone and
+  are entered again; according to the user rare and acceptable. Two sent colas plus one more read as “Cola 3”, there
+  are no separate orders per sending. **The ticket still prints quantities (“print should still print the qty”):**
+  printing happens from the message, which carries `quantity`, not from the database.
+- **Order is promised (decision of the user, 18.09.2026):** `ordersRead` sorts by the oldest open portion of every
+  variant (`ORDER BY MIN(id)`), and the `DELETE` in `orderRemove` takes the newest portions first with
+  `ORDER BY id DESC`, so a variant keeps its place as long as it exists; then no line jumps in the screen
+  “Bestellt”. Without `ORDER BY` SQLite deleted the oldest rows and “Cola 0.5” slipped under “Cola 0.25”. Costs
+  nothing: `EXPLAIN QUERY PLAN` shows the same search in the index `tables_open` with and without it.
+- `tableClose` sets `closed`, the portions stay stored. Catalog changes do not change booked orders (rule under
+  “Articles and groups”).
+- **Transactions:** changes with several statements run as an SQLite transaction, all or none. `orderRemove` deletes
+  first and checks `changes` afterwards (3 colas asked for, 2 there: the 2 are already deleted, only `ROLLBACK`
+  brings them back). `transaction` without a generic (user, 16.09.2026): `work: () => void`, because no caller gets a
+  value back. **Open (user, 17.09.2026):** it bothers him that not every writing function runs through
+  `transaction`; `tableClose` is a single `UPDATE` and therefore already a transaction. Claude's recommendation: the
+  rule “every writing function goes through `transaction`, reading ones do not”. Not decided.
+- Lemon and buffet persons are orders like any other; their special rules come with the screen.
+- Not in module `tables`: HTTP, screen, payment, bill, rksv, printing, table plan.
+
+### What the new chat does first
+
+1. Read this file, first “Collaboration” and “Coding”, then the beginning of the section “Next chat”.
+2. Read `src/page/index.html`, `src/page/router.ts`, `src/page/plan.html`, `src/page/plan.css`, `src/page/plan.ts`,
+   plus his shortened `test/setup.ts` as the measure for comment density.
+3. Explain the ladder above to the user, one rung per answer, then read `plan.html` and `index.html` in the agreed
+   order, then build and look.
+4. After that slice 2 of the order screen, first the specification. At the end rewrite this section for the next
+   step.
+
+## Current status
+
+Planning in the manifest, status of the code under “Status of the files”, the next task at the beginning of “Next
+chat”. New code only in `WokFlow/`.
+
+- **Short status:** the article catalog is finished (closed according to the user). Module `tables` is built and
+  accepted, with `ordersUpdate` as the only writing door. The server interface (`api.ts`, `page.ts`, their tests) is
+  accepted. The table lock is built, the page that locks is missing. Slice 1 of the order screen, the table plan, is
+  built and not yet read.
+- Server: start with `npm start` (`node src/server/index.ts`, without `--watch`, restart after code changes), port
+  3000. At `EADDRINUSE` stop the old server with Ctrl+C. Relative paths count from the folder in which node starts:
+  IntelliJ's run button at `index.ts` starts in `src/server`, `npm start` in `WokFlow`. So build file paths with
+  `import.meta.dirname`, the folder of the file itself.
+- `package.json`: `dinero.js` 2.0.2 (see “Money amounts”), as development tools TypeScript 7.0.2, `@types/node` 26
+  and Vite; no `tsconfig.json`. TypeScript therefore checks with the default values, since TypeScript 6 with
+  `strict: true` including `strictNullChecks`: an optional property `x?: number` may be missing (`undefined` when
+  read), `null` is allowed only with an explicit `| null`.
+- **Screen draft:** there is only one draft, `tmp/screens.html` with `screens.css`, `screens.js`, article data in
+  `preview-menu.js`, fonts under `fonts/`. Phone view with `?vorschau=1#tables`, the same screens with explanations
+  with `?uebersicht=1`, the boss's day closing with `?chef=1#closing`. A local demo, not a real POS. Rules under
+  “Screen and operation”. The user reacts to visible examples.
+- **Delivery of the page (user, 20.09.2026):** Vite builds the page into `dist`, our own server sends it out
+  (`src/server/page.ts`), in development as in the restaurant. After that try it on the phone in the WLAN with one
+  or two waiters.
+- **Git:** `origin` is `git@github.com:UnathiCodex/WokFlow.git` over SSH (local key `id_ed25519`), `main` follows
+  `origin/main`, the repository is private. Git 2.54, Git Credential Manager 2.7.3, GitHub CLI `gh` not installed,
+  system-wide `pull.rebase false`. Git is done by the user himself.
+  - Open: `touchit_bons_vergleich.html` with real day turnovers from 02.09. and 13.09.2026, partly as a photo of the
+    TOUCHIT reports, lies in the history on GitHub (under `tmp/`, in `47c372d` under `docs/`). Decide before
+    inviting others whether it stays; removing it would mean rewriting history. This `CLAUDE.md` also lies in the
+    repo folder and contains business figures, customer numbers, names.
+  - Open: `.git` is synchronised by Syncthing so far; clarify whether that stays with GitHub.
+  - Licence postponed by the user for now. Wish: maybe public later, but no commercial use by others. That is
+    source-available, not open source; proposal PolyForm Noncommercial as `LICENSE`. Still to discuss: contributions
+    by others, own use in the restaurant.
+- Cleaning up: `Documents_2026-09-14*.zip` in Downloads may be removed, as may the download clone `emojitwo-source`
+  under `C:/Users/Vu/.codex/visualizations/2026/09/14/`. Delete `TOUCHIT/DECOMPILED/tools/` (2.8 GB) only when all
+  planned decompilation attempts are finished. Do not delete originals and analysis files unasked.
+
+## Decisions
+
+The manifest describes the whole workflow; here stand the additional details. Newer decisions of the user replace
+older proposals. Open points stay explicitly open.
+
+- **Scope at the start:** ordering, table plan, central tickets and bills, payments, cancellation, rksv, day
+  closing, backup, paying separately, moving tables, German/Chinese and vouchers. No interim bill, no open credit.
+  Further reports still open; QR ordering only later.
+- **Articles:** products with one uniform variant list; every orderable variant carries its price (decision of the
+  user, 15.09.2026). Do not take over free extra texts like “ohne Zwiebel” or card ids. TOUCHIT has articles, sub
+  articles and eight price levels; WokFlow uses the smaller structure below.
+- **Languages:** articles show German and Chinese at the same time. Test it with the waiters first; one fixed
+  language per phone is only a possible fallback when space is short.
+- **Rights:** waiters without a code, devices unlocked once and the normal phone screen lock. A boss code only at
+  the PC for paid cancellations, discounts, voucher sales and the day closing. Who may correct payment kinds stays
+  open. TOUCHIT has four levels and over 100 single rights.
+- **Hardware:** Lenovo ThinkCentre Neo 50q G5 Tiny, i3-1315U, 8 GB, 256 GB, Linux (price 13.09.: about 464 €). Touch
+  monitor with USB, glass front/IP65 and VESA 100: iiyama T2234MSC-B7X, 21.5 inch/about 266 €, or T1634MC-B1S, 15.6
+  inch/about 504 €. Mount open. No spare PC or phone emergency mode, no UPS for now. Test A-Trust under Linux early.
+- **Printing:** one central printer Metapace T-3II for bills, drinks and à la carte. No mobile printer; the broken
+  kitchen printer is dropped. A spare printer is only a proposal.
+- **SQLite:** one local file, opened by the server only. Every booking as a transaction, `synchronous=FULL`; model
+  test: 1,000 bills with ten lines each in 0.9 s. Times in a fixed text format. Driver: `node:sqlite`, which Node 26
+  brings along.
+- **Backup:** encrypted, running into the cloud after a few seconds, hourly to the USB SSD, at night a full one into
+  the cloud with an EU data centre; provider open. A warning after more than a day without a backup, test the
+  restore monthly. Keys and access on paper at home. rksv additionally monthly as a file that is never overwritten.
+  Model year: 54,000 bills, 56 MB, 14 MB packed. TOUCHIT's copy on the same PC does not protect against a disk
+  failure.
+- **Cancellation:** open articles by minus with an undo; reasons and journal in the backend still to be clarified. A
+  paid bill only completely, by the boss at the PC, with a reason, a signed cancellation receipt and a new bill;
+  money out of the till. No private returns outside the booking.
+- **Vouchers:** the boss sells numbered money vouchers, the remaining value is stored; given service vouchers and
+  foreign vouchers are handled separately. Have the tax booking confirmed by the tax adviser. No general payment
+  mode “mixed”; a voucher remainder is a flow of its own. Voucher numbers, providers, validity check and a lasting
+  remaining credit are not connected yet.
+- **Tips:** cash directly to the waiter, not recorded. Card chosen at the Nexi device, taken over separately, paid
+  out to the employees. Clarify tax exemption and proof with the tax adviser; do not transfer it flatly to managing
+  directors with a substantial share.
+- **Closing and sending:** a complete paper ticket stays for now, PDF and a data file in addition. Monthly sending
+  from the mailbox of the boss's wife, plus a resend button; on a failure repeat later and warn. Encryption and
+  sending details open.
+- **Payment kind and receipt:** a logged payment kind separate from the signed receipt; card turnovers have to stay
+  recognisable. Research basis: BAO § 131/§ 132a, rksv § 11 and FAQ Arbeitskreis Kassensoftware 2.4.15. Confirm with
+  the tax adviser and the rksv session before building; do not overwrite anything silently.
+- **Nexi contract:** Germany GmbH, customer number 5905840, contract partner 156469572. Mobile Premium at the
+  counter: 16.90 € rent a month, 0.02 € per payment and a 3.99 € monthly flat fee. Disagio negotiated, minimum fee
+  0.25 € per payment according to the price sheet of 01.08.2026; in August not applied to every payment (912
+  Mastercard payments cost 221.87 €, less than 912 × 0.25 €).
+- **Nexi contract copy** (received 15.09.2026, filed as `Kartenzahlung/Nexi_Vertragsdokument_5905840.pdf`):
+  Concardis contract confirmation of 11.08.2021. Disagio 12.08.2021–11.08.2024: Mastercard, Visa, Visa Electron
+  0.80 %; MC debit national, V PAY, Maestro 0.28 %; Diners 0.95 %; UnionPay, JCB 2.20 %; each at least 0.06 € per
+  payment. DCC (paying in the home currency of foreign cards) active, which lowers the disagio there by 0.50
+  percentage points. Terminal 69065732: 60 months, so by calculation until August 2026, 16.90 € rent, 0.02 € per
+  payment; no monthly flat fee in the contract. All other fees according to the valid price list. The settlements
+  May–July 2026 announce new prices from 01.08.2026; on an objection Nexi may terminate with 14 days' notice. Ask
+  Nexi about the end of the term, extension and notice period of the terminal.
+- **Nexi figures:** 30.09.2025–31.08.2026: 481,668.54 € card turnover, 9,862 payments, disagio 3,052.07 € = 0.63 %.
+  Mastercard about 90 % of the turnover, in August about 0.48 %; Visa about 9 %, about 1.5 %. Total costs around
+  3,960 € a year or 0.76 %. Weekly payout by card kind, settlement periods of four or five weeks. Recalculated per
+  month (15.09.2026): Mastercard October 2025 to July 2026 0.54–0.58 %, August 0.48 %; Visa steadily 1.32–1.64 %, in
+  eleven months 1.52 % on 42,672 €; Maestro, V PAY 0.38–0.57 %; Diners 1.1–1.3 %. Visa at the Mastercard rate would
+  save nearly 500 € a year. Monthly flat fee, rent and payment fee together cost about 450 € a year.
+- **Nexi connection:** the goal is the existing conditions for SoftPOS in addition to the terminal, one settlement.
+  According to the manual the terminal can do ZVT over WLAN; Nexi has to unlock it. The app-to-app interface hands
+  over amount and reference and delivers the result; that would need an Android wrapper of the web app. The card is
+  always read by Nexi's device or app. Costs, the return of tip and reference and the data access are open.
+- **SoftPOS requirements 14.09.:** NFC, Android at least 10, a security update younger than twelve months, no
+  Huawei. The cashier phone Redmi Note 13 Pro 5G is suitable; old Xiaomi/Huawei stay for ordering. List price 1 €
+  licence and 1 %, company cards an extra 1.49 %; wait for the contract answer first. At worse conditions check
+  hobex. SmartPOS A920 and phones with a printer rejected.
+- **Switch-over:** next to TOUCHIT only practice receipts; after registering, real bills only from WokFlow. TOUCHIT
+  briefly as a reserve, then the closing receipt and deregistration. A shared PC and printer during the trial period
+  is open.
+
+### TOUCHIT comparison, 15.09.2026
+
+Question of the user: is a TOUCHIT function missing in WokFlow that the restaurant needs more often? Checked at the
+phone program (21 pages; options Art.Transfer, Kell.Transfer, Separieren, Stornieren; closing with Bar, Card,
+Kredit, Bonus, Erlagschein, Konsumation, Personal, Kein Bon, Tip), at the form names of the main program and at
+`touchit.ini`. Already covered: table plan, ordering, splitting, cancellation, correcting the payment kind, cash
+expenses, change, vouchers, day closing, moving. Missing or to be decided:
+
+- **Bill copy:** print a receipt from “Heute” again, marked as a copy. Needed when the paper runs out or a ticket is
+  lost. Recommendation: take it in, boss and phone.
+- **Bill with a customer address:** from 400 € gross the recipient has to stand on the bill (a small amount bill only
+  up to 400 €, UStG § 11 Abs. 6); companies and large groups ask for it. Recommendation: type name and address once,
+  only at the boss PC, no customer file.
+- **Interim bill and open credits:** switched on in TOUCHIT, dropped in WokFlow. Check with the boss's wife whether
+  they are really unused. Leave them dropped if not.
+- **Staff / own consumption:** TOUCHIT books staff food and own consumption as a payment kind of its own. Clarify
+  whether that is used; otherwise build nothing.
+- **Cash drawer:** not connected in TOUCHIT (`Aktiv=False`). If it should open in future, the Metapace printer gives
+  the impulse; otherwise nothing.
+- **Reports:** TOUCHIT has article and time statistics (33 templates), WokFlow only day and month. Can be generated
+  later from the stored receipts, build nothing now.
+- **Allergens:** TOUCHIT shows them on the phone. Deliberately not in the article in WokFlow; if needed later show
+  only the letters from the menu in the selection.
+- **Two phones at the same table:** TOUCHIT solves it with a section protection per waiter. WokFlow has no waiter
+  accounts and locks the table instead while one device has it open (decision of the user, 18.09.2026).
+- Not needed: waiter transfer, typing the table number, table plan editor (the plan lives in the code), closing
+  “Kein Bon” (receipts are obligatory), hotel, scale, bar tap, bonus card.
+
+### Screen and operation
+
+What counts is the one draft in `tmp/screens.html`: a local HTML/CSS/JavaScript demo without booking, payment,
+printing, buffet automatic. Sizes, colours, spacings stand in `screens.css` and are the truth there; here stand the
+decisions of the user with their reason. The flow is described by the manifest, sections 4 and 5.
+
+**Design**
+
+- Light, neutral greys, dark type. Buttons, tiles, tables grey tinted without a border (user, 16.09.2026: “ohne
+  Umrandung ist schon moderner”). Soft rosé instead of the brand red (`--accent: #cf6b74`, fill `#f3d5d8`), because
+  the strong red stings too much for people with weaker eyes and reads as a warning colour. Rosé is only a state
+  colour for occupied, selected, main button, quantity; no saturated red areas. Rosé areas without a border; the
+  dashed border while moving stays as a state mark.
+- A pressed state per area, pure CSS: grey gets darker, white gets grey, rosé gets stronger. Plus and minus the same
+  size: disabled almost white with pale strokes, usable grey with black strokes, so that older people see the
+  difference without a frame; the strokes are drawn geometrically, not typed characters. Windows come from below, at
+  the thumb. The scroll bar is thin and light, but not hidden, otherwise you lose the sense of whether more follows.
+- **Quantity fields everywhere without a border** (“we agreed on no border for this type of things”), only filled
+  rosé or grey. Visibly small, the tap area stays 48 × 48 px and rectangular, so that taps at the corners add
+  nothing by accident. They show the unpaid quantity of the table at once; at zero the field disappears.
+- **One uniform inset (user, 16.09.2026):** one value `--inset: 16px` left and right on all screens.
+- The undo bar is a white floating card with a light shadow and a grey button; a dark bar like Gmail's was too black
+  and too emphatic for older eyes. In “Bestellt” it follows the language chosen there, in the selection window it
+  stays bilingual.
+- Tap areas at least 44 px. The design follows the W3C notes (WCAG 2.2) on colour, text contrast, control contrast,
+  touch targets, undo; do not derive full accessibility from that.
+- Sizes fixed by the user: **360 px is the standard width**, no button wraps there. German drink names 18 px, food
+  names 18.5 px (bigger than drinks, but small enough for “Gebackener Tintenfisch” to fit in one line). Group names
+  in both group lists the same size, German 20 px, Chinese 17 px. Table numbers in the plan like the number in the
+  header, 30 px with weight 600, garden tables 22 px. Buffet counters big, age groups as big as the buffet name.
+  “Rechnung” in “Bestellt” 20 px.
+- **No automatic shrinking on buttons** (names stay the same size, in an emergency a second line, but report it).
+  Only in “Bestellt” are long names set smaller to fit the width, so that every line stays on one line. When paying
+  separately long names may wrap logically: additions like “+ Wasser”, “+ Zit” and piece counts stay together,
+  “mit”/“und” stay with the following word, never inside a word, no shrinking of the type.
+
+**Images**
+
+- **Only emojis from the EmojiTwo pack, never self-drawn pictures** (user, 16.09.2026: “I strictly want emojis from
+  the emojis pack”). [EmojiTwo](https://github.com/EmojiTwo/emojitwo) is under CC BY 4.0: name the author, link the
+  licence, mark the changes. Small coloured image symbols only in the group lists, on the left of the line, no
+  images at articles or the buffet. Light shapes get a visible outline on white; no cropping, all SVGs keep the full
+  canvas 64 × 64.
+- Adapted menu graphics lie in `icons/wokflow/`, the unchanged collection in `icons/emojitwo/` (2,789 SVGs with
+  `LICENSE.md` and `README.md`, fetched 15.09.2026, revision `311eff547b3ff4a61fdbae897dd09d41416048fc`). Use
+  working copies for changes, leave the collection unchanged. Sources and changes stand briefly in English in
+  `icons/sources.md`; keep the complete linked assignment of every WokFlow graphic to its EmojiTwo originals. The
+  logo `icons/asiawok/logo.svg` is AI-generated according to the user, owner ASIA WOK Restaurant GmbH.
+- Snacks is the unchanged EmojiTwo baguette 1f956 (chosen by the user; a spring roll exists neither in EmojiTwo nor
+  in Unicode), rice 1f35a, chicken & duck the chicken. Meat on the bone for beef the user rejected, a steak SVG is
+  missing in the pack. Provisional until decided: soups & salads `starters`, beef & pork `beef`; after that delete
+  unused images in `icons/wokflow/` together with their lines in `icons/sources.md`.
+
+**Ordering**
+
+- Money only at the bill, the payment, “Heute”, the closing, with a dot and a euro sign (`27.90 €`); no prices while
+  ordering. **Drink sizes always with a dot and without a litre sign**: `0.25`, `0.5`, `0.3 + Wasser`,
+  `0.5 + Soda`. Missing prices are never treated as zero.
+- Header “Bestellen / Bestellt” without an article count, a doubled heading or a status footer; no path “Getränke ›
+  Limonaden”; no changing button positions. **Order view C chosen:** the full ordering area or the full order list
+  over two tabs; group and scroll position stay when adding and when switching tabs; the buffet appears in
+  “Bestellt” too.
+- Selection window: article name and a plain X, without “Variante / 规格”. After a booking it stays open (three
+  times the same Cola size without opening it again), quantities change at once; X, Escape, a tap outside close it,
+  tapping inside does not. Buttons with a further selection show the arrow on the right, direct bookings do not.
+  Cola/Zero/Light: one Cola button, three sort buttons at the top of the window, under them only the fitting
+  variants; Light only as a bottle; the Cola button counts all three sorts. “Flasche 0.35” as a wide line at Cola,
+  Cola Zero, Fanta, Sprite; no invented bottle sorts. Word variants (Tee, Kaffee, Campari, Mineralwasser) as full
+  lines with the quantity on the right.
+- **Lemon, flow confirmed by the user:** first book size/water/soda, then if needed tap “+ Zitrone” once for the
+  glass booked last. No checkbox, no preselection, no confirmation window. A short highlight of the quantity, 20 ms
+  vibration on supported devices, respect reduced motion. In the selection window only the total quantity stays;
+  with and without lemon appear as separate positions in “Bestellt”. The next size tap books without lemon again.
+  The action is not available before the first booking, after it was applied, after a size correction of the last
+  portion, after a sort change or after reopening, until something is booked anew. Tapping again charges no second
+  surcharge; portions already sent stay unchanged. Directly booked drinks get no lemon question. Extra ice is
+  postponed.
+- **One name per article (user, 16.09.2026):** the same name on the button, in “Bestellt”, on the bill; no long
+  form, no own button labels (line breaks on the screen disturb, and every bill line costs paper). `menus` in
+  `preview-menu.js` carries the same names as `src/catalog/`. If a name does not fit at 360 px it is shortened, in
+  both languages with the same cut: usually the beginning stays, distinguishing words stay (Gegrillte and Gebackene
+  Garnelen). Gebackener Tintenfisch 炸鱿鱼 stays long. Drinks keep their full German names. The names deliberately
+  differ from the printed menu: without “Pago”, “Jiao Zi”, “Mini”. Only the display of the additions is shortened:
+  `serviceLabel` makes “+ Zit” out of “+ Zitrone” and “0.35 Fl.” out of “Flasche 0.35”.
+- **One line per name (user, 16.09.2026):** drink buttons show German and Chinese each on one line; long Chinese
+  names are shortened for that in the catalog. At direct articles the German line uses the full button width, only
+  the Chinese one leaves room for the quantity field. The second line of the sushi sets is wanted.
+- Sushi quantities after menu page 5, only in the draft, not in the catalog: small 7 sushi + 3 maki, medium 9 + 3,
+  large 11 + 3, salmon sushi 8 + 3, as a second line like “7 Sushi 寿司 + 3 Maki 卷”, every number only once; Futo
+  Maki (10) and maki in the set (18) on the same line.
+- “Bestellt”: the quantity set in bold without “×”, only minus, for buffet persons too. A small language button
+  “DE”/“CN” to the right of “Rechnung”, one language at a time. The Chinese view also contains size, bottle mark,
+  additions, maki piece count, additions in the same plus notation (“可乐 0.3 + 水 + 柠檬”).
+- **Food groups (user, 16.09.2026, final):** 10 groups, one column, in this order: Suppen & Salate 汤和沙拉 (2 soups
+  | 4 salads), Snacks 小吃, Sushi 4, Maki 6, Meeresfrüchte 5, Gemüse 2, Huhn & Ente 鸡肉和鸭肉 (8 | 1), Rind &
+  Schwein 牛肉和猪肉 (4 | 2), Reis 米饭 5, Nudeln 面条 3. The Chinese group names are the usual words, not
+  provisional. Why: only what belongs together was joined, with known words instead of umbrella terms. Sushi and
+  maki separate, otherwise you would have to scroll inside the group. Rice and noodles separate, garlic sauce to
+  Snacks, desserts dropped. In joined groups a small grey line separates the parts; in the catalog the parts are own
+  groups (`soups`, `salads`), the screen joins them.
+- Drink groups: Limonaden, Fruchtsäfte, Wasser, Bier, Weine, Warmes, Spirituosen. No extra entry “Kaltgetränke”.
+  Short labels “Weine / 酒”, “Warmes / 热饮”; the order follows the printed menu.
+- **Buffet:** the main case, about 99 % according to the user. Drinks often first, the buffet count only when
+  paying. One buffet kind per table.
+- **Buffet tariffs:** Mon/Wed–Sat midday 11:30–14:30: adults 15.90 €, 6–9 years 9.90 €, 3–5 years 5.90 €; evenings
+  17:00–21:30 and Sundays/public holidays all day 19.90/12.90/7.90 €. Under three free; Tuesday closed except on
+  public holidays; no own Friday price.
+- **The buffet automatic is still a proposal:** server time `Europe/Vienna`, Carinthian public holidays stored
+  locally, the tariff recorded in the ticket line. Outside the times choose explicitly; with an unreliable clock or
+  a missing calendar no automatic. Open: Josefstag/Volksabstimmung and noting the tariff at the first order, so that
+  a late entry does not cause a tariff change.
+
+**Moving and takeaway**
+
+- **Moving (changing table, user, 15. and 16.09.2026):** button, strip and window are called “Schieben”, not
+  “Verschieben” or “Umsetzen”. In “Bestellt” “Rechnung” stands big in the middle, on the left the moving button, on
+  the right the language button, both square 56 px. **The button is only an arrow “→”** for both languages, drawn
+  with lines like plus/minus, because Hyperreadable has no “→”; `aria-label` “Tisch schieben · 换桌”; disabled at an
+  empty table. It leads to the table plan with the strip “14 schieben” and “Abbrechen”; the source table is dashed
+  and not tappable, inside/garden stay selectable. A tap on the target table opens a confirmation window: “Tisch 14
+  auf Tisch 12 schieben?”; at an occupied target only “Tisch 14 mit Tisch 3 zusammenführen?” with
+  “Zusammenführen”. “Abbrechen” leaves the target choice open, Escape closes only the window. All order lines and
+  buffet persons are moved, including ones not sent yet. No undo: instead of a strip that stays, the user wanted the
+  explicit question. An occupied target table is allowed, because guests join people they know. Only whole tables;
+  moving single articles (TOUCHIT “Art.Transfer”) is not built and would later go over the selection of paying
+  separately.
+- **Takeaway (user, 16.09.2026):** an own button in the inside plan, centred in the free area between 24 and 18,
+  only the word “Mitnehmen” without Chinese in 18 px, for guests at the counter who only take food away. Inside it
+  is called “M”: id `M`, header “M” like a table number, in “Heute” “M”, in the bill and windows “Mitnehmen”. It
+  opens the order like a table; the buffet tab is missing, because the buffet is not taken away (do not grey it out,
+  leave it away). When moving it can be a source, but not a target.
+
+**Paying**
+
+- **Paying separately:** an article selection with quantities, the rest stays open, back to the selection after a
+  part payment, to the table plan after the last one; the whole bill stays the direct normal case. Selected lines
+  are outlined in the accent colour; the list scrolls, sum and the paying button stay at the foot. Only the sum of
+  the selection, no remainder line. The available quantity on the left, plus/minus compact on the right in the same
+  line. The header while splitting, in the bill and in the card closing reads “Tisch 9” or “9号桌”; while ordering
+  the compact number without “Tisch” stays. No second entry “Getrennt kassieren” on the payment page; “Zurück”
+  leads to the quantity selection even when the whole rest is left.
+- **Language (user, 16.09.2026):** the language button stands only in “Bestellt”; bill, split, cash, card and
+  voucher take the language chosen there without a button of their own. German is the default when opening.
+  Switching changes no selection, amounts or entries and not the language while ordering: the tabs and the article
+  selection stay bilingual.
+- Bill: fixed columns for quantity, name, amount, quantities without “×”, amounts on the right without wrapping, the
+  bill amount large. A fixed foot area: at the very bottom the big buttons “Bar”/“Karte” next to each other, above
+  them “Gutschein” and “Getrennt”/“分开” in two equally wide, language-independent fields; two rows of buttons
+  instead of three. Articles scroll only in their own area. “Bar” opens the cash closing with “Abschließen”, the
+  card closing is called “Fertig”.
+- **Voucher:** opens a compact amount menu with the same number buttons as cash: type the value, see the remaining
+  amount at once, “Anrechnen”. In the bill the remaining amount then stands large, the voucher deduction above the
+  payment buttons; cash/card take only this rest. At full coverage “Abschließen” replaces the cash/card buttons.
+  Open the voucher again to change or remove it; closing, Escape and a tap outside discard only the entry not taken
+  over yet. If the voucher exceeds the bill, “Gutscheinrest” appears, no payout as change. The same flow for part
+  bills, without carrying it over into the next selection or to another table. “Heute” marks voucher, cash +
+  voucher, card + voucher. In the draft there is no real redemption or storage.
+- **Change calculator** in the cash closing, no separate calculator button next to “Bar”. First “Zahlbetrag”,
+  prefilled with the bill sum minus the voucher: take it over unchanged or type the guest's wish, for example 59.70
+  → 60 €. “Übernehmen” opens “Gegeben”; the payment amount stays visible and correctable above it, the change is
+  calculated at once. “Abschließen” works at any time without a change calculation. Own big number buttons with a
+  decimal point and a backspace, input fields with `inputmode="none"`, so that no phone keyboard opens; a normal
+  keyboard and pasting work too, a comma becomes a dot. No round-up button. Too little given shows “Fehlt”; invalid
+  amounts or a payment amount below the open bill amount prevent the closing. The bill keeps its original amount;
+  cash tip, the amount given and the wished payment amount are never stored. Calculating in whole cents. Closing,
+  Escape and a tap outside cancel; at a new bill, a table change or another part payment the entries are discarded.
+- “Heute” on the phone: only the bill list, no sums for cash/card, no bill count. Cash/card only readable there, no
+  accidental switching; who may correct later is open. The day closing is only for the boss, in the draft with
+  `?chef=1#closing`; this parameter is **not a real rights check**.
+- Navigation links “Heute”, “Zurück” outside the payment flow with a small Chinese next to them; plain back arrows
+  in the article groups without visible text.
+
+**Tools and checking**
+
+- `sed -i` destroys the line endings in the CRLF files `screens.js`, `screens.css`, `preview-menu.js`; change them
+  only with the edit tool. The menu file, `screens.css`, `screens.js` and image URLs carry a version mark `?v=`
+  against outdated files in the cache, count it up at every change; the open HTML tab has to be reloaded.
+- Send selection pictures to the user as PNG (rendered with Edge without a window); SVG selection sheets did not
+  land.
+- Checking so far happened in the local Edge browser at 320 to 412 px width with screenshots and measurements, never
+  on the real Redmi. Open on the real device: the feel of the vibration, suppressing the on-screen keyboard under
+  Android.
+
+### Table plan and font
+
+- Two area buttons inside/garden; the room as a section above the garden, together on one screen. The same layout on
+  phone and PC, the plan always fits on one page. Plain rectangles; no chairs, benches, buffet furniture, amounts,
+  times, occupancy dots, free/occupied legend. Tables slightly elongated, no squares, because two people sit at each
+  long side and one at the head.
+- The heading “Tische” is dropped. The header carries “Reservierungen 预订” on the left as a prepared button for
+  online reservations and for marking reserved tables, and “Heute” on the right.
+- Inside at the top 1/2/3/4/5/6; under it 11/10/9/aisle/8/7, then 12/13/14/aisle/15/16. 1–5 the same button size as
+  12–16; table 6 as small as table 7, flush at the top with 1–5. The group of 20s at the far left: 21/22 on top, 24
+  above 23 under 21, table 20 next to it on the right with the same bottom edge as 23. 19 above 18, upright on the
+  right under 15, 17 at the height of 19 next to it. Equal gaps between 21/22 and 24/23. 20 smaller (1+1), 21/22
+  four-seaters, 12–16 six-seaters, 1–6 and 7–11 normally 2+2, 1–6 tight up to 3+3.
+- Four grey dividing lines mark the inside areas: between 11/10/9 and 12/13/14, between 8/7 and 15/16, under
+  12/13/14 before 21/22, under 15/16 before 19/17. The row 1–6 stands closer to the row below, because they belong
+  together.
+- 18, 19, 23, 24 each have their own button and their own order. No selection “Ganz”, no shared booking numbers
+  18/19 or 23/24, no number 25. For one shared group of guests one of the two numbers is used.
+- Room: 33/34/30 above 32/31/35, equal rectangles. Garden: G12/G11, aisle/main entrance, G1/G2/G3/G4; at the bottom
+  G15/G16 on the left, G9 under G2, G8 under G3. G = garden; the aisle as two plain lines. Number 9 and G15/G16 are
+  provisional, the user's confirmation is open.
+- The logo at the bottom right, at most 140 px wide, not squeezed into the middle between the tables, undistorted,
+  without a frame or a tap function.
+- From the user's photos and videos of 15.09.2026: 18/19 is one long table for ten people (2+4+4), 20 a two-seater,
+  21/22 normal tables, 23/24 put together, 16/17 normally in one line. Recommendation: keep the plain geometry, at
+  most even out the proportions. The table plan has not been changed after that; do not move anything against the
+  user's last arrangement.
+- **Font chosen: Hyperreadable**, an explicit correction of the user, not IBM Plex Sans. Source:
+  [Hyperreadable](https://github.com/MadSimple/hyperreadable), SIL OFL 1.1, commercial use checked, keep the
+  copyright and the licence when passing it on. The unchanged cuts Regular/Medium/SemiBold including the OFL lie in
+  `WokFlow/fonts/`, no system installation. Chinese uses fallback fonts.
+
+### Money amounts: Dinero.js 2 (chosen 14.09.2026)
+
+- The user wanted a modern TypeScript library that bigger programs use too, and ordered the selection. Chosen is
+  **Dinero.js 2** (2.0.2 of 13.03.2026, own TypeScript types, Node >= 20): money amounts with a currency,
+  calculations, rounding, output; it fits prices in whole euro cents. `decimal.js` is replaced by it and not needed
+  in addition: Dinero also represents fractions of a cent as a whole number with `scale` (3505 at `scale: 3` for
+  3.505 €), factors as well (`{ amount: 15, scale: 1 }` for 1.5).
+- Honest about how widespread it is (question of the user): not an industry standard and not a proven top place.
+  `decimal.js` has clearly more downloads but is general decimal arithmetic; the recommendation rests on the money
+  functions, the TypeScript support and proven use (WooCommerce lists `dinero.js` 2.0.2 in its dependency file).
+- In the catalog `dinero({ amount: cents, currency: EUR })` without `scale`: Dinero then takes the exponent of the
+  currency, at EUR 2, so cents. Only `article` and `variant` in `articles.ts` call `dinero`. The rounding rule and
+  the moment of rounding are clarified at the bill flow; no money calculations are connected yet.
+- In `commands.md` development tools and Dinero stand separately: `-D` applies to all packages of one call, and
+  Dinero is needed in the running POS system too.
+
+### Articles and groups
+
+Built with the user in `WokFlow/src/catalog/`.
+
+- **Articles stand in the code, not in the database (user, 16.09.2026):** prices change rarely, the user maintains
+  them himself; the boss's wife gets no editing screen. Reason: no extra code for it, and IntelliJ checks every
+  article through the types. Into SQLite goes what comes out of the operation, orders, receipts, payments. A price
+  change needs no compiling, but the running server needs a restart.
+- **Files:**
+  - `articles.ts`: types `Article` (`name` with `de` and `zh`, `variants: Variant[]`) and `Variant` (`name` with
+    `de` and `zh` or `null`, `price: Dinero<number, "EUR">`), plus the factory functions `article(de, zh, variants)`
+    and `variant(de, zh, cents)`. `article` takes a variant list or only the price in cents; a number gives the one
+    variant without a name (checked with `Array.isArray`).
+  - `buffet.ts`, `food.ts`, `drinks.ts`: one `export const name: Article[]` per logical list, one line
+    `article(…),` per article, the order as on the screen. Shared variant lists stand at the top: `buffetSmall` and
+    `buffetBig` in `buffet.ts`; `variantPieces(cents1, cents2)` for “6 Stück” and “12 Stück”, written by the user,
+    in `food.ts`; `variantsFull`, `variantsBottle`, `variantsJuices`, `variantsWines` in `drinks.ts`. `lemon` stands
+    at the end of `drinks.ts`.
+  - `menu.ts` (the folder stays `catalog`): `Category` with `tax`, `print`, `groups`, `Menu` with `buffet`, `food`,
+    `drinks`, the constant `menu`, plus the lookup part with `entryOf`. **The groups in the catalog are the logical
+    lists**, each a simple list in short notation (`soups`, `salads`, `snacks`; no “article matrix” `Article[][]`).
+    The buffet has a group too (`buffets`), so that all main categories are built the same way. **What is shown
+    together is decided by the screen** (user, 16.09.2026, “much more elegant”): it needs a table of its groups with
+    names in both languages and images anyway, and that table also says which catalog groups form a screen group,
+    for example Suppen & Salate out of `soups` and `salads`. No arbitrary nesting: main category, group, article,
+    variant.
+- **Size (counted from the code on 18.09.2026):** 102 articles (buffet 4, food 50, drinks 48) with 199 variants in
+  21 catalog groups (buffet 1, food 13, drinks 7), on the screen 18 groups (food 10); plus `lemon` in the group
+  `extras`, 200 variants together. Names, order and prices as in `tmp/preview-menu.js` and the printed menu 2026;
+  the children's prices for Sunday/public holidays are not in the PDF, taken from “Buffet tariffs”.
+- **The id of an article is its German name** (user, 16.09.2026): all of them are unique, names change rarely; a
+  rename counts as a new article in statistics. No English constant per article; English identifiers only for lists.
+- **One name per article**, German and Chinese, the same on the button, in “Bestellt”, on the bill. Not in the
+  article: allergens, chilli, food notes, English names, card ids, category paths.
+- **Variants:** every article has at least one variant with a price; without a selection its `name` is null and the
+  screen shows no selection. `Variant[]` enforces no minimum length, `article` with a price creates exactly one. A
+  single size stays a variant (Tsingtao 0.33, Hefetrüb 0.5, Cola Light “Flasche 0.35”); Prosecco stands without a
+  size, because “0.2” is shown nowhere. Sizes with a dot and without a litre sign; sizes are text, because variants
+  also describe mixtures, sorts, “6 Stück”. Prices as whole cents (`450` for 4.50 €). Every variant on its own line,
+  a single one too. On the bill the chosen variant stands with quantity and price.
+- **Buffet:** every buffet kind is an article (Mittagsbuffet, Abendbuffet, Sonntagsbuffet, Feiertagsbuffet), the age
+  levels adults, 6–9, 3–5 are its variants; midday with `buffetSmall`, the others with `buffetBig`.
+- **Shared variant lists only where the prices change together** (user, 16.09.2026: Cola and Fanta always change
+  their prices together). Combined by spread, for example `[...variantsFull, ...variantsBottle]` for Cola, Cola
+  Zero, Fanta, Sprite. Written out stand beer (Villacher and Radler cost the same), Aloe Vera, lychee juice,
+  mineral water, soda, tap water. Open: whether the main dishes at 14.90 € change their price together.
+- **Lemon (16.09.2026):** an addition, not a variant; an own article `lemon` (Zitrone 柠檬, 0.20 €). Since
+  17.09.2026 in the catalog group `extras` under drinks, which the screen does not show as a group, so that it
+  cannot be ordered alone. Soda therefore has no own lemon variants any more. How an order line records the lemon is
+  ordering logic and comes with the screen.
+- **Printing at the main category (user, 16.09.2026):** `print` next to `tax`, drinks and food `true`, buffet
+  `false`. What is meant is the order ticket; the bill shows everything.
+- **Tax only at the main category:** buffet 10 %, food 10 %, drinks 20 %. The only exception stands in the building
+  of `entries` in `menu.ts`: tap water 10 (it almost never changes); if tap water is renamed, change that line too.
+  `orderOf` only asks `entryOf` and knows nothing of exceptions (looking up belongs in the menu). The key stays the
+  German name as text: a constant `tapWater` the user rejected. Rejected: `tax?` at the article, a mandatory `tax`
+  at every article, an exception list `taxExceptions`. The name stays `tax`, not `vatRate`. Calculated: tap water
+  10 % (mineral water 20 %); coffee and tea including cappuccino and latte macchiato 20 %. Source checked
+  15.09.2026: [WKO: Umsatzsteuersätze für Restaurationsumsätze](https://www.wko.at/steuern/ermaessigte-umsatzsteuer-saetze).
+  The new 4.9 % for certain staple foods do not apply to restaurant services. Legal basis:
   [UStG § 10](https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004873&Paragraf=10),
-  [BMF zur Änderung 2026](https://www.bmf.gv.at/rechtsnews/steuern-rechtsnews/aktuelle-infos-und-erlaesse/fachinformationen---umsatzsteuer/umsatzsteuersenkung-auf-ausgewaehlte-nahrungsmittel.html).
-  Belegbeschreibung: [BAO § 132a](https://ris.bka.gv.at/eli/bgbl/1961/194/P132a/NOR40173931)
-  und [UStG § 11](https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004873&Paragraf=11).
-- **Beim Buchen** Name, Preis, Steuersatz in der Buchung festhalten, damit Katalogänderungen alte Belege
-  nicht verändern (im Modul `tables` so gebaut); keine zweite, unabhängig gepflegte Preisliste. Steuerberechnung und
-  Belegspeicherung sind noch nicht gebaut.
-- Quellen der Daten: der Prototyp und `AsiaWok_Speisekarte_2026.pdf` (siehe „Einstieg“). Enthaltene Grill-Soßen
-  sind keine eigenen Artikel, bezahlte Extra-Sauce getrennt. Portionsgröße und bestellte Anzahl nicht verwechseln.
-- **Offen:**
-  - Weingrößen „1/8“, „1/4“, „1/2“ weichen von der Punktregel ab, im Prototyp ebenso.
-  - Die Tabelle der Bildschirmgruppen (Namen in beiden Sprachen, Bilder, zugehörige Kataloggruppen) gehört zum
-    künftigen Bildschirmcode; bis dahin stehen die Angaben im Prototyp und unter „Speisengruppen“.
-  - Sushi-/Maki-Stückzahlen („7 Sushi + 3 Maki“) stehen nur im Prototyp, nicht in den Daten.
-  - Mineralwasser-Flaschengröße bestätigen.
-  - Nur anmerken, nicht ungefragt ändern: In `articles.ts` fehlt nach der Konstante `variantSingle` das Semikolon.
-  - Anbindung an den Bildschirm; `tmp/preview-menu.js` bleibt bis dahin eigene Vorschaudaten.
+  [BMF on the 2026 change](https://www.bmf.gv.at/rechtsnews/steuern-rechtsnews/aktuelle-infos-und-erlaesse/fachinformationen---umsatzsteuer/umsatzsteuersenkung-auf-ausgewaehlte-nahrungsmittel.html).
+  Receipt description: [BAO § 132a](https://ris.bka.gv.at/eli/bgbl/1961/194/P132a/NOR40173931) and
+  [UStG § 11](https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004873&Paragraf=11).
+- **When booking**, record name, price and tax rate in the booking, so that catalog changes do not change old
+  receipts (built that way in module `tables`); no second, separately maintained price list. Tax calculation and
+  receipt storage are not built yet.
+- Sources of the data: the prototype and `AsiaWok_Speisekarte_2026.pdf`. Included grill sauces are not own articles,
+  a paid extra sauce is separate. Do not mix up portion size and the number ordered.
+- **Open:**
+  - Wine sizes “1/8”, “1/4”, “1/2” deviate from the dot rule, in the prototype too.
+  - The table of the screen groups (names in both languages, images, matching catalog groups) belongs to the future
+    screen code; until then the data stands in the prototype and under “Food groups”.
+  - Sushi and maki piece counts (“7 Sushi + 3 Maki”) stand only in the prototype, not in the data.
+  - Confirm the mineral water bottle size.
+  - Only note it, do not change it unasked: in `articles.ts` the semicolon after the constant `variantSingle` is
+    missing.
+  - Connection to the screen; `tmp/preview-menu.js` stays its own preview data until then.
 
-## Buchhaltung (Frage des Nutzers, 14.09.2026, nicht entschieden)
+## Accounting (question of the user, 14.09.2026, not decided)
 
-- Ist-Stand: Steuerberater Mag. Helmut Allesch, Klagenfurt (Lohn mit RZL). 9 Lohnabrechnungen im Monat.
-  Lohnjournal Mai 2026: brutto 21.564,98 €, Lohnsteuer 922,26 €, Dienstgeberbeitrag 591,48 €, Zuschlag
-  59,15 €, Kommunalsteuer 646,95 €, ÖGK 7.481,72 €. Jahresabschlüsse der GmbH und Honorarnoten fehlen in der
-  Ablage; der letzte abgelegte Abschluss ist 2017, noch vom Einzelunternehmen Li Vu
-  (Einnahmen-Ausgaben-Rechnung, Umsatz ca. 464.000 €, davon 80 % Küche, Buchhaltungskosten damals 4.180 €).
-- Motiv des Nutzers: Er ist neu in der GmbH, will die Arbeit des Steuerberaters prüfen und vermutet, dass
-  bei den Steuern nichts gespart wird. Einordnung: Die monatliche Zahlung ans Finanzamt ist vor allem
-  Umsatzsteuer (durchlaufend) und Lohnabgaben (Manifest, Punkt 7). Sparpotenzial prüft am schnellsten ein
-  zweiter Steuerberater zum Festpreis anhand des letzten Jahresabschlusses.
-- Rechtlich (Wissen, nicht im Web geprüft): Eine GmbH darf die Buchhaltung selbst führen, auch durch
-  Angestellte; eine Steuerberaterpflicht gibt es nicht. Pflicht sind doppelte Buchführung, Jahresabschluss
-  ans Firmenbuch binnen 9 Monaten, Steuererklärungen, monatliche Umsatzsteuer-Voranmeldung (UVA). Ein
-  Wirtschaftsprüfer ist erst ab einer mittelgroßen GmbH Pflicht, hier nicht. Verantwortlich bleibt der
-  Geschäftsführer. Einen Steuerberater kann man jederzeit fallweise dazuholen, z. B. bei einer Prüfung.
-- Kosten beim Steuerberater (Richtwerte 2026, kein amtlicher Tarif): Buchhaltung 200 bis 310 € im Monat,
-  Lohn 16 bis 40 € je Mitarbeiter und Monat, Jahresabschluss 1.600 bis 2.200 €, Stundensatz 120 bis 310 €;
-  für Asia Wok grob 8.000 bis 13.000 € netto im Jahr.
-- Selbst machen: Buchhaltungssoftware 10 bis 30 € im Monat (z. B. FreeFinance, ProSaldo, everbill),
-  Lohnsoftware fast nur für Profis (RZL, BMD). ELDA und FinanzOnline sind gratis; Kollektivvertrag,
-  Sozialversicherungswerte, Steuertabellen sind öffentlich. Aufwand danach ca. 4 bis 6 Stunden pro Woche (250 bis
-  300 Stunden im Jahr, also rund 30 bis 45 € Ersparnis je Stunde, mit Haftung). Lernen nebenbei: etwa ein Jahr
-  für laufende Buchhaltung und Lohn, 2 bis 3 Jahre bis zum Jahresabschluss. Ein WIFI-Kurs (ca. 3.350 €) ist nicht
-  nötig: Lehrbuch plus KI, Uni-Vorlesungen zur Bilanzierung, für Lohn das jährlich neue Buch „Personalverrechnung
-  in der Praxis“. KI hilft beim Lernen und Prüfen, ersetzt aber nicht das Wissen über jährliche Änderungen,
-  Fristen, Meldungen.
-- Empfehlung von Claude: erst WokFlow fertig bauen. Danach 6 Monate Schattenbuchhaltung: selbst buchen und
-  jeden Monat mit der Saldenliste des Steuerberaters vergleichen. Stimmt es drei Monate hintereinander,
-  laufende Buchhaltung übernehmen; Lohn und Jahresabschluss zuletzt, den ersten eigenen Abschluss vom
-  Steuerberater gegenlesen lassen.
-- Zugänge (Plan): Der Geschäftsführer holt die ID Austria, meldet damit die GmbH bei FinanzOnline an
-  (Steuerkonto, Bescheide, UVAs, Lohnzettel) und im Unternehmensserviceportal USP (darüber WEBEKU der ÖGK
-  mit Beitragskonto und ELDA) und legt den Nutzer als Benutzer an. Die Vollmacht des Steuerberaters bleibt
-  daneben bestehen. FinanzOnline allein zeigt etwa ein Drittel; Buchungen, Saldenlisten, Lohnkonten kommen
-  vom Steuerberater (Mail unter „Korrespondenz“). Online-Banking-Zugang von der Chefin.
-- Wer Geschäftsführer ist, ist intern unklar. Deshalb ID Austria für Li Vu (Chefin) und Kim Hong Vu (Chef):
-  Wer im Firmenbuch steht, kann die GmbH anmelden, beim anderen lehnt das System ab. Ein Firmenbuchauszug
-  kostet auch für den Inhaber eine Gebühr (justizonline.gv.at). Gratis: Gründungsunterlagen und GISA. GISA
-  (Auszug vom 04.07.2026 in der Ablage): Die Gewerbeberechtigung Gastgewerbe Restaurant am Messeplatz 1
-  läuft seit 21.12.2013 auf Li Vu persönlich, nicht auf die GmbH; prüfen, ob die GmbH eine eigene hat.
-- ID Austria in Klagenfurt (im Browser geprüft, beide sind österreichische Staatsbürger): Passamt des
-  Magistrats, Kumpfgasse 20, Telefon +43 463 537-4010, ohne Termin Dienstag und Donnerstag 8 bis 15 Uhr,
-  Freitag 8 bis 12 Uhr, Online-Termine nur Montag und Mittwoch (nächster freier war der 12.10.2026); ob die
-  ID Austria wirklich ohne Termin geht, vorher anrufen. Alternativ nur mit Termin:
-  Landespolizeidirektion, Buchengasse 3 (citizen.bmi.gv.at, Thema „ID Austria - Registrierung“), oder Finanzamt,
-  Siriusstraße 11 (Telefon 050 233 700). Mitbringen: Reisepass, Handy mit ID-Austria-App; Vollfunktion verlangen;
-  vorher die Online-Vorregistrierung auf id-austria.gv.at. Beide sind nicht technikaffin, der Nutzer begleitet sie
-  und richtet die App mit ein. Wer schon eine Handy-Signatur hat, kann die Vollfunktion online freischalten.
+- Current state: tax adviser Mag. Helmut Allesch, Klagenfurt (payroll with RZL). 9 payslips a month. Payroll journal
+  May 2026: gross 21,564.98 €, wage tax 922.26 €, employer contribution 591.48 €, surcharge 59.15 €, municipal tax
+  646.95 €, ÖGK 7,481.72 €. Annual accounts of the GmbH and fee notes are missing in the filing; the last filed
+  accounts are from 2017, still from the sole proprietorship Li Vu (income and expenditure account, turnover about
+  464,000 €, of that 80 % kitchen, bookkeeping costs then 4,180 €).
+- Motive of the user: he is new in the GmbH, wants to check the tax adviser's work and suspects that nothing is
+  saved on taxes. Context: the monthly payment to the Finanzamt is mostly VAT (a pass-through item) and wage levies.
+  Savings potential is checked fastest by a second tax adviser at a fixed price on the basis of the last annual
+  accounts.
+- Legally (knowledge, not checked on the web): a GmbH may do its bookkeeping itself, also through employees; there
+  is no obligation to have a tax adviser. Obligatory are double-entry bookkeeping, annual accounts to the company
+  register within 9 months, tax returns, the monthly VAT return (UVA). An auditor is obligatory only from a
+  medium-sized GmbH, not here. The managing director stays responsible. A tax adviser can be called in case by
+  case at any time, for example at an audit.
+- Costs at the tax adviser (guide values 2026, no official tariff): bookkeeping 200 to 310 € a month, payroll 16 to
+  40 € per employee and month, annual accounts 1,600 to 2,200 €, hourly rate 120 to 310 €; for Asia Wok roughly
+  8,000 to 13,000 € net a year.
+- Doing it yourself: bookkeeping software 10 to 30 € a month (for example FreeFinance, ProSaldo, everbill), payroll
+  software almost only for professionals (RZL, BMD). ELDA and FinanzOnline are free; the collective agreement,
+  social insurance values and tax tables are public. Effort after that about 4 to 6 hours a week (250 to 300 hours a
+  year, so about 30 to 45 € saved per hour, with liability). Learning alongside: about a year for running
+  bookkeeping and payroll, 2 to 3 years up to the annual accounts. A WIFI course (about 3,350 €) is not needed: a
+  textbook plus AI, university lectures on accounting, for payroll the yearly new book “Personalverrechnung in der
+  Praxis”. AI helps with learning and checking but does not replace the knowledge about yearly changes, deadlines
+  and filings.
+- Claude's recommendation: finish building WokFlow first. After that 6 months of shadow bookkeeping: book it
+  yourself and compare it every month with the tax adviser's trial balance. If it matches three months in a row,
+  take over the running bookkeeping; payroll and annual accounts last, and have the first own accounts read by the
+  tax adviser.
+- Access (plan): the managing director gets the ID Austria, registers the GmbH with FinanzOnline (tax account,
+  decisions, VAT returns, wage slips) and with the company service portal USP (through it WEBEKU of the ÖGK with the
+  contribution account and ELDA) and creates the user as a user. The tax adviser's power of attorney stays in place
+  next to it. FinanzOnline alone shows about a third; bookings, trial balances and wage accounts come from the tax
+  adviser. Online banking access from the boss's wife.
+- Who is managing director is unclear internally. Therefore ID Austria for Li Vu (boss's wife) and Kim Hong Vu
+  (boss): whoever stands in the company register can register the GmbH, at the other one the system refuses. A
+  company register extract costs a fee even for the owner (justizonline.gv.at). Free: founding documents and GISA.
+  GISA (extract of 04.07.2026 in the filing): the trade licence for the restaurant at Messeplatz 1 has run on Li Vu
+  personally since 21.12.2013, not on the GmbH; check whether the GmbH has one of its own.
+- ID Austria in Klagenfurt (checked in the browser, both are Austrian citizens): passport office of the Magistrat,
+  Kumpfgasse 20, phone +43 463 537-4010, without an appointment Tuesday and Thursday 8 to 15, Friday 8 to 12, online
+  appointments only Monday and Wednesday (the next free one was 12.10.2026); call first whether ID Austria really
+  works without an appointment. Alternatives only with an appointment: Landespolizeidirektion, Buchengasse 3
+  (citizen.bmi.gv.at, topic “ID Austria - Registrierung”), or the Finanzamt, Siriusstraße 11 (phone 050 233 700).
+  Bring: passport, phone with the ID Austria app; ask for the full function; do the online pre-registration on
+  id-austria.gv.at beforehand. Both are not technically minded, the user goes with them and sets up the app. Whoever
+  already has a mobile phone signature can unlock the full function online.
 
-## Korrespondenz (Arbeitsstand für neue Chats)
+## Correspondence (working status for new chats)
 
-Was an wen ging und worauf gewartet wird. Kommt eine Antwort, hier eintragen und die Folgen unter
-„Entscheidungen“ nachtragen. Stil des Nutzers für Mails: keine Gedankenstriche, keine Einleitung, kein
-Projektname nach außen.
+What went to whom and what is being waited for. When an answer comes, enter it here and add the consequences under
+“Decisions”. The user's style for mails: no dashes, no introduction, no project name to the outside.
 
-### Nexi (serviceDE@nexigroup.com, Kundennummer 5905840, Vertragspartner-Nr. 156469572)
+### Nexi (serviceDE@nexigroup.com, customer number 5905840, contract partner no. 156469572)
 
-- **1. SoftPOS und Kassenanbindung** (laut Nutzer am 14.09.2026 verschickt, Antwort offen; Telefonat vom
-  15.09.2026 im Manifest, Punkt 10). Als Bestandskunde mit einem Terminal Mobile Premium und rund 50.000 €
-  Kartenumsatz im Monat um schriftliche Antwort per E-Mail gebeten:
-  1. Nexi SoftPOS (Tap to Pay on Android) auf einem zusätzlichen Android-Handy als Zusatzvereinbarung zum
-     bestehenden Vertrag, zu den bestehenden Konditionen (Disagio je Kartenart wie bisher, gleiche Abrechnung);
-     Angebot mit allen Kosten und Laufzeit.
-  2. Freischaltung der Kassenanbindung (ZVT über WLAN) am Terminal Mobile Premium, damit die Kasse den Betrag
-     übergibt; Kosten?
-  3. Ist die App-zu-App-Schnittstelle für SoftPOS (Betragsübergabe aus der Kassen-App, Entwicklerportal
-     developer.nexigroup.com) in Österreich verfügbar, und was braucht es für den Zugang?
-- **2. Kopie des Vertrags:** am 14.09.2026 angefragt (Kartenakzeptanzvertrag samt gültigem Konditionenblatt mit
-  Disagio je Kartenart, Mindestentgelt, Monatspauschalen, Terminalmiete, Laufzeit, Kündigungsfrist, allen
-  Änderungen). Die Vertragskopie kam am 15.09.2026, ausgewertet unter „Entscheidungen“, „Nexi-Vertragskopie“;
-  darin steht das Disagio nur bis 11.08.2024, deshalb hat der Nutzer das aktuelle Konditionenblatt am 15.09.2026
-  nachgefordert. Antwort offen.
+- **1. SoftPOS and POS connection** (sent 14.09.2026 according to the user, answer open; the phone call of
+  15.09.2026 is in the manifest, point 10). As an existing customer with a Mobile Premium terminal and about
+  50,000 € card turnover a month, a written answer by e-mail was asked for:
+  1. Nexi SoftPOS (Tap to Pay on Android) on an additional Android phone as an additional agreement to the existing
+     contract, at the existing conditions (disagio per card kind as before, the same settlement); an offer with all
+     costs and the term.
+  2. Unlocking the POS connection (ZVT over WLAN) at the Mobile Premium terminal, so that the POS hands over the
+     amount; costs?
+  3. Is the app-to-app interface for SoftPOS (handing over the amount from the POS app, developer portal
+     developer.nexigroup.com) available in Austria, and what is needed for access?
+- **2. Copy of the contract:** asked for on 14.09.2026 (the card acceptance contract with the valid conditions sheet:
+  disagio per card kind, minimum fee, monthly flat fees, terminal rent, term, notice period, all changes). The copy
+  came on 15.09.2026, evaluated under “Decisions”, “Nexi contract copy”; the disagio in it runs only until
+  11.08.2024, so the user asked for the current conditions sheet on 15.09.2026. Answer open.
 
-Beim Lesen der Antwort prüfen: SoftPOS zum bestehenden Disagio oder zum Listenpreis 1 %? Zusatzvereinbarung
-oder neuer Vertrag mit Laufzeit? Nichts unterschreiben, was nicht klar besser ist. Falls offen bleibt,
-nachfragen: Fragt das Terminal bzw. die App das Trinkgeld beim Gast ab und meldet Betrag, Trinkgeld und
-Transaktionsnummer an die Kasse zurück? Gibt es ohne Kopplung einen Abruf der Tageszahlungen mit einer
-Referenz, die sich einer Rechnung zuordnen lässt? Kostet die Freischaltung etwas?
+When reading the answer check: SoftPOS at the existing disagio or at the list price of 1 %? An additional agreement
+or a new contract with a term? Do not sign anything that is not clearly better. If something stays open, ask: does
+the terminal or the app ask the guest for the tip and report amount, tip and transaction number back to the POS? Is
+there, without coupling, a way to fetch the day's payments with a reference that can be matched to a bill? Does the
+unlocking cost anything?
 
-### Steuerberater (Mag. Helmut Allesch, Klagenfurt)
+### Tax adviser (Mag. Helmut Allesch, Klagenfurt)
 
-**3. Fragen zur Kasse** (Entwurf vom 14.09.2026, auf das Nötigste gekürzt, Versand durch den Nutzer)
+**3. Questions about the POS** (draft of 14.09.2026, shortened to the essentials, sent by the user)
 
 ```text
 Betreff: Fragen zur Kasse
@@ -2015,7 +1660,7 @@ Vielen Dank und freundliche Grüße
 ASIA WOK Restaurant GmbH
 ```
 
-**4. Unterlagen der GmbH** (Entwurf vom 14.09.2026, bewusst ohne Termin, Versand durch den Nutzer)
+**4. Documents of the GmbH** (draft of 14.09.2026, deliberately without an appointment, sent by the user)
 
 ```text
 Betreff: Unterlagen der GmbH
@@ -2037,226 +1682,209 @@ Vielen Dank und freundliche Grüße
 ASIA WOK Restaurant GmbH
 ```
 
-Später an den Steuerberater, bewusst noch nicht gefragt:
+Later to the tax adviser, deliberately not asked yet:
 
-- Zahlart nach dem Rechnungsdruck ohne Storno ändern, mit Protokoll (laut Recherche zulässig).
-- Bezahlte falsche Rechnung künftig mit Stornobeleg, statt Geld privat zurückzugeben.
-- Löst ein verschenktes Buffet beim Einlösen Steuer aus (Werbegeschenk)? Was passiert mit den alten, per
-  Hand geführten Gutscheinen?
-- Umstieg: Was braucht er, und ist Monats- oder Jahresende der bessere Zeitpunkt?
-- rksv-Journal: Reicht ein monatlicher, nie überschriebener Export auf USB-SSD und in die Cloud?
+- Changing the payment kind after the bill was printed without a cancellation, with a log (permitted according to
+  the research).
+- A paid wrong bill in future with a cancellation receipt instead of giving money back privately.
+- Does a given buffet trigger tax when redeemed (a promotional gift)? What happens to the old vouchers kept by hand?
+- Switch-over: what does he need, and is the end of a month or the end of a year the better moment?
+- rksv journal: is a monthly export that is never overwritten, to the USB SSD and the cloud, enough?
 
-### Behörden
+### Authorities
 
-- ID Austria für Li Vu und Kim Hong Vu: beim Passamt anrufen, dann gemeinsam hingehen (Einzelheiten unter
-  „Buchhaltung“). Danach GmbH bei FinanzOnline und USP anmelden, Nutzer als Benutzer anlegen.
+- ID Austria for Li Vu and Kim Hong Vu: call the passport office, then go there together (details under
+  “Accounting”). After that register the GmbH with FinanzOnline and USP and create the user as a user.
 
 ## rksv
 
-Wissen und offene Fragen der rksv-Session (seit 13.09.2026). Fertige Entscheidungen stehen unter
-„Entscheidungen“.
+Knowledge and open questions of the rksv session (since 13.09.2026). Finished decisions stand under “Decisions”.
 
-- **Grundlagen:** rksv heißt Registrierkassensicherheitsverordnung. Jeder Beleg bekommt eine elektronische
-  Signatur, die an der vorherigen hängt wie an einer Kette, und einen QR-Code. Startbeleg (0 €) bei
-  Inbetriebnahme, Anmeldung bei FinanzOnline, Prüfung mit der App des Finanzministeriums. Monatsbeleg (0 €)
-  jeden Monat, der vom Dezember ist der Jahresbeleg und wird ebenfalls mit der App geprüft. Schlussbeleg
-  beim Stilllegen, danach abmelden. DEP (Datenerfassungsprotokoll): Liste aller Belege, 7 Jahre aufbewahren.
-- **Kartentausch bis Mai 2027** (BMF-Seite, gelesen 13.09.2026): Karten mit Chip ACOS-ID 2.1 gelten seit
-  07.06.2025 nicht mehr (Sicherheitslücke „EUCLeak“), CardOS 5.3 spätestens ab Mai 2027. Neue
-  A-Trust-Karte mit Chip ACOS-ID 4.1 ca. 40 € inkl. MwSt., Zertifikat 5 Jahre, am 13.09.2026 im Shop nicht
-  verfügbar; Lesegerät ca. 26 €. TOUCHIT kennt nur ältere Kartentypen (`GetCardType` in
-  `TouchitTrustLibrary`), die neue Karte läuft dort vermutlich nicht. Welcher Chip heute steckt, will der
-  Nutzer nicht prüfen. WokFlow sollte also bis Mai 2027 laufen.
-- **Anbieter** (netto, 13.09.2026): Zertifikate stellen nur A-Trust, GlobalTrust und PrimeSign aus. Karte mit
-  Lesegerät für 5 Jahre: A-Trust ca. 55 €, PrimeSign 60 €, GlobalTrust 149 € (mit Tausch bei Defekt). Online
-  36 bis 359 € im Jahr, alle brauchen Internet. A-Trust-Beispielcode auf GitHub (`A-Trust/RKSV`, C#, Java,
-  C++, für ACOS, ACOS-ID, CardOS 5.3 und die Online-Schnittstelle); ob ACOS-ID 4.1 abgedeckt ist, offen.
-  Unter Linux läuft die Karte über PC/SC (die Linux-Kasse QRK kann es), Node braucht dafür eine
-  Zusatzbibliothek. TOUCHIT nutzt die Windows-Bibliothek `asignp11.dll`.
-- **Aufwand** (Schätzung von Claude): Verschieden ist nur das Holen der Signatur, online 1 bis 2
-  Arbeitstage, mit Karte 3 bis 6.
-- **Ausfall:** Kann nicht signiert werden, gibt die Kasse Belege mit „Sicherheitseinrichtung ausgefallen“
-  aus, danach ein Sammelbeleg. Dauert der Ausfall länger als 48 Stunden, binnen einer Woche über
-  FinanzOnline melden.
-- **Gutscheine** (mit dem Steuerberater prüfen): Geldgutscheine sind Mehrzweckgutscheine, Umsatzsteuer erst
-  beim Einlösen, beim Verkauf mit 0 % („Betrag-Satz-Null“). Leistungsgutscheine wären Einzweckgutscheine mit
-  Steuer schon beim Verkauf; wie die Einlösung dann signiert wird, ist nicht eindeutig (BMF-Mustercode,
-  GitHub-Issue 684). Der Betrieb verschenkt sie aber, deshalb beim Einlösen Betrag 0. Fremdgutscheine
-  (Edenred, Nexi-Papier) sind nur Zahlungsmittel, normaler Umsatz. TOUCHIT signiert die Einlösung verkaufter
-  Gutscheine mit 0 %, das weicht von heutigen Hinweisen ab (LBG, ready2order).
-- **Trainingsmodus und mehrere Kassen:** Vor der Anmeldung darf getestet werden. Danach zählen Übungsbelege
-  als Training (signiert, im DEP, ohne Umsatzzähler, Wert „TRA“, Aufdruck „Trainingsmodus“). Mehrere Kassen
-  im Betrieb sind erlaubt, jede echte Rechnung nur in einer.
-- **Storno:** Vor dem Beleg (offener Tisch) kein rksv-Thema. Einen ausgestellten Beleg darf man nicht
-  löschen, dafür gibt es einen signierten Stornobeleg (Wert „STO“) und bei Bedarf eine neue Rechnung. Ein
-  Grund ist nicht vorgeschrieben, viele Stornos ohne Grund fallen bei Prüfungen aber auf und können zu
-  Hinzuschätzungen führen; empfohlen ist eine kurze Auswahlliste.
-- **Teilrechnungen:** Jede getrennt kassierte Teilrechnung ist ein eigener Beleg. Eine Tischrechnung darf
-  auch zeitnah von mehreren Gästen in Teilen bezahlt werden, ohne Beleg pro Gast.
-- **Zahlart:** kein Pflichtbestandteil des Belegs (§ 132a Abs. 3 BAO, § 11 rksv). Änderungen nach dem Druck
-  mit Protokoll sind zulässig, sofern Kartenumsätze erkennbar sind (FAQ Arbeitskreis Kassensoftware 2.4.15).
-- **Journal sichern** (§ 7 rksv): mindestens vierteljährlich unveränderbar auf einem externen Medium, 7 Jahre
-  aufbewahren, jederzeit im vorgeschriebenen Format exportierbar. Laufende und stündliche Kopien werden
-  überschrieben und zählen vermutlich nicht, deshalb monatlich ein DEP-Export als eigene Datei auf USB-SSD
-  und in die Cloud (mit dem Steuerberater prüfen). Prüfwerkzeug des Finanzministeriums:
-  `TOUCHIT/TOUCHIT_TOOLS/SOFTWARE/RKSV/DEP_Pruefung` (Java-Programm, Java ist nicht installiert).
-- **Offen:** Monats- und Jahresbelege im Detail. A-Trust-Karte ACOS-ID 4.1 mit Lesegerät früh unter Linux
-  testen und den Beispielcode prüfen. Zahlart ohne Beleg bestätigen. Vorschlag von Claude: ein zweites
-  Lesegerät als Ersatz. Den alten AES-Schlüssel aufbewahren (siehe „Sicherheit“).
+- **Basics:** rksv is the Registrierkassensicherheitsverordnung. Every receipt gets an electronic signature that
+  hangs on the previous one like on a chain, and a QR code. A start receipt (0 €) at commissioning, registration
+  with FinanzOnline, a check with the app of the finance ministry. A monthly receipt (0 €) every month, the one from
+  December is the yearly receipt and is checked with the app as well. A closing receipt when shutting down, then
+  deregister. DEP (data collection log): a list of all receipts, keep for 7 years.
+- **Card exchange by May 2027** (BMF page, read 13.09.2026): cards with the chip ACOS-ID 2.1 have not been valid
+  since 07.06.2025 (the security hole “EUCLeak”), CardOS 5.3 at the latest from May 2027. A new A-Trust card with
+  the chip ACOS-ID 4.1 costs about 40 € including VAT, the certificate runs 5 years, on 13.09.2026 it was not
+  available in the shop; a card reader about 26 €. TOUCHIT knows only older card types (`GetCardType` in
+  `TouchitTrustLibrary`), so the new card probably does not run there. Which chip is in use today the user does not
+  want to check. So WokFlow should be running by May 2027.
+- **Providers** (net, 13.09.2026): only A-Trust, GlobalTrust and PrimeSign issue certificates. A card with a reader
+  for 5 years: A-Trust about 55 €, PrimeSign 60 €, GlobalTrust 149 € (with an exchange on defect). Online 36 to
+  359 € a year, all of them need the internet. A-Trust example code on GitHub (`A-Trust/RKSV`, C#, Java, C++, for
+  ACOS, ACOS-ID, CardOS 5.3 and the online interface); whether ACOS-ID 4.1 is covered is open. Under Linux the card
+  runs over PC/SC (the Linux POS QRK can do it), Node needs an extra library for that. TOUCHIT uses the Windows
+  library `asignp11.dll`.
+- **Effort** (estimate by Claude): only fetching the signature differs, online 1 to 2 working days, with a card 3 to
+  6.
+- **Failure:** if signing is impossible, the POS issues receipts with “Sicherheitseinrichtung ausgefallen”, and
+  afterwards a collective receipt. If the failure lasts longer than 48 hours, report it within a week over
+  FinanzOnline.
+- **Vouchers** (check with the tax adviser): money vouchers are multi-purpose vouchers, VAT only when redeemed, at
+  the sale with 0 %. Service vouchers would be single-purpose vouchers with tax already at the sale; how the
+  redemption is then signed is not unambiguous (BMF example code, GitHub issue 684). But the business gives them
+  away, so at redemption the amount is 0. Foreign vouchers (Edenred, Nexi paper) are only a means of payment, normal
+  turnover. TOUCHIT signs the redemption of sold vouchers with 0 %, which deviates from today's guidance.
+- **Training mode and several tills:** before the registration testing is allowed. After that practice receipts
+  count as training (signed, in the DEP, without a turnover counter, value “TRA”, printed “Trainingsmodus”).
+  Several tills in one business are allowed, every real bill only in one.
+- **Cancellation:** before the receipt (an open table) it is not an rksv topic. An issued receipt must not be
+  deleted; for that there is a signed cancellation receipt (value “STO”) and, if needed, a new bill. A reason is not
+  prescribed, but many cancellations without a reason stand out at audits and can lead to estimated additions; a
+  short selection list is recommended.
+- **Part bills:** every separately paid part bill is a receipt of its own. A table bill may also be paid in parts by
+  several guests at about the same time, without a receipt per guest.
+- **Payment kind:** not an obligatory part of the receipt (§ 132a Abs. 3 BAO, § 11 rksv). Changes after printing
+  with a log are permitted, as long as card turnovers stay recognisable (FAQ Arbeitskreis Kassensoftware 2.4.15).
+- **Securing the journal** (§ 7 rksv): at least quarterly, unchangeable, on an external medium, keep for 7 years,
+  exportable at any time in the prescribed format. Running and hourly copies are overwritten and probably do not
+  count, so a monthly DEP export as its own file to the USB SSD and the cloud (check with the tax adviser). The
+  finance ministry's checking tool: `TOUCHIT/TOUCHIT_TOOLS/SOFTWARE/RKSV/DEP_Pruefung` (a Java program, Java is not
+  installed).
+- **Open:** monthly and yearly receipts in detail. Test the A-Trust card ACOS-ID 4.1 with a reader under Linux early
+  and check the example code. Confirm the payment kind without a receipt. Claude's proposal: a second reader as a
+  spare. Keep the old AES key (see “Security”).
 
-## Sicherheit
+## Security
 
-- Im Ordner `TOUCHIT/` stehen Zugangsdaten im Klartext: SQL-Admin-Passwort, rksv-Karten-PIN und
-  AES-Schlüssel, FTP-, Mail- und Kamerapasswörter, Lizenzschlüssel. Unter anderem in
-  `TOUCHIT/TOUCHIT/RESOURCEN/INI/touchit.ini`, `TOUCHIT/TOUCHIT_DIENSTE/RESOURCEN/INI/touchit_dienste.ini`
-  und `TOUCHIT/TOUCHIT_PHONE/Web.config`. Die Werte nicht in andere Dateien übernehmen.
-- **Diesen Projektordner nie in ein öffentliches Repository oder ins Internet stellen.** Git nur im
-  Ordner `WokFlow/`, und der enthält nur neuen Code. `TOUCHIT/` und `Nexi/` kommen nie in ein
-  Repository.
-- Den AES-Schlüssel aufbewahren. Er wird gebraucht, damit das alte rksv-Journal prüfbar bleibt.
-- Programme in `TOUCHIT/DECOMPILED/recovered/` sind reine Analysekopien: **nie starten.**
-- An der echten Kasse keine Test-Verkäufe, Stornos, Zahlungen oder Fiskalbelege auslösen. Kasse,
-  Handys und Drucker im Restaurant nur nach Rückfrage beim Nutzer ansprechen.
+- In the folder `TOUCHIT/` access data stands in plain text: the SQL admin password, the rksv card PIN and AES key,
+  FTP, mail and camera passwords, licence keys. Among others in
+  `TOUCHIT/TOUCHIT/RESOURCEN/INI/touchit.ini`, `TOUCHIT/TOUCHIT_DIENSTE/RESOURCEN/INI/touchit_dienste.ini` and
+  `TOUCHIT/TOUCHIT_PHONE/Web.config`. Do not copy the values into other files.
+- **Never put this project folder into a public repository or onto the internet.** Git only in the folder
+  `WokFlow/`, and that contains only new code. `TOUCHIT/` never goes into a repository.
+- Keep the AES key. It is needed so that the old rksv journal stays checkable.
+- Programs in `TOUCHIT/DECOMPILED/recovered/` are pure analysis copies: **never start them.**
+- Do not trigger test sales, cancellations, payments or fiscal receipts at the real POS. Talk to the POS, phones and
+  printer in the restaurant only after asking the user.
 
-## Das alte System
+## The old system
 
-- „TOUCHIT“ v4.72 von Kortschak-Datensysteme (Österreich): Visual Basic .NET, WinForms, .NET 4.5.1, eine EXE
-  mit 139 MB, nur Binärdateien. Datenbank Microsoft SQL Server `TOUCHIT_FILIALE_1` (ca. 155 Tabellen) unter
-  `C:\KKK-Corporation\DATEN\Filiale_1\`. Die Handys öffnen ein ASP.NET-Webprogramm (2008, .NET 3.5,
-  21 Seiten aus `TOUCHIT/TOUCHIT_PHONE/_www/`) im Browser, eine Android-App gibt es nicht. Die Lizenz hängt an
-  der CPU-Kennung, ein Ersatz-PC bräuchte vermutlich eine neue. rksv mit A-Trust-Karte, KasseID 1, ein
-  Kartenleser aktiv.
-- Genutzt (laut `TOUCHIT/TOUCHIT/RESOURCEN/INI/touchit.ini`): 1 PC (nicht 2, der Druckmanager führt denselben
-  PC zweimal), 4 Handys, Tischplan, Splitten, Transfer, Storno mit Grund, Zwischenrechnung, offene Kredite,
-  gemischte Zahlung, Tagesabschluss, Berichte, Umschaltung Chinesisch/Europäisch. Ausgeschaltet: Hotel,
-  Events, Waage, Kameras, Schankanlage, Bonuskarten, Zeiterfassung, Filialen, Kiosk, Kreditkartenmodul,
-  Drehkreuz, Webshop.
-- Alles läuft auf dem einen PC, auch der SQL Server: das Kassenprogramm mit Druckmanager (druckt auch die
-  Bons der Handys), das Handy-Webprogramm im Windows-Webserver IIS (schreibt `MTISCH`, `LOG_BON` und
-  `MTISCHE`, druckt nie selbst, speichert Rechnungen ohne Transaktion) und das Hilfsprogramm
-  `TOUCHIT_DIENSTE` für zeitgesteuerte Backups (in unserer Kopie ausgeschaltet, letzte Backups 2019). Ohne
-  den PC geht auf den Handys nichts, es gibt keinen Notbetrieb.
-- Drucker: In `touchit.ini` stehen zwei Epson TM-T88 (Rechnung an COM2, Küche im LAN 192.168.1.61:9100) und
-  eine ungenutzte TM-P20-Vorgabe. Heute läuft nur der Zentraldrucker an der Theke, laut Video ein Metapace
-  T-3II (ESC/POS, Epson-kompatibel, Treiber in `TOUCHIT/TOUCHIT_TOOLS/TREIBER/Diverses/Metapace/`); der
-  Küchendrucker ist kaputt.
+- “TOUCHIT” v4.72 by Kortschak-Datensysteme (Austria): Visual Basic .NET, WinForms, .NET 4.5.1, one EXE with 139 MB,
+  binary files only. Database Microsoft SQL Server `TOUCHIT_FILIALE_1` (about 155 tables) under
+  `C:\KKK-Corporation\DATEN\Filiale_1\`. The phones open an ASP.NET web program (2008, .NET 3.5, 21 pages from
+  `TOUCHIT/TOUCHIT_PHONE/_www/`) in the browser, there is no Android app. The licence hangs on the CPU id, a
+  replacement PC would probably need a new one. rksv with an A-Trust card, KasseID 1, one card reader active.
+- Used (according to `touchit.ini`): 1 PC (not 2, the print manager lists the same PC twice), 4 phones, table plan,
+  splitting, transfer, cancellation with a reason, interim bill, open credits, mixed payment, day closing, reports,
+  switching Chinese/European. Switched off: hotel, events, scale, cameras, bar tap, bonus cards, time recording,
+  branches, kiosk, credit card module, turnstile, web shop.
+- Everything runs on the one PC, the SQL Server too: the POS program with the print manager (which also prints the
+  tickets of the phones), the phone web program in the Windows web server IIS (it writes `MTISCH`, `LOG_BON` and
+  `MTISCHE`, never prints itself, saves bills without a transaction) and the helper program `TOUCHIT_DIENSTE` for
+  scheduled backups (switched off in our copy, last backups 2019). Without the PC nothing works on the phones, there
+  is no emergency mode.
+- Printers: `touchit.ini` lists two Epson TM-T88 (bill at COM2, kitchen in the LAN 192.168.1.61:9100) and an unused
+  TM-P20 default. Today only the central printer at the counter runs, according to the video a Metapace T-3II
+  (ESC/POS, Epson compatible, drivers in `TOUCHIT/TOUCHIT_TOOLS/TREIBER/Diverses/Metapace/`); the kitchen printer is
+  broken.
 
-## Ordner
+## Folders
 
-- `WokFlow/`: das neue System, eigenes Git-Repo (Branch `main`, privat auf GitHub als `UnathiCodex/WokFlow`); darin
-  liegt auch diese `CLAUDE.md`.
-- `WokFlow-before-server-api-20260917-161729.zip` im Hauptordner: dem Namen nach eine Sicherung vom 17.09.2026 vor
-  dem Bau der Server-Schnittstelle.
-- Die 11 monatlichen Nexi-Abrechnungen (Oktober 2025 bis August 2026) und die Terminal-Rechnungen (Juni 2025 bis
-  August 2026) liegen in der Geschäftsablage des Nutzers:
-  `M:\NomWorkspace\NomBusinessworkings\AsiaWokRestaurantGmbH\Kartenzahlung\<Jahr>\` als
-  `AsiaWok_Nexi_Abrechnung_YYYYMM.pdf` und `AsiaWok_Nexi_Rechnung_YYYYMM.pdf`. Auswertung unter „Entscheidungen“
-  („Nexi-Zahlen“). Geschäftsdaten, nie in ein Repository. Den früheren Ordner `Nexi/` im Hauptordner gibt es nicht
-  mehr.
-- `TOUCHIT/`: alles zum Altsystem.
-  - **Original-Unterordner, nicht verändern, nicht löschen:** `BACKUP`, `DATEN`, `TOUCHIT`,
-    `TOUCHIT_DIENSTE`, `TOUCHIT_KONFIGURATION`, `TOUCHIT_PHONE`, `TOUCHIT_TOOLS`, `TOUCHIT_UPDATE`, `UPDATE`.
-    - `TOUCHIT/TOUCHIT/RESOURCEN/INI/touchit.ini`: Live-Konfiguration.
-    - `TOUCHIT/BACKUP/Filiale1 (local)/`: Datenbank-Backups. Das neueste ist vom 18.07.2024.
-    - `TOUCHIT/TOUCHIT_PHONE/`: Kellner-Handy-Programm.
-    - `TOUCHIT/TOUCHIT_TOOLS/`: Werkzeugkiste des Herstellers. Ein paar eigene Hilfsprogramme (Backup,
-      Kartenleser, IP-Scanner, NFC-Leser, rksv-Tool), die sind dekompiliert. Sonst Software anderer
-      Firmen, nicht dekompiliert: Treiber (FTDI, Epson, Metapace, Intel, Microsoft), A-Trust-Installer, Fernwartung
-      (TeamViewer, UltraVNC), Synology, Adobe Reader, Datenbank-Reparatur (Stellar Phoenix).
-    - `TOUCHIT/TOUCHIT_TOOLS/SOFTWARE/RKSV/DEP_Pruefung`: Prüfwerkzeug des Finanzministeriums.
-  - `TOUCHIT/DECOMPILED/`: unsere **einzige Dekompilierung**, vollständig und geprüft. Einstieg
-    `README.md` und `MODULE_INDEX.csv`.
-    - `sources/`: Code aller 119 .NET-Dateien, davon 21 vom Hersteller, der Rest Fremdbibliotheken.
-      Hauptprogramm in `sources/TOUCHIT__c409d7140c/` (samt 33 Berichtsvorlagen `*.rdlc`),
-      Handy-Programm in `sources/TOUCHIT-Phone__712a7e6eaf/`.
-    - `native_sources/`: C-Pseudocode der nativen Dateien.
-    - `recovered/`: entschlüsselte Programmkopien, **nie starten**.
-    - `tools/`: Werkzeuge der Dekompilierung, 2,8 GB. Löschen nur unter der Bedingung im Abschnitt
-      „Aktueller Stand“.
-  - `TOUCHIT/PERFORMANCE_AUDIT/`: unsere SQL-Aufrufanalyse und der Datenbank-Modelltest. Einstieg
-    `README.md` und `Sandbox/ERGEBNIS.md`.
+- `WokFlow/`: the new system, its own Git repo (branch `main`, private on GitHub as `UnathiCodex/WokFlow`); this
+  `CLAUDE.md` lies in it too.
+- `WokFlow-before-server-api-20260917-161729.zip` in the main folder: by its name a backup of 17.09.2026 before the
+  server interface was built.
+- The 11 monthly Nexi settlements (October 2025 to August 2026) and the terminal invoices (June 2025 to August 2026)
+  lie in the user's business filing:
+  `M:\NomWorkspace\NomBusinessworkings\AsiaWokRestaurantGmbH\Kartenzahlung\<year>\` as
+  `AsiaWok_Nexi_Abrechnung_YYYYMM.pdf` and `AsiaWok_Nexi_Rechnung_YYYYMM.pdf`. Business data, never into a
+  repository.
+- `TOUCHIT/`: everything about the old system.
+  - **Original subfolders, do not change, do not delete:** `BACKUP`, `DATEN`, `TOUCHIT`, `TOUCHIT_DIENSTE`,
+    `TOUCHIT_KONFIGURATION`, `TOUCHIT_PHONE`, `TOUCHIT_TOOLS`, `TOUCHIT_UPDATE`, `UPDATE`.
+    - `TOUCHIT/TOUCHIT/RESOURCEN/INI/touchit.ini`: the live configuration.
+    - `TOUCHIT/BACKUP/Filiale1 (local)/`: database backups. The newest is from 18.07.2024.
+    - `TOUCHIT/TOUCHIT_PHONE/`: the waiter phone program.
+    - `TOUCHIT/TOUCHIT_TOOLS/`: the manufacturer's tool box, with a few own helper programs (backup, card reader, IP
+      scanner, NFC reader, rksv tool), which are decompiled. The rest is other companies' software, not decompiled.
+    - `TOUCHIT/TOUCHIT_TOOLS/SOFTWARE/RKSV/DEP_Pruefung`: the finance ministry's checking tool.
+  - `TOUCHIT/DECOMPILED/`: our **only decompilation**, complete and checked. Entry point `README.md` and
+    `MODULE_INDEX.csv`. `sources/` holds the code of all 119 .NET files, 21 of them from the manufacturer (main
+    program in `sources/TOUCHIT__c409d7140c/` with 33 report templates `*.rdlc`, phone program in
+    `sources/TOUCHIT-Phone__712a7e6eaf/`); `native_sources/` the C pseudo code of the native files; `recovered/` the
+    decrypted program copies, **never start them**; `tools/` the decompilation tools, 2.8 GB, delete only under the
+    condition in “Current status”.
+  - `TOUCHIT/PERFORMANCE_AUDIT/`: our SQL call analysis and the database model test. Entry point `README.md` and
+    `Sandbox/ERGEBNIS.md`.
 
-Pfade in den Berichten von `DECOMPILED` und `PERFORMANCE_AUDIT` stammen von vor dem Umzug, als beide
-direkt im Hauptordner lagen: `DECOMPILED/...` heißt heute `TOUCHIT/DECOMPILED/...`. In älteren
-Protokollen kann noch der frühere Name `DECOMPILED_VERIFIED` stehen.
-Die Zahlen in der Analyse unten wurden an der ersten, inzwischen gelöschten Dekompilierung gezählt
-(gleiche EXE, andere Aufteilung in Dateien).
+Paths in the reports of `DECOMPILED` and `PERFORMANCE_AUDIT` come from before the move, when both lay directly in
+the main folder: `DECOMPILED/...` today means `TOUCHIT/DECOMPILED/...`. Older logs may still carry the earlier name
+`DECOMPILED_VERIFIED`. The figures in the analysis below were counted at the first decompilation, which has been
+deleted since (the same EXE, a different split into files).
 
-Der Nutzer entwickelt in IntelliJ IDEA 2026.2 (Ordner `.idea`, per `.gitignore` ausgeschlossen), auf diesem
-PC und auf einem Laptop. Den Workspace gleicht Syncthing zwischen den Geräten ab (Wurzel `M:/NomWorkspace/`,
-Ausnahmen in `M:/NomWorkspace/.stignoreglobal`). Dort sind `**/node_modules` und `**/.idea` für alle Projekte
-ausgenommen (vom Nutzer eingetragen, 14.09.2026). Ältere Konfliktdateien liegen noch in `WokFlow/.idea/`. Weil
-`node_modules` nicht synchronisiert wird, braucht jeder Rechner einmal `npm install` im Ordner `WokFlow`.
+The user develops in IntelliJ IDEA 2026.2 (folder `.idea`, excluded by `.gitignore`), on this PC and on a laptop.
+Syncthing matches the workspace between the devices (root `M:/NomWorkspace/`, exceptions in
+`M:/NomWorkspace/.stignoreglobal`). There `**/node_modules` and `**/.idea` are excluded for all projects. Because
+`node_modules` is not synchronised, every machine needs `npm install` once in the folder `WokFlow`.
 
-**IntelliJ und die Node-Typen (geklärt 14.09.2026, im IntelliJ-Log geprüft):** Hat ein Projekt kein eigenes
-TypeScript, nimmt IntelliJ sein mitgeliefertes und findet die Node-Typen ohne `tsconfig.json` nicht (rote Zeilen bei
-`node:http`); deshalb steht `typescript` 7.0.2 in den devDependencies. Es gibt zwei getrennte Helfer: Hover-Text,
-Strg+Klick, Fehler im Code kommen vom TypeScript-7-Dienst, der die Node-Typen je Computer selbst beschafft
-(`%LOCALAPPDATA%\Microsoft\TypeScript\7.0`), deshalb kann sich der Laptop anders verhalten als der PC. Links in
-Kommentaren prüft IntelliJ selbst und braucht dafür `@types/node` in `node_modules`.
+**IntelliJ and the Node types (clarified 14.09.2026, checked in the IntelliJ log):** if a project has no TypeScript
+of its own, IntelliJ takes its own and does not find the Node types without a `tsconfig.json` (red lines at
+`node:http`); that is why `typescript` 7.0.2 stands in the devDependencies. There are two separate helpers: hover
+text, Ctrl+click and errors in the code come from the TypeScript 7 service, which fetches the Node types itself per
+computer (`%LOCALAPPDATA%\Microsoft\TypeScript\7.0`), so the laptop can behave differently from the PC. Links in
+comments IntelliJ checks itself and needs `@types/node` in `node_modules` for that.
 
-Auf dem PC installiert (Stand 14.09.2026): Node.js 26, Git, ffmpeg 8 (winget), Python 3.14 als Nutzer-Installation
-unter `AppData\Local\Python` mit `faster-whisper`; Whisper-Modelle tiny bis large-v3 liegen im Hugging-Face-Cache des
-Nutzers. Damit lassen sich Sprachnachrichten und Videos in Text umwandeln: mit ffmpeg eine 16-kHz-Mono-WAV ziehen,
-dann `WhisperModel("large-v3", device="cpu", compute_type="int8")`, 60 s Ton dauern ca. 35 s. Kein SQL Server. .NET,
-Java, Ghidra liegen nur als Werkzeuge in `TOUCHIT/DECOMPILED/tools/`, nicht installiert. Der Hauptordner ist kein
-Git-Repository.
+Installed on the PC (14.09.2026): Node.js 26, Git, ffmpeg 8 (winget), Python 3.14 as a user installation under
+`AppData\Local\Python` with `faster-whisper`; Whisper models tiny to large-v3 lie in the user's Hugging Face cache.
+With that, voice messages and videos can be turned into text: pull a 16 kHz mono WAV with ffmpeg, then
+`WhisperModel("large-v3", device="cpu", compute_type="int8")`, 60 s of sound take about 35 s. No SQL Server. .NET,
+Java and Ghidra lie only as tools in `TOUCHIT/DECOMPILED/tools/`, not installed. The main folder is not a Git
+repository.
 
-## Was schon gemacht wurde
+## What has been done
 
-- 08. und 09.09.2026: Scan, Analyse (Ergebnis unter „Analyse des alten Systems“), Komplett-Dekompilierung in
-  `TOUCHIT/DECOMPILED/`: alle 119 .NET-Dateien als C#, auch die 17 mit ConfuserEx geschützten (offline entschlüsselt
-  mit `scripts/recover_antitamper.py`, ohne die Programme zu starten; Reihenfolge der Skripte in `README.md`).
-  230.359 Methoden ohne Syntaxfehler, dazu 12 native Dateien per Ghidra als C-Pseudocode. Alle 339 Originaldateien
-  sind unverändert (SHA-256 geprüft). Nur zum Verstehen, nichts nachgebaut oder mit der echten Kasse verglichen.
-  Zwei ältere Dekompilierungen (`DECOMPILED`, `DECOMPILED_KLARTEXT`) liegen im Papierkorb, bitte nicht
-  wiederherstellen.
-- SQL-Aufrufanalyse und Modelltest in `TOUCHIT/PERFORMANCE_AUDIT/`. Echte Laufzeiten der Kasse gibt es nicht, der
-  Messplan mit 12 Abläufen steht dort.
-- 13. bis 18.09.2026: Planung von WokFlow (Manifest, Entscheidungen), Tagesabschluss der Chefin per Foto und Video
-  verstanden, Nexi-Abrechnungen ausgewertet und in die Geschäftsablage sortiert, Bildschirmentwurf, Mails an Nexi
-  und Steuerberater, Artikelkatalog, Modul `tables`. Den Code-Verlauf zeigt Git in `WokFlow/`.
+- 08. and 09.09.2026: scan, analysis (result under “Analysis of the old system”), complete decompilation in
+  `TOUCHIT/DECOMPILED/`: all 119 .NET files as C#, including the 17 protected with ConfuserEx (decrypted offline
+  with `scripts/recover_antitamper.py`, without starting the programs). 230,359 methods without a syntax error, plus
+  12 native files as C pseudo code via Ghidra. All 339 original files are unchanged (SHA-256 checked). Only for
+  understanding, nothing rebuilt or compared with the real POS.
+- SQL call analysis and a model test in `TOUCHIT/PERFORMANCE_AUDIT/`. There are no real run times of the POS, the
+  measurement plan with 12 flows stands there.
+- 13. to 21.09.2026: planning of WokFlow (manifest, decisions), understood the boss's wife's day closing from photos
+  and video, evaluated the Nexi settlements, screen draft, mails to Nexi and the tax adviser, article catalog,
+  module `tables`, server interface, table lock, slice 1 of the order screen. The code history is shown by Git in
+  `WokFlow/`.
 
-## Analyse des alten Systems
+## Analysis of the old system
 
-TOUCHIT ist 20- bis 30-mal größer als nötig; ein sauberes System mit diesem Umfang hätte 30.000 bis 60.000
-Zeilen. Über 15 Jahre gewachsen, ein einziger Entwickler, Copy-Paste, keine Tests. Die 13 Hauptprobleme,
-schlimmste zuerst (Zahlen aus der ersten Dekompilierung):
+TOUCHIT is 20 to 30 times bigger than needed; a clean system of this size would have 30,000 to 60,000 lines. Grown
+over 15 years, one single developer, copy-paste, no tests. The 13 main problems, the worst first (figures from the
+first decompilation):
 
-1. Jede Abfrage läuft doppelt (`Module_Sql.Execute`: erst NonQuery, dann Reader, 4.736 Stellen).
-2. 1.398 Schleifen mit je einer Datenbankabfrage pro Durchlauf.
-3. SQL per Textverkettung: 7.711 Befehle, nur 31 mit Parametern (Angriffsgefahr, Komma-Fehler).
-4. 48 globale Datenbankverbindungen mit globalen Readern (`Execute2` bis `Execute1000`).
-5. Nachfragen statt Ereignisse: ca. 370 Timer (66 im 1-ms-Takt), 652 `DoEvents`, 283 `Thread.Sleep`.
-6. Riesige Dateien: `Form_Bonieren_0.cs` hat 118.955 Zeilen, 66 Funktionen haben über 1.000 Zeilen.
-7. Kopieren statt Wiederverwenden: 385 Gruppen gleicher Methoden mit 53.235 Zeilen.
-8. Verschluckte Fehler: 378 leere Fehlerbehandlungen, 541 `goto`, 773 Meldungsfenster.
-9. Lockere Typen: 28.612 automatische Umwandlungen, 16.765 Textvergleiche für Entscheidungen.
-10. Fest verdrahtet: 131-mal `C:\KKK-Corporation`, Passwörter im Klartext, Lizenz an der CPU-Kennung.
-11. Drucken steckt im Bildschirmcode: 15.230 rohe Druckerbefehle.
-12. Kasse und Handy-Programm bonieren getrennt, jede Änderung musste doppelt gemacht werden.
-13. Berichte im Bildschirmcode: der Finanzbericht als eine Methode mit 2.477 Zeilen, dazu eine Kopie.
+1. Every query runs twice (`Module_Sql.Execute`: first NonQuery, then Reader, 4,736 places).
+2. 1,398 loops with one database query per pass.
+3. SQL by text concatenation: 7,711 commands, only 31 with parameters (danger of injection, comma errors).
+4. 48 global database connections with global readers (`Execute2` to `Execute1000`).
+5. Asking instead of events: about 370 timers (66 at a 1 ms interval), 652 `DoEvents`, 283 `Thread.Sleep`.
+6. Huge files: `Form_Bonieren_0.cs` has 118,955 lines, 66 functions have over 1,000 lines.
+7. Copying instead of reusing: 385 groups of equal methods with 53,235 lines.
+8. Swallowed errors: 378 empty error handlers, 541 `goto`, 773 message windows.
+9. Loose types: 28,612 automatic conversions, 16,765 text comparisons for decisions.
+10. Hard-wired: `C:\KKK-Corporation` 131 times, passwords in plain text, the licence on the CPU id.
+11. Printing sits in the screen code: 15,230 raw printer commands.
+12. POS and phone program order separately, every change had to be made twice.
+13. Reports in the screen code: the financial report as one method with 2,477 lines, plus a copy.
 
-Modelltest mit künstlichen Daten (keine Messung an der Kasse): Die Handy-Tischübersicht mit 30 offenen
-Tischen braucht 182 Abfragen, gebündelt reicht eine (bei 5 ms je Abfrage ca. 1 s statt 6 ms). Doppelte
-Schreibbefehle könnten Zähler doppelt erhöhen, ein Beweis für doppelt gebuchte Verkäufe ist das nicht.
+Model test with artificial data (not a measurement at the POS): the phone table overview with 30 open tables needs
+182 queries, bundled one is enough (at 5 ms per query about 1 s instead of 6 ms). Double write commands could
+increase counters twice, but that is no proof of doubly booked sales.
 
-Brauchbares Wissen (nur die Idee, nie Code): Datenmodell (`ARTIKEL`, `WGR`, `TASTENPLAN`, `OBJEKTE_TISCHE`,
-`MTISCHE`, `LOG_RECHNUNG`, `LOG_BON`, `LOG_RECHNUNG_ZAHLART`, `LOG_STORNOS`, `ZUGRIFF`, chinesischer Name in
-`Bezeichnung_2`), der rksv-Ablauf, ESC/POS-Druck und die 33 Berichtsvorlagen als Liste gebrauchter Zahlen.
+Usable knowledge (only the idea, never code): the data model (`ARTIKEL`, `WGR`, `TASTENPLAN`, `OBJEKTE_TISCHE`,
+`MTISCHE`, `LOG_RECHNUNG`, `LOG_BON`, `LOG_RECHNUNG_ZAHLART`, `LOG_STORNOS`, `ZUGRIFF`, the Chinese name in
+`Bezeichnung_2`), the rksv flow, ESC/POS printing and the 33 report templates as a list of the numbers in use.
 
-## Die 10 Regeln fürs neue System
+## The 10 rules for the new system
 
-1. Eine kleine Datenbankschicht. Jede Abfrage mit Parametern, jede Abfrage läuft genau einmal.
-2. Ein Bildschirm lädt mit ein oder zwei Abfragen, nie eine Abfrage pro Zeile.
-3. Keine Timer, die ständig nachfragen. Der Server schickt Ereignisse (neuer Druckauftrag, Tisch
-   geändert) an die Bildschirme.
-4. Drucken ist ein eigener kleiner Dienst mit Warteschlange, Wiederholungen und Protokoll.
-   Bildschirme sprechen nie direkt mit Druckern.
-5. Eine Codebasis für Kassen-PC und Kellner-Handys (Web-App).
-6. Geldberechnung mit Dinero.js 2, Speicherung in ganzen Cent. Text nur für die Ausgabe.
-   Datumsangaben sind echte Datumswerte.
-7. Jeder Fehler wird mit Zeit, Station und Benutzer protokolliert. Keine leeren Fehlerbehandlungen.
-8. Bildschirme bleiben klein. Eine Funktion, die länger als eine Bildschirmseite ist, wird aufgeteilt.
-9. rksv-Code hat automatische Tests und wird vor dem Start mit dem Prüfwerkzeug des Ministeriums geprüft.
-10. Konfiguration und Geheimnisse liegen an einem Ort, nicht im Code.
+1. One small database layer. Every query with parameters, every query runs exactly once.
+2. A screen loads with one or two queries, never one query per line.
+3. No timers that keep asking. The server sends events (a new print job, a changed table) to the screens.
+4. Printing is a small service of its own with a queue, retries and a log. Screens never talk to printers directly.
+5. One code base for the POS PC and the waiter phones (a web app).
+6. Money calculation with Dinero.js 2, storage in whole cents. Text only for the output. Dates are real date values.
+7. Every error is logged with time, station and user. No empty error handlers.
+8. Screens stay small. A function longer than one screen page is split.
+9. rksv code has automatic tests and is checked with the ministry's tool before the start.
+10. Configuration and secrets lie in one place, not in the code.
