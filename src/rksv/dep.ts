@@ -10,6 +10,7 @@
  */
 
 import type { DatabaseSync } from "node:sqlite";
+import { fdatasync } from "node:fs";
 
 /**
  * One receipt in the DEP.
@@ -73,4 +74,17 @@ export function depLast(database: DatabaseSync): DepEntry | null {
     if (row === undefined)
         return null;
     return {number: row.number, jws: row.jws, state: row.state };
+}
+
+/**
+ * Reads all receipt of the DEP in their order.
+ *
+ * @param database - Open database
+ * @returns Every JWS, oldest first
+ */
+export function depRead(database: DatabaseSync): string[] {
+    const rows = database
+        .prepare("SELECT jws FROM dep ORDER BY number ASC")
+        .all() as { jws: string; }[];
+    return rows.map((row: { jws: string; }): string => row.jws);
 }

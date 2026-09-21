@@ -7,7 +7,7 @@
 import { beforeEach, test } from "node:test";
 import { deepEqual, equal, throws } from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
-import { depAppend, depDatabaseCreate, depLast } from "../src/rksv/dep.ts";
+import { depAppend, depDatabaseCreate, depLast, depRead } from "../src/rksv/dep.ts";
 
 
 let database: DatabaseSync;
@@ -41,4 +41,11 @@ test("receipts in the DEP cannot be changed or deleted", (): void => {
     throws((): void => database.exec("UPDATE dep SET jws = 'other'"), /DEP entries cannot be changed/);
     throws((): void => database.exec("DELETE FROM dep"), /DEP entries cannot be deleted/);
     deepEqual(depLast(database), { number: 1, jws: "jws-1", state: 0 });
+});
+
+test("reading the DEP gives every receipt, oldest first", (): void => {
+    deepEqual(depRead(database), []);
+    depAppend(database, { number: 2, jws: "jws-2", state: 4070 });
+    depAppend(database, { number: 1, jws: "jws-1", state: 0 });
+    deepEqual(depRead(database), ["jws-1", "jws-2"]);
 });
