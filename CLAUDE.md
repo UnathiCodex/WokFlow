@@ -2104,6 +2104,52 @@ Wissen und offene Fragen der rksv-Session (seit 13.09.2026). Fertige Entscheidun
   testen und den Beispielcode prüfen. Zahlart ohne Beleg bestätigen. Vorschlag von Claude: ein zweites
   Lesegerät als Ersatz. Den alten AES-Schlüssel aufbewahren (siehe „Sicherheit“).
 
+### Umsetzung in `src/rksv/` (Stand 22.09.2026)
+
+Gebaut Block für Block: Claude zeigt einen Block und erklärt ihn, der Nutzer tippt den Quellcode selbst, die
+Testdateien schreibt Claude blockweise mit Erklärung dazwischen. Vor jedem Block liest Claude die Datei neu und
+baut auf ihrem Stand auf; gelöschte Kommentare bleiben gelöscht. Nur Node-Bordmittel (`node:crypto`,
+`node:sqlite`, `node:test`), `package.json` bleibt unverändert. Erwartete Werte in den Tests stammen aus
+unabhängigen Programmen (`sha256sum`, `openssl`), nicht aus unserem eigenen Code.
+
+- `qrcode.ts`: `qrcodeCreate(jws)` gibt den QR-Text, also Datenzeile, `_`, Signatur in normalem Base64.
+- `signature.ts`: Typ `Signer` (Bytes rein, 64 Byte raus), `jwsCreate(dataLine, signer)` baut
+  `Kopf.Datenzeile.Signatur`; bei `signer === null` steht „Sicherheitseinrichtung ausgefallen“ an der Stelle der
+  Signatur (§ 17 Abs. 4, Anlage Z 6). `signerKey(key)` signiert mit einem Node-Testschlüssel (ES256,
+  `dsaEncoding: "ieee-p1363"`), nie im Betrieb verwenden.
+- `chaining.ts`: `chainingCreate(previousJws, cashboxId)` gibt die ersten 8 Byte des SHA-256 als Base64, beim
+  Startbeleg über die Kassen-ID.
+- `counter.ts`: `counterAdd(state, total, training)`, `counterEncrypt(state, key, cashboxId, number)` (8 Byte
+  Big-Endian, AES-256-CTR, IV aus den ersten 16 Byte SHA-256 über Kassen-ID und Belegnummer), dazu
+  `counterStorno` (`U1RP`) und `counterTraining` (`VFJB`).
+- `receipt.ts`: Typen `Item`, `TaxAmounts`, `Receipt`; `taxAmountsSum` (nur 20, 10, 13, 0 %, andere Sätze werfen
+  einen Fehler), `taxAmountsNegate` fürs Storno, `amountFormat` (Cent zu `31,80`), `timeFormat`
+  (österreichische Ortszeit über `sv-SE` mit `Europe/Vienna`), `dataLineCreate` baut `_R1-AT1_…`.
+- `dep.ts`: Typ `DepEntry`; `depDatabaseCreate` legt die Datenbanktabelle `dep` an (`number` als PRIMARY KEY,
+  `jws`, `state`, STRICT) samt Triggern, die UPDATE und DELETE ablehnen; dazu `depAppend`, `depLast`, `depRead`.
+- `depExport.ts`: Typ `DepExport`, `depExportCreate(receipts, certificate, authorities)` gibt den JSON-Text nach
+  Anlage Z 3.
+- `cashbox.ts`: Typen `ReceiptKind` (`normal`, `storno`, `training`) und `Cashbox` (Datenbank, Kassen-ID,
+  AES-Schlüssel, Zertifikat-Seriennummer, Signer); `receiptCreate(cashbox, items, kind, time)` erledigt in einer
+  Transaktion (`transaction` aus `src/tables/orderbook.ts`) der Reihe nach: letzten Beleg lesen, Belegnummer,
+  Beträge, Zählerstand, Verkettung, Datenzeile, Signatur, Eintrag ins DEP, und gibt diesen Eintrag zurück.
+  **Die Testdatei dazu fehlt noch.**
+
+Tests grün am 22.09.2026: qrcode 4, signature 5, chaining 3, counter 6, receipt 5, dep 5, depExport 2.
+
+Offen, in dieser Reihenfolge: Test für `cashbox.ts`; erster Lauf des BMF-Prüfwerkzeugs über einen echten Export
+(klärt auch, ob Beträge ab 1.000 € einen Tausenderpunkt brauchen, der Mustercode schreibt `1.234,50`, wir
+`1234,50`); Sonderbelege (Start, Monat, Jahr, Schluss, Sammel); die acht BMF-Testszenarien; `signerCard` für die
+A-Trust-Karte unter Linux (braucht eine Node-Bibliothek für den Kartenleser, also erstmals `package.json`);
+Druck mit QR-Code (der Metapace T-3II kann QR-Codes selbst, ESC/POS); Anbinden an Rechnung und Server. Nebenher:
+Karte und Lesegerät bestellen, Kassen-ID festlegen, AES-Schlüssel erzeugen und sichern, bei FinanzOnline
+anmelden.
+
+Nachtrag zum Prüfwerkzeug: Java ist vorhanden, JDK 17 und 21 liegen unter `C:\Users\Sophale\.jdks`. Das
+Prüfwerkzeug gibt es auch in den GitHub-Releases des BMF-Mustercodes (`regkassen-verification-depformat` und
+`regkassen-verification-receipts`), es braucht eine `cryptographicMaterialContainer.json` mit Zertifikat und
+AES-Schlüssel.
+
 ## Sicherheit
 
 - Im Ordner `TOUCHIT/` stehen Zugangsdaten im Klartext: SQL-Admin-Passwort, rksv-Karten-PIN und
