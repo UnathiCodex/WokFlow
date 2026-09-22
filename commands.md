@@ -42,12 +42,15 @@ npm start
 ### Run with npm
 
 ```bash
+# Build the page into the dist folder, runs vite build from package.json
+npm run build
+
+# Build the page again after each save, runs vite build --watch from package.json
+npm run watch
+
 # Start the server at localhost:3000, runs node src/server/index.ts from package.json
 npm start
 
 # Run all tests from the WokFlow folder, --test: finds test files
 node --test
-
-# Start Vite at localhost:5173, runs vite from package.json
-npm run dev
 ```

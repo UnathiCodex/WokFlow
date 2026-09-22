@@ -89,24 +89,22 @@ button:active {
     border-bottom: 1px solid var(--line);
 }
 
-.header-button {
+.header button {
     display: inline-flex;
     gap: 6px;
     align-items: center;
-    min-height: 44px;
+    min-height: 48px;
     padding: 10px 12px;
     border-radius: 12px;
     background: var(--tonal);
-    color: inherit;
-    text-decoration: none;
     white-space: nowrap;
 }
 
-.header-button:active {
+.header button:active {
     background: var(--pressed);
 }
 
-.header-button [lang] {
+.header [lang] {
     font-size: 14px;
     color: var(--muted);
 }
@@ -120,7 +118,7 @@ button:active {
     border-bottom: 1px solid var(--line);
 }
 
-.tab {
+.tabs button {
     flex: 1;
     min-height: 48px;
     padding: 10px 6px;
@@ -128,11 +126,11 @@ button:active {
     color: var(--muted);
 }
 
-.tab:active {
+.tabs button:active {
     background: var(--pressed);
 }
 
-.tab.selected {
+.tabs button.selected {
     box-shadow: inset 0 -3px var(--accent);
     font-weight: 600;
     color: var(--ink);
@@ -183,7 +181,7 @@ button:active {
     padding: 12px var(--inset);
 }
 
-.table {
+.tables button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -196,15 +194,15 @@ button:active {
     font-weight: 600;
 }
 
-.table:active {
+.tables button:active {
     background: var(--pressed);
 }
 
-.table.occupied {
+.tables button.occupied {
     background: var(--accent-soft);
 }
 
-.table.occupied:active {
+.tables button.occupied:active {
     background: var(--accent-pressed);
 }
 
@@ -213,7 +211,7 @@ button:active {
 
 .tables-indoor {
     --row-gap: 18px;
-    grid-template-columns: repeat(6, minmax(44px, 1fr));
+    grid-template-columns: repeat(6, minmax(48px, 1fr));
     grid-template-rows:
         minmax(60px, 100px) minmax(46px, 78px) minmax(60px, 100px)
         repeat(3, minmax(46px, 78px));
@@ -222,7 +220,7 @@ button:active {
     height: 100%;
 }
 
-.tables-indoor .table {
+.tables-indoor button {
     height: 100%;
 }
 
@@ -235,20 +233,20 @@ button:active {
     row-gap: 10px;
 }
 
-.tables-indoor .table.short {
+.tables-indoor button.short {
     align-self: start;
     height: 80%;
 }
 
 /* Ends on the same line as the pair of tables next to it. */
-.tables-indoor .table.small {
+.tables-indoor button.small {
     align-self: end;
     height: 75%;
-    min-height: 44px;
+    min-height: 48px;
     margin-bottom: var(--row-gap);
 }
 
-.tables-indoor .table.takeaway {
+.tables-indoor button.takeaway {
     place-self: center;
     width: 64%;
     height: 60%;
@@ -265,16 +263,16 @@ button:active {
     height: calc(100% - var(--row-gap));
 }
 
-.table-pair .table {
+.tables .table-pair button {
     height: auto;
 }
 
-.table-pair .table:first-child {
+.tables .table-pair button:first-child {
     border-radius: 12px 12px 0 0;
 }
 
 /* Overlaps the first table by a pixel, so no seam shows between them. */
-.table-pair .table:last-child {
+.tables .table-pair button:last-child {
     margin-top: -1px;
     border-radius: 0 0 12px 12px;
 }
@@ -311,24 +309,24 @@ button:active {
 /* Room and garden */
 
 .tables-room {
-    grid-template-columns: repeat(3, minmax(44px, 1fr));
+    grid-template-columns: repeat(3, minmax(48px, 1fr));
     gap: 10px;
     max-width: 300px;
     margin-inline: auto;
 }
 
-.tables-room .table {
+.tables-room button {
     height: 64px;
 }
 
 /* Two columns, the aisle to the entrance, four columns. */
 .tables-garden {
     grid-template-columns:
-        repeat(2, minmax(44px, 1fr)) minmax(40px, .85fr)
-        repeat(4, minmax(44px, 1fr));
+        repeat(2, minmax(48px, 1fr)) minmax(40px, .85fr)
+        repeat(4, minmax(48px, 1fr));
 }
 
-.tables-garden .table {
+.tables-garden button {
     font-size: 22px;
 }
 

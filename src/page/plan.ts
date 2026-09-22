@@ -28,7 +28,7 @@ async function tablesShow(): Promise<void> {
  * @param tab - Pressed tab
  */
 function areaShow(tab: Element): void {
-    document.querySelectorAll(".tab").forEach((other: Element): void => {
+    document.querySelectorAll(".tabs button").forEach((other: Element): void => {
         other.classList.toggle("selected", other === tab);
     });
     document.querySelectorAll(".area").forEach((area: Element): void => {
@@ -36,12 +36,16 @@ function areaShow(tab: Element): void {
     });
 }
 
+/**
+ * Starts the table plan, after the router has put its html into the page.
+ */
+export function planStart(): void {
+    document.querySelectorAll(".tabs button").forEach((tab: Element): void => {
+        tab.addEventListener("click", (): void => areaShow(tab));
+    });
 
-document.querySelectorAll(".tab").forEach((tab: Element): void => {
-    tab.addEventListener("click", (): void => areaShow(tab));
-});
-
-tablesShow().catch((error: unknown): void => {
-    console.error(error);
-    document.querySelector(".offline")?.removeAttribute("hidden");
-});
+    tablesShow().catch((error: unknown): void => {
+        console.error(error);
+        document.querySelector(".offline")?.removeAttribute("hidden");
+    });
+}
