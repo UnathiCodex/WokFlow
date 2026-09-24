@@ -2,10 +2,8 @@
  * ## Cashbox
  *
  * Creates one receipt, from the ordered items to the entry in the DEP.
- * Everything runs in one transaction, so a receipt is stored completely or not at all.
  */
 
-import { transaction } from "../tables/orderbook.ts";
 import { chainingCreate } from "./chaining.ts";
 import { counterAdd, counterEncrypt, counterStorno, counterTraining } from "./counter.ts";
 import { depAppend, depLast } from "./dep.ts";
@@ -62,33 +60,30 @@ function counterField(cashbox: Cashbox, kind: ReceiptKind, state: number, number
  * @returns The receipt as it was stored in the DEP
  */
 export function receiptCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time: Date): DepEntry {
-    let entry!: DepEntry;
-    transaction(cashbox.database, (): void => {
-        const previousJws: DepEntry | null = depLast(cashbox.database);
-        const number: number = previousJws === null ? 1 : previousJws.number + 1;
-        const summed: TaxAmounts = taxAmountsSum(items);
-        const taxAmounts: TaxAmounts = kind === "storno" ? taxAmountsNegate(summed) : summed;
-        const total: number
-            = taxAmounts.taxNormal
-            + taxAmounts.taxReduced1
-            + taxAmounts.taxReduced2
-            + taxAmounts.taxZero
-            + taxAmounts.taxSpecial;
-        const state: number
-            = counterAdd(previousJws === null ? 0 : previousJws.state, total, kind === "training");
-        const chaining: string = chainingCreate(previousJws === null ? null : previousJws.jws, cashbox.cashboxId);
-        const counter: string = counterField(cashbox, kind, state, number);
-        const dataLine: string = dataLineCreate({
-            cashboxId: cashbox.cashboxId,
-            number,
-            time,
-            taxAmounts,
-            counter,
-            certificateSerial: cashbox.certificateSerial,
-            chaining,
-        });
-        entry = { number, jws: jwsCreate(dataLine, cashbox.signer), state};
-        depAppend(cashbox.database, entry);
+    const previousDepEntry: DepEntry | null = depLast(cashbox.database);
+    const number: number = previousDepEntry === null ? 1 : previousDepEntry.number + 1;
+    const summed: TaxAmounts = taxAmountsSum(items);
+    const taxAmounts: TaxAmounts = kind === "storno" ? taxAmountsNegate(summed) : summed;
+    const total: number
+        = taxAmounts.taxNormal
+        + taxAmounts.taxReduced1
+        + taxAmounts.taxReduced2
+        + taxAmounts.taxZero
+        + taxAmounts.taxSpecial;
+    const state: number
+        = counterAdd(previousDepEntry === null ? 0 : previousDepEntry.state, total, kind === "training");
+    const chaining: string = chainingCreate(previousDepEntry === null ? null : previousDepEntry.jws, cashbox.cashboxId);
+    const counter: string = counterField(cashbox, kind, state, number);
+    const dataLine: string = dataLineCreate({
+        cashboxId: cashbox.cashboxId,
+        number,
+        time,
+        taxAmounts,
+        counter,
+        certificateSerial: cashbox.certificateSerial,
+        chaining,
     });
+    const entry: DepEntry = { number, jws: jwsCreate(dataLine, cashbox.signer), state };
+    depAppend(cashbox.database, entry);
     return entry;
 }

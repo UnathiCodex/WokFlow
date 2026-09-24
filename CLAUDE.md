@@ -1747,7 +1747,7 @@ Knowledge and open questions of the rksv session (since 13.09.2026). Finished de
   and check the example code. Confirm the payment kind without a receipt. Claude's proposal: a second reader as a
   spare. Keep the old AES key (see “Security”).
 
-### Implementation in `src/rksv/` (status 22.09.2026)
+### Implementation in `src/rksv/` (status 23.09.2026)
 
 Built block by block: Claude shows a block and explains it, the RKSV person types the source code, Claude writes the
 test files block by block with an explanation in between. Before every block Claude reads the file again and builds
@@ -1773,33 +1773,46 @@ on its state; deleted comments stay deleted. Only Node built-ins (`node:crypto`,
 - `depExport.ts`: type `DepExport`, `depExportCreate(receipts, certificate, authorities)` returns the JSON text
   according to Anlage Z 3.
 - `cashbox.ts`: types `ReceiptKind` (`normal`, `storno`, `training`) and `Cashbox` (database, cash register ID, AES
-  key, certificate serial number, signer); `receiptCreate(cashbox, items, kind, time)` does in one transaction
-  (`transaction` from `src/tables/orderbook.ts`) in this order: read the last receipt, receipt number, amounts,
-  turnover counter, chaining, data line, signature, entry into the DEP, and returns this entry. **Its test file is
-  still missing.**
+  key, certificate serial number, signer); `receiptCreate(cashbox, items, kind, time)` does in this order: read the
+  last receipt, receipt number, amounts, turnover counter, chaining, data line, signature, entry into the DEP, and
+  returns this entry. No transaction (removed 23.09.2026): the only write is the one `INSERT` of `depAppend`, which
+  stores all or nothing by itself.
 
-Tests green on 22.09.2026: qrcode 4, signature 5, chaining 3, counter 6, receipt 5, dep 5, depExport 2.
+Tests green on 23.09.2026: qrcode 4, signature 5, chaining 3, counter 6, receipt 5, dep 5, depExport 2, cashbox 3.
+The cashbox test signs with 64 zero bytes, so every JWS stays the same and the expected data lines can be computed
+in advance.
 
 **Order of the RKSV person (22.09.2026):** Whoever builds the RKSV works through this list from top to bottom,
 every step builds on the one before (planned since 19.09.2026). It applies only to the RKSV part, not to the module
 order under “Next chat”.
 
-1. Test for `cashbox.ts`.
-2. First run of the BMF checking tool over a real export. It also settles whether amounts from 1,000 € need a
-   thousands separator: the example code writes `1.234,50`, we write `1234,50`.
-3. Special receipts: start, month, year, closing, collective.
-4. The eight BMF test scenarios.
-5. `signerCard` for the A-Trust card under Linux; it needs a Node library for the card reader, so `package.json`
+1. Special receipts: start, month, year, closing, collective.
+2. Go through every file in `src/rksv/` with the RKSV person, one at a time and line by line, then how the files fit
+   together (wish of the RKSV person, 23.09.2026, to understand the whole connection).
+3. The eight BMF test scenarios.
+4. `signerCard` for the A-Trust card under Linux; it needs a Node library for the card reader, so `package.json`
    changes for the first time.
-6. Printing with the QR code; the Metapace T-3II can print QR codes itself (ESC/POS).
-7. Connecting to the bill and the server.
+5. Printing with the QR code; the Metapace T-3II can print QR codes itself (ESC/POS).
+6. Connecting to the bill and the server.
 
-Alongside: order the card and reader soon, so step 5 does not wait; fix the cash register ID; generate and secure
+Alongside: order the card and reader soon, so step 4 does not wait; fix the cash register ID; generate and secure
 the AES key; register with FinanzOnline shortly before the start.
 
-Addendum on the checking tool: Java is available, JDK 17 and 21 are under `C:\Users\Sophale\.jdks`. The checking
-tool is also in the GitHub releases of the BMF example code (`regkassen-verification-depformat` and
-`regkassen-verification-receipts`); it needs a `cryptographicMaterialContainer.json` with certificate and AES key.
+**First run of the BMF checking tool (23.09.2026): everything passed.** Five receipts (start, normal, storno,
+training, one over 1,000 €), signed with a test key, exported with `depExportCreate`.
+
+- `1234,50` is accepted, so amounts need no thousands separator.
+- `_R1-AT1_` is accepted with a self-signed test certificate.
+- Deliberately broken exports turn red: changed amount, swapped or missing receipt, wrong AES key, training
+  counted. A storno with positive amounts stays green; only our storno test catches that.
+
+To repeat it: download `regkassen-verification-1.1.1.zip` from the releases of
+`BMF-RKSV-Technik/at-registrierkassen-mustercode` and run it with Java 17 from `C:\Users\Sophale\.jdks`:
+`java -jar regkassen-verification-depformat-1.1.1.jar -v -f -i dep-export.json -c <container> -o out`.
+The test certificate comes from `openssl req -new -x509 -key key.pem -set_serial 0x1a2b3c4d`; its serial must match
+`certificateSerial` in the data line. Container fields, from the BMF class `CryptographicMaterialContainer`:
+`base64AESKey`, and `certificateOrPublicKeyMap` with the serial as key and `id`, `signatureDeviceType`
+(`CERTIFICATE`), `signatureCertificateOrPublicKey` (certificate as Base64 DER).
 
 ## Security
 
