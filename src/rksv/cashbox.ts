@@ -4,12 +4,12 @@
  * Creates one receipt, from the ordered items to the entry in the DEP.
  */
 
+import { dataLineCreate, taxAmountsNegate, taxAmountsSum, timeFormat } from "./receipt.ts";
+import { Buffer } from "node:buffer";
 import { chainingCreate } from "./chaining.ts";
 import { counterAdd, counterEncrypt, counterStorno, counterTraining } from "./counter.ts";
 import { depAppend, depLast } from "./dep.ts";
-import { dataLineCreate, taxAmountsNegate, taxAmountsSum } from "./receipt.ts";
-import { jwsCreate } from "./signature.ts";
-import type { Buffer } from "node:buffer";
+import { jwsCreate, jwsFailed } from "./signature.ts";
 import type { DatabaseSync } from "node:sqlite";
 import type { DepEntry } from "./dep.ts";
 import type { Item, TaxAmounts } from "./receipt.ts";
@@ -51,6 +51,17 @@ function counterField(cashbox: Cashbox, kind: ReceiptKind, state: number, number
 }
 
 /**
+ * Reads year and month of a receipt from its JWS.
+ *
+ * @param jws - JWS of the receipt
+ * @returns Year and month of the receipt time
+ */
+function monthOf(jws: string): string {
+    const dataLine: string = Buffer.from(jws.split(".")[1], "base64url").toString("utf8");
+    return dataLine.split("_")[4].slice(0, 7);
+}
+
+/**
  * Creates one receipt and stores it in the DEP.
  *
  * @param cashbox - Cash register with database, key, signature device
@@ -59,7 +70,7 @@ function counterField(cashbox: Cashbox, kind: ReceiptKind, state: number, number
  * @param time - Point in time of the receipt
  * @returns The receipt as it was stored in the DEP
  */
-export function receiptCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time: Date): DepEntry {
+function depEntryCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time: Date): DepEntry {
     const previousDepEntry: DepEntry | null = depLast(cashbox.database);
     const number: number = previousDepEntry === null ? 1 : previousDepEntry.number + 1;
     const summed: TaxAmounts = taxAmountsSum(items);
@@ -86,4 +97,29 @@ export function receiptCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind
     const entry: DepEntry = { number, jws: jwsCreate(dataLine, cashbox.signer), state };
     depAppend(cashbox.database, entry);
     return entry;
+}
+
+/**
+ * Creates one receipt and stores it in the DEP.
+ * On an empty DEP, a start receipt over zero comes first.
+ * In a new month, a monthly receipt over zero comes first.
+ * After a failure, a collective receipt over zero comes first, as soon as the signature device works again.
+ *
+ * @param cashbox - Cash register with database, key, signature device
+ * @param items - Ordered items, empty for a receipt over zero
+ * @param kind - Kind of the receipt
+ * @param time - Time of the receipt
+ * @returns The receipt as it was stored in the DEP
+ * @throws {Error} - When the start receipt cannot be signed
+ */
+export function receiptCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time: Date): DepEntry {
+    const previousDepEntry: DepEntry | null = depLast(cashbox.database);
+    if (previousDepEntry === null && cashbox.signer === null)
+        throw new Error("Start receipt needs a working signature device");
+    if (previousDepEntry === null                                             // first receipt
+        || monthOf(previousDepEntry.jws) !== timeFormat(time).slice(0, 7)     // month changed
+        || (jwsFailed(previousDepEntry.jws) && cashbox.signer !== null)) {    // signer failed
+        depEntryCreate(cashbox, [], "normal", time);
+    }
+    return depEntryCreate(cashbox, items, kind, time);
 }

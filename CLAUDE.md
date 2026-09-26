@@ -1747,7 +1747,7 @@ Knowledge and open questions of the rksv session (since 13.09.2026). Finished de
   and check the example code. Confirm the payment kind without a receipt. Claude's proposal: a second reader as a
   spare. Keep the old AES key (see “Security”).
 
-### Implementation in `src/rksv/` (status 23.09.2026)
+### Implementation in `src/rksv/` (status 26.09.2026)
 
 Built block by block: Claude shows a block and explains it, the RKSV person types the source code, Claude writes the
 test files block by block with an explanation in between. Before every block Claude reads the file again and builds
@@ -1758,8 +1758,8 @@ on its state; deleted comments stay deleted. Only Node built-ins (`node:crypto`,
 - `qrcode.ts`: `qrcodeCreate(jws)` returns the QR text, i.e. data line, `_`, signature in normal Base64.
 - `signature.ts`: type `Signer` (bytes in, 64 bytes out), `jwsCreate(dataLine, signer)` builds
   `header.dataline.signature`; with `signer === null` “Sicherheitseinrichtung ausgefallen” takes the place of the
-  signature (§ 17 Abs. 4, Anlage Z 6). `signerKey(key)` signs with a Node test key (ES256,
-  `dsaEncoding: "ieee-p1363"`), never use it in operation.
+  signature (§ 17 Abs. 4, Anlage Z 6), and `jwsFailed(jws)` recognises it again. `signerKey(key)` signs with a Node
+  test key (ES256, `dsaEncoding: "ieee-p1363"`), never use it in operation.
 - `chaining.ts`: `chainingCreate(previousJws, cashboxId)` returns the first 8 bytes of the SHA-256 as Base64, for the
   start receipt over the cash register ID.
 - `counter.ts`: `counterAdd(state, total, training)`, `counterEncrypt(state, key, cashboxId, number)` (8 bytes
@@ -1773,29 +1773,40 @@ on its state; deleted comments stay deleted. Only Node built-ins (`node:crypto`,
 - `depExport.ts`: type `DepExport`, `depExportCreate(receipts, certificate, authorities)` returns the JSON text
   according to Anlage Z 3.
 - `cashbox.ts`: types `ReceiptKind` (`normal`, `storno`, `training`) and `Cashbox` (database, cash register ID, AES
-  key, certificate serial number, signer); `receiptCreate(cashbox, items, kind, time)` does in this order: read the
-  last receipt, receipt number, amounts, turnover counter, chaining, data line, signature, entry into the DEP, and
-  returns this entry. No transaction (removed 23.09.2026): the only write is the one `INSERT` of `depAppend`, which
-  stores all or nothing by itself.
+  key, certificate serial number, signer). `receiptCreate(cashbox, items, kind, time)` first adds one receipt over
+  zero when one is due, then the receipt itself: a start receipt on an empty DEP (throws without a working signature
+  device), a monthly receipt when `monthOf` the last receipt differs from the new month (Vienna time from the data
+  line, so the turn of the year needs nothing extra), a collective receipt when the last receipt failed and the
+  signature device works again. One receipt over zero covers several reasons at once. `depEntryCreate` (not
+  exported) creates exactly one entry: read the last receipt, receipt number, amounts, turnover counter, chaining,
+  data line, signature, entry into the DEP. No transaction (removed 23.09.2026): the only write is the one `INSERT`
+  of `depAppend`, which stores all or nothing by itself.
 
-Tests green on 23.09.2026: qrcode 4, signature 5, chaining 3, counter 6, receipt 5, dep 5, depExport 2, cashbox 3.
+Tests green on 26.09.2026: qrcode 4, signature 5, chaining 3, counter 6, receipt 5, dep 5, depExport 2, cashbox 6.
 The cashbox test signs with 64 zero bytes, so every JWS stays the same and the expected data lines can be computed
 in advance.
+
+**Special receipts (26.09.2026):** all of them are receipts over zero (§ 6 Abs. 1, § 8, § 17 Abs. 4 and 8 RKSV) and
+`receiptCreate` adds them by itself, except the closing receipt: `receiptCreate(cashbox, [], "normal", time)` when
+shutting down, the button comes with the screen. The monthly receipt comes with the first receipt of the next month;
+the BMF FAQ (questions 68 and 69) allows that on the next opening day if it is within about a week. Open: if the
+restaurant is closed longer over a month end, the monthly receipt has to come before, for example at the day
+closing. The December monthly receipt is the yearly receipt: print it, keep it, check it with the BMF Belegcheck app
+by 15 February. The start receipt is checked the same way after the registration in FinanzOnline.
 
 **Order of the RKSV person (22.09.2026):** Whoever builds the RKSV works through this list from top to bottom,
 every step builds on the one before (planned since 19.09.2026). It applies only to the RKSV part, not to the module
 order under “Next chat”.
 
-1. Special receipts: start, month, year, closing, collective.
-2. Go through every file in `src/rksv/` with the RKSV person, one at a time and line by line, then how the files fit
+1. Go through every file in `src/rksv/` with the RKSV person, one at a time and line by line, then how the files fit
    together (wish of the RKSV person, 23.09.2026, to understand the whole connection).
-3. The eight BMF test scenarios.
-4. `signerCard` for the A-Trust card under Linux; it needs a Node library for the card reader, so `package.json`
+2. The eight BMF test scenarios.
+3. `signerCard` for the A-Trust card under Linux; it needs a Node library for the card reader, so `package.json`
    changes for the first time.
-5. Printing with the QR code; the Metapace T-3II can print QR codes itself (ESC/POS).
-6. Connecting to the bill and the server.
+4. Printing with the QR code; the Metapace T-3II can print QR codes itself (ESC/POS).
+5. Connecting to the bill and the server.
 
-Alongside: order the card and reader soon, so step 4 does not wait; fix the cash register ID; generate and secure
+Alongside: order the card and reader soon, so step 3 does not wait; fix the cash register ID; generate and secure
 the AES key; register with FinanzOnline shortly before the start.
 
 **First run of the BMF checking tool (23.09.2026): everything passed.** Five receipts (start, normal, storno,
