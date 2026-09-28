@@ -1,0 +1,50 @@
+/* Indoor plan: six columns, six rows */
+.tables-indoor {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 96px 72px 96px repeat(3, 72px);
+}
+
+/* Table 6 smaller, top flush with 1 to 5 */
+.tables-indoor [data-table="6"] {
+    height: 80%;
+}
+
+/* Table 20 smaller, bottom level with 23 */
+.tables-indoor [data-table="20"] {
+    align-self: end;
+    height: 75%;
+    margin-bottom: 14px;
+}
+
+/* Mitnehmen centred, smaller text */
+.tables-indoor [data-table="M"] {
+    place-self: center;
+    width: 124px;
+    height: 48px;
+    font-size: 16px;
+}
+
+/* Two buttons form one long table */
+.table-pair {
+    display: grid;
+    height: 144px;
+}
+
+/* Upper table rounded on top */
+.table-pair button:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+/* Lower table rounded at bottom */
+.table-pair button:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+/* Logo at bottom right */
+.logo {
+    grid-area: 6 / 3 / 7 / 7;
+    justify-self: end;
+    width: 120px;
+    margin-right: 8px;
+    background: url("../../../assets/asiawok/logo.svg") no-repeat right bottom / contain;
+}
