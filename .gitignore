@@ -3,4 +3,4 @@ node_modules
 wokflow.db
 dist
 tmp
-.claude/settings.local.json
+.claude

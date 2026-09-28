@@ -4,8 +4,8 @@ The new point-of-sale system of the Asia Wok restaurant in Klagenfurt. It replac
 
 ## Router
 
-- Learning chat (he wants to learn or understand): read `tmp/learning.md` only. Never read `project.md`.
-- Building chat (code, specification, restaurant, tax, mails): read `project.md`.
+- Learning chat (he wants to learn or understand): read `tmp/learning.md` only. Never read `tmp/project.md`.
+- Building chat (code, specification, restaurant, tax, mails): read `tmp/project.md`.
 - Unclear which: ask.
 
 ## For every chat
