@@ -46,6 +46,16 @@ export function jwsCreate(dataLine: string, signer: Signer | null): string {
 }
 
 /**
+ * Tells whether a JWS was built while the signature device had failed.
+ *
+ * @param jws - JWS of a receipt
+ * @returns Whether the failure text stands in place of the signature
+ */
+export function jwsFailed(jws: string): boolean {
+    return jws.split(".")[2] === signatureFailed;
+}
+
+/**
  * Creates a signature device that signs with a key of this computer, for development and tests.
  *
  * @param key - Private key on the curve P-256

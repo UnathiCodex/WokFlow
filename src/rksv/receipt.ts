@@ -66,6 +66,23 @@ export function taxAmountsSum(items: Item[]): TaxAmounts {
     return amounts;
 }
 
+
+/**
+ * Turns the amounts of a receipt into negative ones for a storno.
+ *
+ * @param amounts - Gross amounts per tax rate in cents
+ * @returns The same amounts with the opposite sign
+ */
+export function taxAmountsNegate(amounts: TaxAmounts): TaxAmounts {
+    return {
+        taxNormal: -amounts.taxNormal,
+        taxReduced1: -amounts.taxReduced1,
+        taxReduced2: -amounts.taxReduced2,
+        taxZero: -amounts.taxZero,
+        taxSpecial: -amounts.taxSpecial,
+    };
+}
+
 /**
  * Writes an amount in cents as euros.
  *
