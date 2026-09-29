@@ -1773,11 +1773,11 @@ on its state; deleted comments stay deleted. Only Node built-ins (`node:crypto`,
 - `depExport.ts`: type `DepExport`, `depExportCreate(receipts, certificate, authorities)` returns the JSON text
   according to Anlage Z 3.
 - `cashbox.ts`: types `ReceiptKind` (`normal`, `storno`, `training`) and `Cashbox` (database, cash register ID, AES
-  key, certificate serial number, signer). `receiptCreate(cashbox, items, kind, time)` first adds one receipt over
-  zero when one is due, then the receipt itself: a start receipt on an empty DEP (throws without a working signature
+  key, certificate serial number, signer). `receiptCreate(cashbox, items, kind, time)` first adds one zero receipt
+  when one is due, then the receipt itself: a start receipt on an empty DEP (throws without a working signature
   device), a monthly receipt when `monthOf` the last receipt differs from the new month (Vienna time from the data
   line, so the turn of the year needs nothing extra), a collective receipt when the last receipt failed and the
-  signature device works again. One receipt over zero covers several reasons at once. `depEntryCreate` (not
+  signature device works again. One zero receipt covers several reasons at once. `depEntryCreate` (not
   exported) creates exactly one entry: read the last receipt, receipt number, amounts, turnover counter, chaining,
   data line, signature, entry into the DEP. No transaction (removed 23.09.2026): the only write is the one `INSERT`
   of `depAppend`, which stores all or nothing by itself.
@@ -1786,7 +1786,7 @@ Tests green on 26.09.2026: qrcode 4, signature 5, chaining 3, counter 6, receipt
 The cashbox test signs with 64 zero bytes, so every JWS stays the same and the expected data lines can be computed
 in advance.
 
-**Special receipts (26.09.2026):** all of them are receipts over zero (§ 6 Abs. 1, § 8, § 17 Abs. 4 and 8 RKSV) and
+**Special receipts (26.09.2026):** all of them are zero receipts (§ 6 Abs. 1, § 8, § 17 Abs. 4 and 8 RKSV) and
 `receiptCreate` adds them by itself, except the closing receipt: `receiptCreate(cashbox, [], "normal", time)` when
 shutting down, the button comes with the screen. The monthly receipt comes with the first receipt of the next month;
 the BMF FAQ (questions 68 and 69) allows that on the next opening day if it is within about a week. Open: if the
@@ -1808,6 +1808,15 @@ order under “Next chat”.
 
 Alongside: order the card and reader soon, so step 3 does not wait; fix the cash register ID; generate and secure
 the AES key; register with FinanzOnline shortly before the start.
+
+**Walkthrough (step 1), status 28.09.2026, the next chat continues here.** Order agreed with the RKSV person:
+`cashbox.ts` first, because `receiptCreate` calls all the others, then `dep.ts`, `receipt.ts`, `counter.ts`,
+`chaining.ts`, `signature.ts`, last `qrcode.ts` and `depExport.ts`, which nobody calls yet. One part per answer, top
+to bottom through the file, short; imports and similar basics only when asked (RKSV person, 26.09.2026).
+`cashbox.ts` is gone through completely; next: `dep.ts`. **Say “Nullbeleg” in the chat, never “Beleg über null”
+(28.09.2026):** the RKSV person read “über null” as “more than zero” and did not understand the header of
+`cashbox.ts`. Comments name the kinds instead (“If a start, monthly or collective receipt is due, it comes first.”)
+or write “with 0€”; “receipt over zero” is gone from the code.
 
 **First run of the BMF checking tool (23.09.2026): everything passed.** Five receipts (start, normal, storno,
 training, one over 1,000 €), signed with a test key, exported with `depExportCreate`.

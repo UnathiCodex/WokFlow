@@ -10,7 +10,6 @@
  */
 
 import type { DatabaseSync } from "node:sqlite";
-import { fdatasync } from "node:fs";
 
 /**
  * One receipt in the DEP.
@@ -36,11 +35,11 @@ export function depDatabaseCreate(database: DatabaseSync): void {
             number INTEGER PRIMARY KEY,
             jws TEXT NOT NULL,
             state INTEGER NOT NULL
-        ) STRICT;
+            ) STRICT;
 
         CREATE TRIGGER IF NOT EXISTS dep_no_update
             BEFORE UPDATE ON dep
-            BEGIN SELECT RAISE(ABORT, 'DEP entries cannot be changed'); END;
+        BEGIN SELECT RAISE(ABORT, 'DEP entries cannot be changed'); END;
 
         CREATE TRIGGER IF NOT EXISTS dep_no_delete
             BEFORE DELETE ON dep

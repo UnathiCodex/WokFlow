@@ -2,6 +2,7 @@
  * ## Cashbox
  *
  * Creates one receipt, from the ordered items to the entry in the DEP.
+ * If a start, monthly or collective receipt is due, it comes first.
  */
 
 import { dataLineCreate, taxAmountsNegate, taxAmountsSum, timeFormat } from "./receipt.ts";
@@ -28,8 +29,8 @@ export type ReceiptKind = "normal" | "storno" | "training";
  * - `signer`: Signature device, null when it has failed.
  */
 export type Cashbox = {
-    database: DatabaseSync;
-    cashboxId: string;
+    database: DatabaseSync;    // open database with the table dep
+    cashboxId: string;         // cash register ID
     key: Buffer;
     certificateSerial: string;
     signer: Signer | null;
@@ -65,7 +66,7 @@ function monthOf(jws: string): string {
  * Creates one receipt and stores it in the DEP.
  *
  * @param cashbox - Cash register with database, key, signature device
- * @param items - Ordered items, empty for a receipt over zero
+ * @param items - Ordered items, empty for a receipt with 0€
  * @param kind - Kind of the receipt
  * @param time - Point in time of the receipt
  * @returns The receipt as it was stored in the DEP
@@ -83,7 +84,8 @@ function depEntryCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time
         + taxAmounts.taxSpecial;
     const state: number
         = counterAdd(previousDepEntry === null ? 0 : previousDepEntry.state, total, kind === "training");
-    const chaining: string = chainingCreate(previousDepEntry === null ? null : previousDepEntry.jws, cashbox.cashboxId);
+    const chaining: string
+        = chainingCreate(previousDepEntry === null ? null : previousDepEntry.jws, cashbox.cashboxId);
     const counter: string = counterField(cashbox, kind, state, number);
     const dataLine: string = dataLineCreate({
         cashboxId: cashbox.cashboxId,
@@ -101,12 +103,12 @@ function depEntryCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time
 
 /**
  * Creates one receipt and stores it in the DEP.
- * On an empty DEP, a start receipt over zero comes first.
- * In a new month, a monthly receipt over zero comes first.
- * After a failure, a collective receipt over zero comes first, as soon as the signature device works again.
+ * On an empty DEP, a start receipt comes first.
+ * In a new month, a monthly receipt comes first.
+ * After a failure, a collective receipt comes first, as soon as the signature device works again.
  *
  * @param cashbox - Cash register with database, key, signature device
- * @param items - Ordered items, empty for a receipt over zero
+ * @param items - Ordered items, empty for a receipt with 0€
  * @param kind - Kind of the receipt
  * @param time - Time of the receipt
  * @returns The receipt as it was stored in the DEP
@@ -115,7 +117,7 @@ function depEntryCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time
 export function receiptCreate(cashbox: Cashbox, items: Item[], kind: ReceiptKind, time: Date): DepEntry {
     const previousDepEntry: DepEntry | null = depLast(cashbox.database);
     if (previousDepEntry === null && cashbox.signer === null)
-        throw new Error("Start receipt needs a working signature device");
+        throw new Error("Start receipt needs a working signature device");    // only for first receipt
     if (previousDepEntry === null                                             // first receipt
         || monthOf(previousDepEntry.jws) !== timeFormat(time).slice(0, 7)     // month changed
         || (jwsFailed(previousDepEntry.jws) && cashbox.signer !== null)) {    // signer failed
