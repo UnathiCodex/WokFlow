@@ -1,0 +1,41 @@
+/* Headings Raum and Garten, small and grey */
+.area h2 {
+    margin: 0;
+    padding: 10px var(--inset-side) 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+/* Room: three columns, centred */
+.tables-room {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 292px;
+    margin-inline: auto;
+}
+
+/* Room tables 64 px high */
+.tables-room button {
+    height: 64px;
+}
+
+/* Garden: two columns, aisle, four columns */
+.tables-garden {
+    grid-template-columns: repeat(2, 1fr) 16px repeat(4, 1fr);
+}
+
+/* Garden tables taller, numbers smaller */
+.tables-garden button {
+    position: relative;
+    height: 72px;
+    font-size: 20px;
+}
+
+/* Small G in corner keeps number readable */
+.table-prefix {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    font-size: 12px;
+    line-height: 1;
+}

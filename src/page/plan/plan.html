@@ -1,0 +1,80 @@
+<!-- Tabs switch between area indoor and garden -->
+<nav class="tabs">
+    <button class="selected" data-area="indoor">Innen</button>
+    <button data-area="garden">Garten</button>
+</nav>
+
+<!-- Information shown when connection to server is gone -->
+<p class="offline" hidden>Keine Verbindung <span lang="zh-Hans">无连接</span></p>
+
+<!-- Plan of indoor area if corresponding tab selected -->
+<div class="area" id="indoor">
+    <div class="tables tables-indoor">
+        <button data-table="1" style="grid-area: 1 / 1">1</button>
+        <button data-table="2" style="grid-area: 1 / 2">2</button>
+        <button data-table="3" style="grid-area: 1 / 3">3</button>
+        <button data-table="4" style="grid-area: 1 / 4">4</button>
+        <button data-table="5" style="grid-area: 1 / 5">5</button>
+        <button data-table="6" style="grid-area: 1 / 6">6</button>
+
+        <button data-table="11" style="grid-area: 2 / 1">11</button>
+        <button data-table="10" style="grid-area: 2 / 2">10</button>
+        <button data-table="9" style="grid-area: 2 / 3">9</button>
+        <button data-table="8" style="grid-area: 2 / 5">8</button>
+        <button data-table="7" style="grid-area: 2 / 6">7</button>
+
+        <button data-table="12" style="grid-area: 3 / 1">12</button>
+        <button data-table="13" style="grid-area: 3 / 2">13</button>
+        <button data-table="14" style="grid-area: 3 / 3">14</button>
+        <button data-table="15" style="grid-area: 3 / 5">15</button>
+        <button data-table="16" style="grid-area: 3 / 6">16</button>
+
+        <button data-table="21" style="grid-area: 4 / 1">21</button>
+        <button data-table="22" style="grid-area: 4 / 2">22</button>
+        <div class="table-pair" style="grid-area: 4 / 5 / 6 / 6">
+            <button data-table="19">19</button>
+            <button data-table="18">18</button>
+        </div>
+        <button data-table="17" style="grid-area: 4 / 6">17</button>
+
+        <div class="table-pair" style="grid-area: 5 / 1 / 7 / 2">
+            <button data-table="24">24</button>
+            <button data-table="23">23</button>
+        </div>
+        <button data-table="M" style="grid-area: 5 / 2 / 6 / 5">Mitnehmen</button>
+        <button data-table="20" style="grid-area: 6 / 2">20</button>
+        <div class="logo"></div>
+    </div>
+</div>
+
+<!-- Plan of garden area if corresponding tab selected -->
+<div class="area" id="garden" hidden>
+    <h2>Raum</h2>
+    <div class="tables tables-room">
+        <button data-table="33">33</button>
+        <button data-table="34">34</button>
+        <button data-table="30">30</button>
+        <button data-table="32">32</button>
+        <button data-table="31">31</button>
+        <button data-table="35">35</button>
+    </div>
+
+    <h2>Garten</h2>
+    <div class="tables tables-garden">
+        <button data-table="G12" style="grid-area: 1 / 1"><span class="table-prefix">G</span>12</button>
+        <button data-table="G11" style="grid-area: 1 / 2"><span class="table-prefix">G</span>11</button>
+        <button data-table="G1" style="grid-area: 1 / 4"><span class="table-prefix">G</span>1</button>
+        <button data-table="G2" style="grid-area: 1 / 5"><span class="table-prefix">G</span>2</button>
+        <button data-table="G3" style="grid-area: 1 / 6"><span class="table-prefix">G</span>3</button>
+        <button data-table="G4" style="grid-area: 1 / 7"><span class="table-prefix">G</span>4</button>
+        <button data-table="G15" style="grid-area: 2 / 1"><span class="table-prefix">G</span>15</button>
+        <button data-table="G16" style="grid-area: 2 / 2"><span class="table-prefix">G</span>16</button>
+        <button data-table="G9" style="grid-area: 2 / 5"><span class="table-prefix">G</span>9</button>
+        <button data-table="G8" style="grid-area: 2 / 6"><span class="table-prefix">G</span>8</button>
+    </div>
+</div>
+
+<!-- Bar for restaurant reservation panel -->
+<button class="reservations-bar">
+    <span class="reservations-label">Reservierungen <span lang="zh-Hans">预订</span></span>
+</button>

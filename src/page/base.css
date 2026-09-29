@@ -1,0 +1,65 @@
+/* Colours and side space, use with var(--name) */
+html {
+    --background: #ffffff;
+    --text-main: #000000;
+    --text-muted: #606060;
+    --button-line: #ebebeb;
+    --accent-logo: #ae1f2e;
+    --accent-soft: #ebc7cb;
+    --inset-side: 16px;
+}
+
+/* Hyperreadable, normal weight */
+@font-face {
+    font-family: Hyperreadable;
+    src: url("../../assets/fonts/Hyperreadable-Regular.ttf");
+    font-weight: 400;
+    font-display: swap;
+}
+
+/* Hyperreadable, bold weight */
+@font-face {
+    font-family: Hyperreadable;
+    src: url("../../assets/fonts/Hyperreadable-SemiBold.ttf");
+    font-weight: 600;
+    font-display: swap;
+}
+
+/* Sizes include padding and border */
+* {
+    box-sizing: border-box;
+}
+
+/* Whole page: tabs, area, strip from top to bottom */
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    margin: 0 auto;
+    font-family: Hyperreadable, sans-serif;
+    line-height: 1.5;
+    background: var(--background);
+    color: var(--text-main);
+    touch-action: pan-y pinch-zoom;
+}
+
+/* For device mit mouse: Fixed developing phone size */
+@media (pointer: fine) {
+    body {
+        width: 360px;
+        height: 740px;
+    }
+}
+
+/* Chinese beside German is grey */
+[lang="zh-Hans"] {
+    color: var(--text-muted);
+}
+
+/* Button: grey, no frame, no browser highlighter, page font */
+button {
+    border: 0;
+    background: var(--button-line);
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
