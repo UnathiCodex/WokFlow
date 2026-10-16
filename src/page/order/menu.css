@@ -1,0 +1,135 @@
+/* Row of the group list and heading row: white, thin grey line below, content left */
+.menu-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 52px;
+    padding: 0 var(--inset-side);
+    border-bottom: 1px solid var(--button-line);
+    background: none;
+    font-size: 18px;
+    text-align: left;
+}
+
+/* Group picture, about 32 px */
+.menu-picture {
+    width: 32px;
+    height: 32px;
+}
+
+/* German and Chinese name side by side on one line, gap keeps them apart */
+.menu-names {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    white-space: nowrap;
+}
+
+/* Counter field keeps its size at quantity 0, so nothing shifts when it fills */
+.menu-count {
+    min-width: 24px;
+    min-height: 24px;
+    text-align: right;
+    font-weight: 600;
+}
+
+/* Arrow to the right at the end of a group row */
+.menu-group::after {
+    content: "";
+    width: 11px;
+    height: 11px;
+    margin-right: 4px;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg);
+}
+
+/* Arrow to the left, back to the group list */
+.menu-back::before {
+    content: "";
+    width: 11px;
+    height: 11px;
+    margin-left: 4px;
+    border-bottom: 2px solid currentColor;
+    border-left: 2px solid currentColor;
+    transform: rotate(45deg);
+}
+
+/* Bar of an open drinks group stays at the top while the articles scroll */
+.menu-bar {
+    display: flex;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid var(--button-line);
+    background: var(--background);
+}
+
+/* Bar buttons equally wide, picture or arrow in the middle, no fill */
+.menu-pick {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    background: none;
+}
+
+/* Open group in the bar: red underline like a selected tab */
+.menu-pick.selected {
+    box-shadow: inset 0 -3px var(--accent-logo);
+}
+
+/* Articles as tiles in two columns */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 12px var(--inset-side);
+}
+
+/* Article name over its variant tiles, across both columns */
+.menu-heading {
+    grid-column: 1 / -1;
+    margin: 6px 0 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Tile: grey, rounded, German name on top, Chinese name and counter below */
+.menu-tile {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 16px;
+    text-align: left;
+}
+
+/* German name over both columns, on one line */
+.menu-german {
+    grid-column: 1 / -1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Chinese name smaller, on one line */
+.menu-tile .menu-chinese {
+    overflow: hidden;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Booked tile flashes soft red and fades back to grey in 150 ms */
+.menu-tile.booked {
+    animation: menu-flash 150ms;
+}
+
+/* Flash starts soft red and ends at the colour the tile has */
+@keyframes menu-flash {
+    from {
+        background: var(--accent-soft);
+    }
+}

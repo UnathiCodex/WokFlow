@@ -63,3 +63,31 @@ button {
     font: inherit;
     -webkit-tap-highlight-color: transparent;
 }
+
+/* Tabs side by side, thin grey line below */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--button-line);
+}
+
+/* Tabs equally wide, grey text, no fill */
+.tabs button {
+    flex: 1;
+    min-height: 48px;
+    background: none;
+    color: var(--text-muted);
+}
+
+/* Selected tab: red underline, bold, black */
+.tabs button.selected {
+    box-shadow: inset 0 -3px var(--accent-logo);
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* Hint line below the tabs, like a missing connection */
+.hint {
+    margin: 0;
+    padding: 10px var(--inset-side);
+    font-size: 20px;
+}

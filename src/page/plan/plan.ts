@@ -1,6 +1,24 @@
 /**
  * ## Table plan
  *
+ * Shows occupied tables, switches areas, opens tables.
+ *
+ * - `../lock.ts`: Holds a table open on this device only.
+ * - `../offline.ts`: Shows hint in place of screen, when connection to server is gone.
+ * - `../swipe.ts`: Switches tabs on horizontal swipes.
+ */
+
+import { lockSend } from "../lock.ts";
+import { offlineShow } from "../offline.ts";
+import { swipeStart } from "../swipe.ts";
+
+
+/**
+ * Area shown when table plan opens again, `indoor` or `garden`.
+ */
+let areaOpen: string = "indoor";
+
+/**
  * Shows occupied tables reported by server.
  *
  * - {@link fetch}: Sends an HTTP request.
@@ -28,65 +46,49 @@ async function tablesShow(): Promise<void> {
  * @param tab - Pressed tab
  */
 function areaShow(tab: Element): void {
+    areaOpen = tab.getAttribute("data-area") ?? "indoor";
     document.querySelectorAll(".tabs button").forEach((other: Element): void => {
         other.classList.toggle("selected", other === tab);
     });
     document.querySelectorAll(".area").forEach((area: Element): void => {
-        area.toggleAttribute("hidden", area.id !== tab.getAttribute("data-area"));
+        area.toggleAttribute("hidden", area.id !== areaOpen);
     });
 }
 
 /**
- * Switches areas on horizontal swipes, suppressing their following click.
+ * Opens a table when this device gets its table-lock,
+ * else shows that the table is open on another device.
+ *
+ * @param tableId - Table identifier
+ * @param orderOpen - Opens order screen of a table
+ * @throws {Error} - When server gives no valid answer
  */
-function areaSwipeStart(): void {
-    let start: { x: number; y: number; } | null = null;
-    let suppressClick: boolean = false;
-
-    document.body.addEventListener("pointerdown", (event: PointerEvent): void => {
-        start = null;
-        suppressClick = false;
-        if (event.isPrimary && event.button === 0 && (event.target as Element).closest(".tabs, .area")) {
-            start = { x: event.clientX, y: event.clientY };
-        }
-    });
-
-    document.body.addEventListener("pointercancel", (): void => { start = null; });
-
-    document.body.addEventListener("pointerup", (event: PointerEvent): void => {
-        if (start === null) return;
-        const x: number = event.clientX - start.x;
-        const y: number = event.clientY - start.y;
-        start = null;
-        if (Math.abs(x) < 48 || Math.abs(x) < Math.abs(y) * 1.5) return;
-
-        suppressClick = true;
-        const tab: Element | null = document.querySelector(".tabs .selected");
-        const next: Element | null = (x < 0 ? tab?.nextElementSibling : tab?.previousElementSibling) ?? null;
-        if (next !== null) areaShow(next);
-    });
-
-    document.body.addEventListener("click", (event: MouseEvent): void => {
-        if (suppressClick && event.detail !== 0) {
-            suppressClick = false;
-            event.preventDefault();
-            event.stopImmediatePropagation();
-        }
-    }, true);
+async function tableOpen(tableId: string, orderOpen: (tableId: string) => void): Promise<void> {
+    if (await lockSend("POST", tableId))
+        orderOpen(tableId);
+    else
+        document.querySelector(".busy")?.removeAttribute("hidden");
 }
 
 /**
  * Starts table plan after router has put its HTML into page.
+ * Shows the area that was open last time.
+ *
+ * @param orderOpen - Opens order screen of a table
  */
-export function planStart(): void {
+export function planStart(orderOpen: (tableId: string) => void): void {
     document.querySelectorAll(".tabs button").forEach((tab: Element): void => {
         tab.addEventListener("click", (): void => areaShow(tab));
+        if (tab.getAttribute("data-area") === areaOpen) areaShow(tab);
     });
 
-    areaSwipeStart();
-    tablesShow().catch((error: unknown): void => {
-        console.error(error);
-        document.querySelectorAll("body > :not(.offline)").forEach((block: Element): void => block.remove());
-        document.querySelector(".offline")?.removeAttribute("hidden");
+    document.querySelectorAll("[data-table]").forEach((table: Element): void => {
+        const tableId: string = table.getAttribute("data-table") ?? "";
+        table.addEventListener("click", (): void => {
+            tableOpen(tableId, orderOpen).catch(offlineShow);
+        });
     });
+
+    swipeStart(".tabs, .area", areaShow);
+    tablesShow().catch(offlineShow);
 }

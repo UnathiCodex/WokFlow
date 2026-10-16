@@ -1,0 +1,41 @@
+/* Header: table number in first quarter, tabs share the rest */
+.order-header {
+    display: flex;
+}
+
+/* Table number: grey button, big bold number */
+.table-number {
+    flex: 1;
+    margin: 2px 6px 2px var(--inset-side);
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* Three tabs take three quarters */
+.order-header .tabs {
+    flex: 3;
+}
+
+/* Drinks tab shows cup */
+.tabs [data-view="drinks"] {
+    background: url("../../../assets/pictograms/cup.svg") no-repeat center / 28px;
+}
+
+/* Ordered tab shows clipboard */
+.tabs [data-view="ordered"] {
+    background: url("../../../assets/pictograms/clipboard.svg") no-repeat center / 28px;
+}
+
+/* Food tab shows cutlery */
+.tabs [data-view="food"] {
+    background: url("../../../assets/pictograms/cutlery.svg") no-repeat center / 28px;
+}
+
+/* Views fill middle and scroll without scrollbar */
+.view {
+    flex: 1;
+    overflow-y: auto;
+    touch-action: pan-y pinch-zoom;
+    scrollbar-width: none;
+}

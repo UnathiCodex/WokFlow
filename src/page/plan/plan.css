@@ -1,31 +1,3 @@
-/* Tabs Innen and Garten side by side */
-.tabs {
-    display: flex;
-    border-bottom: 1px solid var(--button-line);
-}
-
-/* Tabs equally wide, grey text, no fill */
-.tabs button {
-    flex: 1;
-    min-height: 48px;
-    background: none;
-    color: var(--text-muted);
-}
-
-/* Selected tab: red underline, bold, black */
-.tabs button.selected {
-    box-shadow: inset 0 -3px var(--accent-logo);
-    font-weight: 600;
-    color: var(--text-main);
-}
-
-/* Hint when server gives no answer */
-.offline {
-    margin: 0;
-    padding: 10px var(--inset-side);
-    font-size: 20px;
-}
-
 /* Fills middle, cut-off row replaces scrollbar */
 .area {
     flex: 1;

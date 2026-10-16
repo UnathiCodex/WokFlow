@@ -1,0 +1,24 @@
+<!-- Header: table number leads back to plan, tabs switch between drinks, ordered, food -->
+<header class="order-header">
+    <button class="table-number"></button>
+    <nav class="tabs">
+        <button class="selected" data-view="drinks" aria-label="Getränke 饮料"></button>
+        <button data-view="ordered" aria-label="Bestellt 已点"></button>
+        <button data-view="food" aria-label="Essen 食物"></button>
+    </nav>
+</header>
+
+<!-- Drinks menu if corresponding tab selected -->
+<div class="view" id="drinks"></div>
+
+<!-- Open orders of table, oldest first, if corresponding tab selected -->
+<ul class="view ordered" id="ordered" hidden></ul>
+
+<!-- Undo bar for the newest minus, shown with the ordered tab once something was removed -->
+<div class="undo-bar" hidden>
+    <span class="undo-name"></span>
+    <button class="undo">Rückgängig <span lang="zh-Hans">撤销</span></button>
+</div>
+
+<!-- Food menu if corresponding tab selected -->
+<div class="view" id="food" hidden></div>
