@@ -6,7 +6,7 @@
  * - `vite/client`: Vite types for type checker only with `?raw`.
  * - `./plan/plan.html?raw`: Html as text, packed into built code by Vite.
  * - `./order/order.html?raw`: Html as text, packed into built code by Vite.
- * - `./plan/plan.ts`: Shows occupied tables, switches areas, opens tables.
+ * - `./plan/plan.ts`: Shows occupied tables, switches areas, opens tables, moves a table.
  * - `./order/order.ts`: Shows open orders of a table.
  */
 
@@ -33,7 +33,18 @@ function screenPut(html: string): void {
  */
 function planOpen(): void {
     screenPut(planHtml);
-    planStart(orderOpen);
+    planStart(orderOpen, planOpen, null);
+}
+
+/**
+ * Opens table plan in move mode, where a tap on a target table moves the table there.
+ * Not called yet, the order screen has no move button so far.
+ *
+ * @param tableId - Identifier of the table to move
+ */
+function moveOpen(tableId: string): void {
+    screenPut(planHtml);
+    planStart(orderOpen, planOpen, tableId);
 }
 
 /**

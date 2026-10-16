@@ -78,3 +78,18 @@
 <button class="reservations-bar">
     <span class="reservations-label">Reservierungen <span lang="zh-Hans">预订</span></span>
 </button>
+
+<!-- Strip in place of the reservations bar while a table is moved, with its way back -->
+<div class="move-bar">
+    <span><span class="move-source"></span> schieben <span lang="zh-Hans">移动</span></span>
+    <button class="move-cancel">Abbrechen <span lang="zh-Hans">取消</span></button>
+</div>
+
+<!-- Confirmation after a tap on a target table while a table is moved -->
+<dialog class="move-dialog">
+    <form method="dialog">
+        <p class="move-question"></p>
+        <button class="move-confirm"></button>
+        <button>Abbrechen <span lang="zh-Hans">取消</span></button>
+    </form>
+</dialog>

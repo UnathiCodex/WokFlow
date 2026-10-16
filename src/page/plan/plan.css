@@ -52,3 +52,47 @@
     border-right: 2px solid currentColor;
     transform: translateY(3px) rotate(-45deg);
 }
+
+/* Table being moved: dashed frame, no fill */
+.tables button.moving {
+    border: 2px dashed var(--text-muted);
+    background: none;
+}
+
+/* Move strip: label left, cancel button right, thin line above */
+.move-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 64px;
+    padding: 0 var(--inset-side);
+    border-top: 1px solid var(--button-line);
+    font-size: 18px;
+}
+
+/* Cancel and dialog buttons: rounded, 48 px high */
+.move-cancel, .move-dialog button {
+    min-height: 48px;
+    padding: 0 var(--inset-side);
+    border-radius: 12px;
+}
+
+/* Confirmation: white card, rounded, no frame */
+.move-dialog {
+    width: 320px;
+    padding: 20px var(--inset-side);
+    border: 0;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+/* Question above the buttons, which are stacked */
+.move-dialog form {
+    display: grid;
+    gap: 12px;
+}
+
+/* Question without browser margin */
+.move-question {
+    margin: 0 0 4px;
+}
