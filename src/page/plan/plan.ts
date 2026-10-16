@@ -39,9 +39,10 @@ async function tablesShow(): Promise<void> {
 }
 
 /**
- * Shows selected area and hides other area.
+ * Shows selected area, hides other area and the `busy` hint.
  * - {@link Element#toggleAttribute}: Adds attribute when condition
  *   is true, else removes it.
+ * - {@link Element#setAttribute}: Adds attribute `hidden`.
  *
  * @param tab - Pressed tab
  */
@@ -53,17 +54,22 @@ function areaShow(tab: Element): void {
     document.querySelectorAll(".area").forEach((area: Element): void => {
         area.toggleAttribute("hidden", area.id !== areaOpen);
     });
+    document.querySelector(".busy")?.setAttribute("hidden", "");
 }
 
 /**
  * Opens a table when this device gets its table-lock,
  * else shows that the table is open on another device.
+ * Hides the busy hint before each lock request.
+ * - {@link Element#setAttribute}: Adds attribute `hidden`.
+ * - {@link Element#removeAttribute}: Removes attribute `hidden`.
  *
  * @param tableId - Table identifier
  * @param orderOpen - Opens order screen of a table
  * @throws {Error} - When server gives no valid answer
  */
 async function tableOpen(tableId: string, orderOpen: (tableId: string) => void): Promise<void> {
+    document.querySelector(".busy")?.setAttribute("hidden", "");
     if (await lockSend("POST", tableId))
         orderOpen(tableId);
     else

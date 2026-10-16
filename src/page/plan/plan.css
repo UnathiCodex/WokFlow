@@ -59,6 +59,11 @@
     background: none;
 }
 
+/* Tables not tappable in move mode keep readable grey text */
+.tables button:disabled {
+    color: var(--text-muted);
+}
+
 /* Move strip: label left, cancel button right, thin line above */
 .move-bar {
     display: flex;
