@@ -1,7 +1,8 @@
 /**
  * ## Menu test
  *
- * Checks the prices and tax rates that {@link entryOf} finds in the {@link menu}.
+ * Checks the prices and tax rates that {@link entryOf} finds in the {@link menu},
+ * and that no two variants share a name.
  *
  * - `node:test`: Runs tests and reports the results.
  * - `node:assert/strict`: Compares values exactly including types.
@@ -30,6 +31,21 @@ test(
                 });
             });
         });
+    }
+);
+
+test(
+    "No two variants share the same name",
+    (): void => {
+        const names: string[] = [];
+        Object.values(menu).forEach((category: Category): void => {
+            Object.values(category.groups).flat().forEach((article: Article): void => {
+                article.variants.forEach((variant: Variant): void => {
+                    names.push(`${article.name.de} ${variant.name?.de}`);
+                });
+            });
+        });
+        equal(new Set(names).size, names.length);
     }
 );
 
