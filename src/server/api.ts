@@ -80,6 +80,8 @@ function responseSend(response: ServerResponse, status: number, body: unknown): 
  * - `POST /tables/:table/orders`: Adds/removes orders of table.
  * - `POST /tables/:table/lock`: Locks table for device in body.
  * - `DELETE /tables/:table/lock`: Unlocks table for device in body.
+ * - `POST /tables/:table/move`: Moves table to table in body.
+ * - `POST /tables/:table/pay`: Pays orders of table in body.
  *
  * A HTTP-request example as the phone sends with headers:
  *
@@ -98,8 +100,8 @@ async function requestHandle(database: DatabaseSync, request: IncomingMessage,
                              response: ServerResponse): Promise<void> {
 
     const path: string = request.url ?? ""; // Path of url, without protocol, host, port.
-    const pathMatch: RegExpMatchArray | null = // Path /tables/:table/orders|lock
-        path.match(new RegExp("^/tables/([A-Z0-9]+)/(orders|lock)$"));
+    const pathMatch: RegExpMatchArray | null = // Path /tables/:table/orders|lock|move|pay
+        path.match(new RegExp("^/tables/([A-Z0-9]+)/(orders|lock|move|pay)$"));
 
     const tableId: string = pathMatch?.[1] ?? "";
     const tableResource: string = pathMatch?.[2] ?? "";
@@ -122,6 +124,14 @@ async function requestHandle(database: DatabaseSync, request: IncomingMessage,
 
     } else if (request.method === "DELETE" && tableResource === "lock") {
         tableUnlock(tableId, await json(request) as string);
+        responseSend(response, 200, null);
+
+    } else if (request.method === "POST" && tableResource === "move") {
+        orders.tableMove(database, tableId, await json(request) as string);
+        responseSend(response, 200, null);
+
+    } else if (request.method === "POST" && tableResource === "pay") {
+        orders.ordersPay(database, tableId, await json(request) as orders.OrderNew[]);
         responseSend(response, 200, null);
 
     } else {

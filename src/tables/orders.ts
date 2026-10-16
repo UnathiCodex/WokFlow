@@ -188,3 +188,65 @@ export function tableClose(database: DatabaseSync, tableId: string): void {
         throw new Error(`No open orders`);
 }
 
+/**
+ * Pays a part of a table by marking portions of its open {@link Order}s as closed.
+ * Takes the oldest portions of a variant first, so the receipt follows the booking.
+ * All portions of one payment get the same `closed` time.
+ * Pays all of it or nothing in one {@link transaction}.
+ * An empty list pays nothing, the whole table is paid with {@link tableClose}.
+ *
+ * @param database - Open database
+ * @param tableId - Table identifier
+ * @param ordersPaid - Variants with the quantity to pay
+ * @throws {Error} - When the table has too few open portions to pay
+ */
+export function ordersPay(database: DatabaseSync, tableId: string, ordersPaid: OrderNew[]): void {
+    const closed: string = new Date().toISOString();
+    transaction(database, (): void => {
+        ordersPaid.forEach((order: OrderNew): void => {
+            const paid: StatementResultingChanges = database.prepare(`
+                UPDATE orders
+                SET closed = ?
+                WHERE id IN (SELECT id
+                             FROM orders
+                             WHERE table_id = ?
+                               AND closed IS NULL
+                               AND article_id = ?
+                               AND variant_id IS ?
+                             ORDER BY id
+                             LIMIT ?)
+            `).run(closed, tableId, order.articleId, order.variantId, order.quantity);
+
+            if (paid.changes !== order.quantity)
+                throw new Error(`Not enough ${order.articleId} to pay ${order.quantity}`);
+        });
+    });
+}
+
+/**
+ * Moves a table by giving its open {@link Order}s to another table.
+ * An occupied target is joined, as {@link ordersRead} groups equal variants.
+ * Mitnehmen (`M`) can be moved from, never to.
+ * One statement is a transaction on its own.
+ *
+ * @param database - Open database
+ * @param tableId - Table identifier
+ * @param targetId - Identifier of the table to move to
+ * @throws {Error} - When the target is Mitnehmen or the table has no open orders
+ */
+export function tableMove(database: DatabaseSync, tableId: string, targetId: string): void {
+    if (targetId === "M")
+        throw new Error(`Mitnehmen is never a target`);
+
+    const moved: StatementResultingChanges = database
+        .prepare(`
+            UPDATE orders
+            SET table_id = ?
+            WHERE table_id = ?
+              AND closed IS NULL
+        `).run(targetId, tableId);
+
+    if (moved.changes === 0)
+        throw new Error(`No open orders`);
+}
+

@@ -86,3 +86,63 @@ test(
         deepEqual(orders.ordersRead(database, "14"), [colaBig1]);
     }
 );
+
+test(
+    "A part of a table is paid and the rest stays open",
+    (): void => {
+        orders.ordersUpdate(database, "14", { add: [colaBig1, colaSmall1, redBull1], remove: [] });
+        orders.ordersUpdate(database, "14", { add: [colaBig2], remove: [] });
+
+        orders.ordersPay(database, "14", [colaBig1, redBull1]);
+        deepEqual(orders.ordersRead(database, "14"), [colaSmall1, colaBig2]);
+        deepEqual(orders.tablesRead(database), ["14"]);
+
+        orders.ordersPay(database, "14", [colaSmall1, colaBig2]);
+        deepEqual(orders.ordersRead(database, "14"), []);
+        deepEqual(orders.tablesRead(database), []);
+    }
+);
+
+test(
+    "A part payment with too few portions changes nothing",
+    (): void => {
+        orders.ordersUpdate(database, "14", { add: [colaBig1, colaSmall1], remove: [] });
+        throws((): void => orders.ordersPay(database, "14", [colaSmall1, colaBig2]), /pay/);
+        deepEqual(orders.ordersRead(database, "14"), [colaBig1, colaSmall1]);
+    }
+);
+
+test(
+    "A table is moved to a free table and joined into an occupied one",
+    (): void => {
+        orders.ordersUpdate(database, "G3", { add: [colaBig2, colaSmall1], remove: [] });
+        orders.ordersUpdate(database, "14", { add: [colaBig1, redBull1], remove: [] });
+
+        orders.tableMove(database, "14", "12");
+        deepEqual(orders.ordersRead(database, "14"), []);
+        deepEqual(orders.ordersRead(database, "12"), [colaBig1, redBull1]);
+
+        orders.tableMove(database, "12", "G3");
+        deepEqual(orders.ordersRead(database, "12"), []);
+        deepEqual(orders.ordersRead(database, "G3"), [colaBig3, colaSmall1, redBull1]);
+        deepEqual(orders.tablesRead(database), ["G3"]);
+    }
+);
+
+test(
+    "A table without open orders cannot be moved",
+    (): void => {
+        orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] });
+        orders.tableClose(database, "14");
+        throws((): void => orders.tableMove(database, "14", "12"), /open/);
+    }
+);
+
+test(
+    "Mitnehmen is never a target",
+    (): void => {
+        orders.ordersUpdate(database, "14", { add: [colaBig1], remove: [] });
+        throws((): void => orders.tableMove(database, "14", "M"), /target/);
+        deepEqual(orders.ordersRead(database, "14"), [colaBig1]);
+    }
+);

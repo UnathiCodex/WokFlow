@@ -60,6 +60,36 @@ test(
 );
 
 test(
+    "A phone moves a table to another table",
+    async (): Promise<void> => {
+        await updateSend("14", { add: [colaBig2], remove: [] });
+        const moved: Response = await fetch(`${url}/tables/14/move`, {
+            method: "POST",
+            body: JSON.stringify("G3"),
+        });
+        const movedRead: Response = await fetch(`${url}/tables/G3/orders`);
+
+        deepEqual([moved.status, await moved.json()], [200, null]);
+        deepEqual(await movedRead.json(), [colaBig2]);
+    }
+);
+
+test(
+    "A phone pays part of a table",
+    async (): Promise<void> => {
+        await updateSend("14", { add: [colaBig2, redBull1], remove: [] });
+        const paid: Response = await fetch(`${url}/tables/14/pay`, {
+            method: "POST",
+            body: JSON.stringify([colaBig1]),
+        });
+        const paidRead: Response = await fetch(`${url}/tables/14/orders`);
+
+        deepEqual([paid.status, await paid.json()], [200, null]);
+        deepEqual(await paidRead.json(), [colaBig1, redBull1]);
+    }
+);
+
+test(
     "An unknown address or address outside the page folder gets status 404",
     async (): Promise<void> => {
         deepEqual(await pathSend("/../src/page/index.html"), 404);
