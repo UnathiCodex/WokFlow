@@ -34,8 +34,9 @@
     font-weight: 600;
 }
 
-/* Arrow to the right at the end of a group row */
-.menu-group::after {
+/* Arrow to the right at the end of a group row and in the corner of a window tile */
+.menu-group::after,
+.menu-open::after {
     content: "";
     width: 11px;
     height: 11px;
@@ -116,7 +117,8 @@
 }
 
 /* Chinese name smaller, on one line */
-.menu-tile .menu-chinese {
+.menu-tile .menu-chinese,
+.menu-sort .menu-chinese {
     overflow: hidden;
     font-size: 14px;
     white-space: nowrap;
@@ -132,4 +134,50 @@
     from {
         background: var(--accent-soft);
     }
+}
+
+/* Window tile: German name left, the arrow takes the top right corner */
+.menu-open .menu-german {
+    grid-column: 1;
+}
+
+/* Arrow of the window tile above the counter */
+.menu-open::after {
+    grid-area: 1 / 2;
+    justify-self: end;
+}
+
+/* Sizes of the window need no side space, the panel has it, and keep the room of four rows */
+.menu-window .menu-grid {
+    align-content: start;
+    min-height: 282px;
+    padding: 12px 0;
+}
+
+/* Sort button: German name over Chinese name */
+.menu-sort {
+    flex-direction: column;
+}
+
+/* Selected sort: bold like a selected tab */
+.menu-sort.selected {
+    font-weight: 600;
+}
+
+/* Lemon button: wide, grey while unavailable */
+.menu-lemon {
+    width: 100%;
+    min-height: 56px;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+/* Lemon button usable: rosé */
+.menu-lemon:enabled {
+    background: var(--accent-soft);
+}
+
+/* Lemon button unavailable: grey text, not the pale browser grey */
+.menu-lemon:disabled {
+    color: var(--text-muted);
 }
