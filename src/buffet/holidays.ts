@@ -1,7 +1,7 @@
 /**
  * ## Holidays
  *
- * Finds the Austrian public holidays of a year, on which the restaurant opens even on Tuesday.
+ * Finds the Austrian public holidays of a year.
  */
 
 /**
@@ -30,9 +30,10 @@ const holidaysAfterEaster: number[] = [
 ];
 
 /**
- * Finds Easter Sunday of a year by the anonymous Gregorian algorithm (Meeus/Jones/Butcher).
+ * Finds Easter Sunday of a year by the Meeus/Jones/Butcher algorithm.
  * - {@link Math.floor}: Rounds a division down, as TypeScript has no whole-number division.
- * - {@link Date.UTC}: Builds the date in UTC, so the time zone of the machine cannot shift the day.
+ * - {@link Date.UTC}: Builds the date in UTC,
+ *   so the time zone of the machine cannot shift the day.
  *
  * The letters `a` to `m` are named as in the algorithm.
  *
@@ -60,10 +61,10 @@ function easterOf(year: number): Date {
 /**
  * Finds the 13 public holidays of a year in calendar order.
  * - {@link easterOf}: Finds the Easter Sunday that the moving holidays follow.
- * - {@link Date.UTC}: Builds the date in UTC; a day beyond the end of the month rolls over to the next.
- * - {@link Date.prototype.toISOString}: Writes the date as `YYYY-MM-DD` followed by the time,
- *   which `slice` cuts off.
- * - {@link Array.prototype.sort}: Orders the dates as text, which is calendar order for `YYYY-MM-DD`.
+ * - {@link Date.UTC}: Builds the date in UTC, a day beyond the month rolls over.
+ * - {@link Date#toISOString}: Writes the date as `YYYY-MM-DD` and the time.
+ * - {@link String#slice}: Cuts off the time.
+ * - {@link Array#sort}: Orders the dates as text, which is calendar order.
  *
  * @param year - Year in the Gregorian calendar
  * @returns Dates as `YYYY-MM-DD` text

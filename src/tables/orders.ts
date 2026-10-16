@@ -190,20 +190,20 @@ export function tableClose(database: DatabaseSync, tableId: string): void {
 
 /**
  * Pays a part of a table by marking portions of its open {@link Order}s as closed.
- * Takes the oldest portions of a variant first, so the receipt follows the booking.
+ * Takes the oldest portions of a variant first.
  * All portions of one payment get the same `closed` time.
  * Pays all of it or nothing in one {@link transaction}.
  * An empty list pays nothing, the whole table is paid with {@link tableClose}.
  *
  * @param database - Open database
  * @param tableId - Table identifier
- * @param ordersPaid - Variants with the quantity to pay
+ * @param ordersToPay - Variants with the quantity to pay
  * @throws {Error} - When the table has too few open portions to pay
  */
-export function ordersPay(database: DatabaseSync, tableId: string, ordersPaid: OrderNew[]): void {
+export function ordersPay(database: DatabaseSync, tableId: string, ordersToPay: OrderNew[]): void {
     const closed: string = new Date().toISOString();
     transaction(database, (): void => {
-        ordersPaid.forEach((order: OrderNew): void => {
+        ordersToPay.forEach((order: OrderNew): void => {
             const paid: StatementResultingChanges = database.prepare(`
                 UPDATE orders
                 SET closed = ?

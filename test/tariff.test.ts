@@ -1,7 +1,7 @@
 /**
  * ## Tariff test
  *
- * Checks that the buffet is chosen by the time, the weekday and the holidays in Vienna.
+ * Checks that the buffet is chosen by the time, the weekday, the holidays in Vienna.
  *
  * - `node:test`: Runs tests and reports the results.
  * - `node:assert/strict`: Compares values exactly including types.

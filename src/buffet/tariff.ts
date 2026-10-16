@@ -1,8 +1,7 @@
 /**
  * ## Tariff
  *
- * Chooses the buffet by clock, weekday and public holiday;
- * this automatic is still a proposal of the owner.
+ * Chooses the buffet by clock, weekday, public holiday.
  *
  * - `./holidays.ts`: Finds the public holidays of a year.
  */
@@ -22,24 +21,23 @@ const buffetTimes: string[][] = [
 
 /**
  * Finds the buffet that applies at a moment, or `null` when the buffet is closed.
- * - {@link Intl.DateTimeFormat}: Writes a moment in parts, with these options:
- *   - `"en-US"`: Gives the weekday in English, `Mon` to `Sun`.
- *   - `timeZone`: `Europe/Vienna` reads the clock of the restaurant,
- *     whatever the time zone of the machine.
- *   - `year`, `month`, `day`: Give `2026`, `10` and `16`, month and day with two digits.
- *   - `weekday`: `short` gives the first three letters.
- *   - `hour`, `minute`: Give two digits each.
- *   - `hourCycle`: `h23` counts the hours 00 to 23, so midnight is not `24`.
- * - {@link Intl.DateTimeFormat.prototype.formatToParts}: Splits the moment into parts,
+ * - {@link Intl.DateTimeFormat}: Writes a moment in parts of the Vienna clock.
+ * - {@link Intl.DateTimeFormatOptions.timeZone}: `Europe/Vienna` reads the clock
+ *   of the restaurant, whatever the time zone of the machine.
+ * - {@link Intl.DateTimeFormatOptions.hourCycle}: `h23` counts the hours 00 to 23,
+ *   so midnight is not `24`.
+ * - {@link Intl.DateTimeFormat#formatToParts}: Splits the moment into parts,
  *   each with a type and a value.
  * - {@link Object.fromEntries}: Turns the parts into an object by their type.
- * - {@link holidaysOf}: Finds the holidays of the year, which open the buffet even on Tuesday.
+ * - {@link holidaysOf}: Finds the holidays of the year,
+ *   which open the buffet even on Tuesday.
  *
- * `slot` is the position in {@link buffetTimes}: 0 at midday, 1 in the evening, -1 when closed.
+ * `slot` is the position in {@link buffetTimes}:
+ * 0 at midday, 1 in the evening, -1 when closed.
  * The buffet is named as in `../catalog/buffet.ts`.
  *
  * @param time - Moment to look at
- * @returns German name of the buffet article
+ * @returns German name of the buffet article, or `null` when closed
  */
 export function buffetOf(time: Date): string | null {
     const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat("en-US", {
