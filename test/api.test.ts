@@ -11,11 +11,21 @@
 import { test, before, after, beforeEach, afterEach } from "node:test";
 import { deepEqual } from "node:assert/strict";
 import { menu } from "../src/catalog/menu.ts";
+import { jobNext, jobPrinted } from "../src/print/queue.ts";
+import { paymentAdd } from "../src/tables/payments.ts";
 import {
     database, url, pageDummyCreate, pageDummyRemove, serverStart, serverStop,
     updateSend, lockSend, pathSend, colaSmall1, colaBig1, colaBig2, redBull1,
 } from "./setup.ts";
 import type { TestContext, Mock } from "node:test";
+import type { OrderNew } from "../src/tables/orders.ts";
+import type { Payment } from "../src/tables/payments.ts";
+
+
+/**
+ * One adult at the midday buffet, which is never printed on the order ticket.
+ */
+const buffetAdult1: OrderNew = { articleId: "Mittagsbuffet", variantId: "Erwachsene", quantity: 1 };
 
 
 before(pageDummyCreate);
@@ -86,6 +96,40 @@ test(
 
         deepEqual([paid.status, await paid.json()], [200, null]);
         deepEqual(await paidRead.json(), [colaBig1, redBull1]);
+    }
+);
+
+test(
+    "An order with drinks puts one job into the print queue, a buffet order none",
+    async (): Promise<void> => {
+        await updateSend("14", { add: [buffetAdult1], remove: [] });
+        deepEqual(jobNext(database), null);
+
+        await updateSend("14", { add: [colaBig2, redBull1], remove: [] });
+        deepEqual(jobNext(database)?.id, 1);
+        jobPrinted(database, 1);
+        deepEqual(jobNext(database), null);
+    }
+);
+
+test(
+    "A phone reads the turnover and the payments of today",
+    async (): Promise<void> => {
+        await updateSend("14", { add: [colaBig2, redBull1], remove: [] });
+        await fetch(`${url}/tables/14/pay`, { method: "POST", body: JSON.stringify([colaBig1]) });
+        const cash: Payment = {
+            tableId: "14",
+            kind: "cash",
+            amount: colaBig1.price,
+            time: new Date().toISOString(),
+        };
+        paymentAdd(database, cash);
+
+        const closing: Response = await fetch(`${url}/closing`);
+        deepEqual([closing.status, await closing.json()], [
+            200,
+            { turnover: [{ tax: 20, gross: colaBig1.price }], payments: [cash] },
+        ]);
     }
 );
 

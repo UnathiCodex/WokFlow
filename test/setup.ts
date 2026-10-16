@@ -16,6 +16,8 @@ import { request } from "node:http";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { orderbookCreate } from "../src/tables/orderbook.ts";
+import { queueCreate } from "../src/print/queue.ts";
+import { paymentsCreate } from "../src/tables/payments.ts";
 import { orderOf } from "../src/tables/orders.ts";
 import { serverCreate } from "../src/server/api.ts";
 import { pageFolder } from "../src/server/page.ts";
@@ -26,13 +28,15 @@ import type { Order } from "../src/tables/orders.ts";
 
 
 /**
- * Opens an empty database in memory with the `orderbook`.
+ * Opens an empty database in memory with the `orderbook`, `print_jobs`, `payments`.
  *
  * @returns {@link DatabaseSync} connection object
  */
 export function databaseTest(): DatabaseSync {
     const database: DatabaseSync = new DatabaseSync(":memory:");
     orderbookCreate(database);
+    queueCreate(database);
+    paymentsCreate(database);
     return database;
 }
 
