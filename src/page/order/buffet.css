@@ -1,0 +1,93 @@
+/* Arrow at the end of the tariff line, points down */
+.buffet-line::after {
+    content: "";
+    width: 11px;
+    height: 11px;
+    margin-right: 4px;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(135deg);
+}
+
+/* Arrow points up while the kinds are unfolded */
+.buffet-line.open::after {
+    transform: rotate(-45deg);
+}
+
+/* Kind under the tariff line: indented, so it reads as part of the line */
+.menu-row.buffet-kind {
+    padding-left: calc(var(--inset-side) * 2);
+}
+
+/* Kind of the table is bold */
+.buffet-kind.selected {
+    font-weight: 600;
+}
+
+/* Kind that cannot be changed while persons are booked is grey */
+.buffet-kind:disabled {
+    color: var(--text-muted);
+}
+
+/* Three tiles of equal width, thin grey line below */
+.buffet-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 12px var(--inset-side);
+    border-bottom: 1px solid var(--button-line);
+}
+
+/* Tile: grey, rounded, add button and count button in the same cell on top of each other */
+.buffet-tile {
+    display: grid;
+    height: 96px;
+    border-radius: 12px;
+    background: var(--button-line);
+}
+
+/* Both buttons fill the cell without own fill, so the tile shows its colour */
+.buffet-tile > button {
+    grid-area: 1 / 1;
+    background: none;
+}
+
+/* Add button: German name over Chinese name at the bottom left */
+.buffet-add {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8px 10px;
+    font-size: 18px;
+    text-align: left;
+}
+
+/* Chinese name smaller */
+.buffet-add .buffet-chinese {
+    font-size: 14px;
+}
+
+/* Tile without a kind is grey */
+.buffet-add:disabled {
+    color: var(--text-muted);
+}
+
+/* Count: bold number in the top right corner, big tap area */
+.buffet-count {
+    align-self: start;
+    justify-self: end;
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* Empty count lets a tap through to the add button below */
+.buffet-count:disabled {
+    pointer-events: none;
+}
+
+/* Booked tile flashes soft red and fades back to grey in 150 ms, like the tiles of menu.css */
+.buffet-tile.booked {
+    animation: menu-flash 150ms;
+}
