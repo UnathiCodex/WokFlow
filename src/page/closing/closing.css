@@ -1,0 +1,63 @@
+/* Header: back button left, title beside it, thin grey line below */
+.closing-header {
+    display: flex;
+    align-items: center;
+    gap: var(--inset-side);
+    padding: 8px var(--inset-side);
+    border-bottom: 1px solid var(--button-line);
+}
+
+/* Back button: rounded, 48 px high */
+.closing-back {
+    min-height: 48px;
+    padding: 0 var(--inset-side);
+    border-radius: 12px;
+}
+
+/* Title without browser margin, semibold like the other headings */
+.closing-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* Large figure: label left, number right, thin grey line below */
+.closing-figure {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 72px;
+    margin: 0;
+    padding: 0 var(--inset-side);
+    border-bottom: 1px solid var(--button-line);
+    font-size: 20px;
+}
+
+/* Number big and bold */
+.closing-figure output {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* Lines as plain list without bullets, the only part that scrolls */
+.closing-lines {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+/* One line per white row: label left, amount right, thin grey line below */
+.closing-lines li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 0 var(--inset-side);
+    border-bottom: 1px solid var(--button-line);
+    font-size: 18px;
+}
