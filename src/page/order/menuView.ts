@@ -9,6 +9,7 @@
 
 import { panelOpen } from "../panel.ts";
 import { lineAdd, quantityOf } from "./ordered.ts";
+
 import type { Category } from "../../catalog/menu.ts";
 import type { Article, Variant } from "../../catalog/articles.ts";
 import type { GroupRow } from "./groups.ts";

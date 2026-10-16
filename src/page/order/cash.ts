@@ -31,7 +31,7 @@ export function centsOf(text: string): number | null {
 }
 
 /**
- * Puts a number key into the chosen field, in place of the selected text.
+ * Types a number key into the chosen field, in place of the selected text.
  * Backspace deletes the selected text, or the sign before the cursor.
  * - {@link HTMLInputElement#setRangeText}: Replaces a range of the text
  *   and puts the cursor behind it.

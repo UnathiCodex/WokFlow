@@ -6,7 +6,7 @@
  *
  * - `vite/client`: Vite types for type checker only with `?raw`.
  * - `../money.ts`: Shows an amount of money as euros with two decimals.
- * - `./cash.ts`: Reads a typed amount into whole cents and types a number key into a field.
+ * - `./cash.ts`: Takes the money of a cash payment: amount, money given and change.
  */
 
 /// <reference types="vite/client" />

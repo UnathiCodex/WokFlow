@@ -3,7 +3,7 @@
  *
  * Shows the buffet at the top of the food tab: the tariff line and the tiles for the persons.
  *
- * - `../../buffet/tariff.ts`: Chooses the buffet by clock, weekday and public holiday.
+ * - `../../buffet/tariff.ts`: Chooses the buffet by clock, weekday, public holiday.
  * - `./ordered.ts`: Holds the ordered list of an open table on the phone until the way back to the plan.
  */
 
