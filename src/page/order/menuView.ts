@@ -3,10 +3,12 @@
  *
  * Shows the drinks or food menu of the order screen, first its group list, then one group.
  *
+ * - `../element.ts`: Makes elements, the Chinese name and the label of both names.
  * - `../panel.ts`: A window sliding up from below, over a light veil.
  * - `./ordered.ts`: Holds the ordered list of an open table on the phone until the way back to the plan.
  */
 
+import { chineseOf, elementOf, labelOf } from "../element.ts";
 import { panelOpen } from "../panel.ts";
 import { lineAdd, quantityOf } from "./ordered.ts";
 
@@ -20,34 +22,6 @@ import type { Line, Ordered } from "./ordered.ts";
  * German names of the Cola sorts, which share one tile and one size window.
  */
 const colaSorts: string[] = ["Cola", "Cola Zero", "Cola Light"];
-
-/**
- * Makes an element with a class and its children.
- * - {@link Element#append}: Puts the children into the element, texts as text nodes.
- *
- * @param tag - Tag name, like `button`
- * @param className - Class of the element
- * @param children - Elements or texts inside the element
- * @returns The element
- */
-function elementOf(tag: string, className: string, ...children: (Node | string)[]): HTMLElement {
-    const element: HTMLElement = document.createElement(tag);
-    element.className = className;
-    element.append(...children);
-    return element;
-}
-
-/**
- * Makes the Chinese name, which the page shows grey beside or below the German name.
- *
- * @param text - Chinese name
- * @returns Span in Chinese language
- */
-function chineseOf(text: string): HTMLElement {
-    const chinese: HTMLElement = elementOf("span", "menu-chinese", text);
-    chinese.lang = "zh-Hans";
-    return chinese;
-}
 
 /**
  * Makes the picture of a {@link GroupRow}.
@@ -71,7 +45,7 @@ function pictureOf(group: GroupRow): HTMLImageElement {
  * @param counted - Tells whether a line belongs to the counter
  * @returns The quantity, or an empty text at 0
  */
-function countOf(ordered: Ordered, counted: (line: Line) => boolean): string {
+export function countOf(ordered: Ordered, counted: (line: Line) => boolean): string {
     const quantity: number = ordered.lines
         .filter(counted)
         .reduce((sum: number, line: Line): number => sum + quantityOf(line), 0);
@@ -105,15 +79,20 @@ function articlesOf(category: Category, group: GroupRow): Article[] {
 function tileOf(article: Article, variant: Variant, ordered: Ordered): HTMLElement {
     const name: { de: string; zh: string; } = variant.name ?? article.name;
     const variantId: string | null = variant.name?.de ?? null;
-    const isVariant: (line: Line) => boolean = (line: Line): boolean =>
+    const lineOfVariant: (line: Line) => boolean = (line: Line): boolean =>
         line.articleId === article.name.de && line.variantId === variantId;
 
-    const count: HTMLElement = elementOf("span", "menu-count", countOf(ordered, isVariant));
-    const tile: HTMLElement = elementOf("button", "menu-tile",
-        elementOf("span", "menu-german", name.de), chineseOf(name.zh), count);
+    const count: HTMLElement = elementOf("span", "menu-count", countOf(ordered, lineOfVariant));
+    const tile: HTMLElement = elementOf(
+        "button",
+        "menu-tile",
+        elementOf("span", "menu-german", name.de),
+        chineseOf(name.zh),
+        count,
+    );
     tile.addEventListener("click", (): void => {
         lineAdd(ordered, article.name.de, variantId);
-        count.textContent = countOf(ordered, isVariant);
+        count.textContent = countOf(ordered, lineOfVariant);
         tile.classList.add("booked");
     });
     tile.addEventListener("animationend", (): void => tile.classList.remove("booked"));
@@ -160,17 +139,17 @@ function sortsOf(articles: Article[]): Article[][] {
 /**
  * Makes the size tiles of one sort, a tap books one portion like on every {@link tileOf}.
  * - {@link Array#map}: Turns each variant into a tile.
- * - {@link Element#addEventListener}: Calls `booked` after the booking of the tile.
+ * - {@link Element#addEventListener}: Calls `bookingDone` after the booking of the tile.
  *
  * @param sort - Article of the sizes
  * @param ordered - Ordered list of the table
- * @param booked - Called after each booking
+ * @param bookingDone - Called after each booking
  * @returns Tile per variant in screen order
  */
-function sizesOf(sort: Article, ordered: Ordered, booked: () => void): HTMLElement[] {
+function sizesOf(sort: Article, ordered: Ordered, bookingDone: () => void): HTMLElement[] {
     return sort.variants.map((variant: Variant): HTMLElement => {
         const tile: HTMLElement = tileOf(sort, variant, ordered);
-        tile.addEventListener("click", booked);
+        tile.addEventListener("click", bookingDone);
         return tile;
     });
 }
@@ -194,8 +173,12 @@ function sizesOf(sort: Article, ordered: Ordered, booked: () => void): HTMLEleme
 function windowOf(sorts: Article[], ordered: Ordered, lemon: Article,
                   countShow: () => void): HTMLElement {
 
-    const lemonButton: HTMLButtonElement = elementOf("button", "menu-lemon",
-        `+ ${lemon.name.de} `, chineseOf(lemon.name.zh)) as HTMLButtonElement;
+    const lemonButton: HTMLButtonElement = elementOf(
+        "button",
+        "menu-lemon",
+        `+ ${lemon.name.de} `,
+        chineseOf(lemon.name.zh),
+    ) as HTMLButtonElement;
     lemonButton.addEventListener("click", (): void => {
         lineAdd(ordered, lemon.name.de, null);
         lemonButton.disabled = true;
@@ -203,8 +186,12 @@ function windowOf(sorts: Article[], ordered: Ordered, lemon: Article,
 
     const sizes: HTMLElement = elementOf("div", "menu-grid");
     const picks: HTMLElement[] = sorts.map((sort: Article): HTMLElement => {
-        const pick: HTMLElement = elementOf("button", "menu-pick menu-sort",
-            elementOf("span", "menu-german", sort.name.de), chineseOf(sort.name.zh));
+        const pick: HTMLElement = elementOf(
+            "button",
+            "menu-pick menu-sort",
+            elementOf("span", "menu-german", sort.name.de),
+            chineseOf(sort.name.zh),
+        );
         pick.addEventListener("click", (): void => sortShow(sort));
         return pick;
     });
@@ -221,10 +208,14 @@ function windowOf(sorts: Article[], ordered: Ordered, lemon: Article,
     };
     sortShow(sorts[0]);
 
-    return elementOf("div", "menu-window",
+    return elementOf(
+        "div",
+        "menu-window",
         elementOf("h3", "menu-names menu-heading", sorts[0].name.de, chineseOf(sorts[0].name.zh)),
         ...(sorts.length > 1 ? [elementOf("nav", "menu-bar", ...picks)] : []),
-        sizes, lemonButton);
+        sizes,
+        lemonButton,
+    );
 }
 
 /**
@@ -241,13 +232,19 @@ function windowOf(sorts: Article[], ordered: Ordered, lemon: Article,
  */
 function windowTileOf(sorts: Article[], ordered: Ordered, lemon: Article): HTMLElement {
     const articleIds: string[] = sorts.map((sort: Article): string => sort.name.de);
-    const isSort: (line: Line) => boolean = (line: Line): boolean => articleIds.includes(line.articleId);
+    const lineOfSort: (line: Line) => boolean = (line: Line): boolean =>
+        articleIds.includes(line.articleId);
 
-    const count: HTMLElement = elementOf("span", "menu-count", countOf(ordered, isSort));
-    const tile: HTMLElement = elementOf("button", "menu-tile menu-open",
-        elementOf("span", "menu-german", sorts[0].name.de), chineseOf(sorts[0].name.zh), count);
+    const count: HTMLElement = elementOf("span", "menu-count", countOf(ordered, lineOfSort));
+    const tile: HTMLElement = elementOf(
+        "button",
+        "menu-tile menu-open",
+        elementOf("span", "menu-german", sorts[0].name.de),
+        chineseOf(sorts[0].name.zh),
+        count,
+    );
     const countShow: () => void = (): void => {
-        count.textContent = countOf(ordered, isSort);
+        count.textContent = countOf(ordered, lineOfSort);
     };
     tile.addEventListener("click", (): void => panelOpen(windowOf(sorts, ordered, lemon, countShow)));
     return tile;
@@ -255,7 +252,7 @@ function windowTileOf(sorts: Article[], ordered: Ordered, lemon: Article): HTMLE
 
 /**
  * Makes the tiles of the Limonaden: a window tile per article with several variants,
- * the tile of {@link tilesOf} for an article without a choice, like Red Bull.
+ * the tile of {@link tilesOf} for an article without a choice.
  * - {@link Array#flatMap}: Turns each tile's sorts into its tiles.
  *
  * @param category - Drinks category of the menu
@@ -279,8 +276,7 @@ function windowTilesOf(category: Category, group: GroupRow, ordered: Ordered): H
  * @returns Heading button with the names of the group
  */
 function headingOf(group: GroupRow, listShow: () => void): HTMLElement {
-    const heading: HTMLElement = elementOf("button", "menu-row menu-back",
-        elementOf("span", "menu-names", group.name.de, chineseOf(group.name.zh)));
+    const heading: HTMLElement = elementOf("button", "menu-row menu-back", labelOf(group.name));
     heading.addEventListener("click", listShow);
     return heading;
 }
@@ -333,8 +329,12 @@ function groupShow(view: Element, category: Category, rows: GroupRow[], ordered:
 
     const listShow: () => void = (): void => menuShow(view, category, rows, ordered);
     const head: HTMLElement = view.id === "drinks"
-        ? barOf(rows, group, listShow, (other: GroupRow): void =>
-            groupShow(view, category, rows, ordered, other))
+        ? barOf(
+            rows,
+            group,
+            listShow,
+            (other: GroupRow): void => groupShow(view, category, rows, ordered, other),
+        )
         : headingOf(group, listShow);
 
     const tiles: HTMLElement[] = group.lists.includes("lemonades")
@@ -362,11 +362,17 @@ export function menuShow(view: Element, category: Category, rows: GroupRow[], or
     const buttons: HTMLElement[] = rows.map((group: GroupRow): HTMLElement => {
         const articleIds: string[] = articlesOf(category, group)
             .map((article: Article): string => article.name.de);
-        const button: HTMLElement = elementOf("button", "menu-row menu-group",
+        const button: HTMLElement = elementOf(
+            "button",
+            "menu-row menu-group",
             pictureOf(group),
-            elementOf("span", "menu-names", group.name.de, chineseOf(group.name.zh)),
-            elementOf("span", "menu-count",
-                countOf(ordered, (line: Line): boolean => articleIds.includes(line.articleId))));
+            labelOf(group.name),
+            elementOf(
+                "span",
+                "menu-count",
+                countOf(ordered, (line: Line): boolean => articleIds.includes(line.articleId)),
+            ),
+        );
         button.addEventListener("click", (): void => groupShow(view, category, rows, ordered, group));
         return button;
     });

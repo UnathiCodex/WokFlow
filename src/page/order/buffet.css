@@ -1,11 +1,5 @@
-/* Arrow at the end of the tariff line, points down */
+/* Arrow of the tariff line points down */
 .buffet-line::after {
-    content: "";
-    width: 11px;
-    height: 11px;
-    margin-right: 4px;
-    border-top: 2px solid currentColor;
-    border-right: 2px solid currentColor;
     transform: rotate(135deg);
 }
 
@@ -14,7 +8,7 @@
     transform: rotate(-45deg);
 }
 
-/* Kind under the tariff line: indented, so it reads as part of the line */
+/* Kind under the tariff line: indented, part of the line */
 .menu-row.buffet-kind {
     padding-left: calc(var(--inset-side) * 2);
 }
@@ -38,7 +32,7 @@
     border-bottom: 1px solid var(--button-line);
 }
 
-/* Tile: grey, rounded, add button and count button in the same cell on top of each other */
+/* Tile: grey, rounded, add and count button in one cell */
 .buffet-tile {
     display: grid;
     height: 96px;
@@ -46,7 +40,7 @@
     background: var(--button-line);
 }
 
-/* Both buttons fill the cell without own fill, so the tile shows its colour */
+/* Both buttons fill the cell with no fill of their own */
 .buffet-tile > button {
     grid-area: 1 / 1;
     background: none;
@@ -63,7 +57,7 @@
 }
 
 /* Chinese name smaller */
-.buffet-add .buffet-chinese {
+.buffet-add [lang="zh-Hans"] {
     font-size: 14px;
 }
 
@@ -87,7 +81,7 @@
     pointer-events: none;
 }
 
-/* Booked tile flashes soft red and fades back to grey in 150 ms, like the tiles of menu.css */
+/* Booked tile flashes like the tiles of menu.css */
 .buffet-tile.booked {
     animation: menu-flash 150ms;
 }

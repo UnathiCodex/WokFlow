@@ -4,10 +4,15 @@
  * Shows the buffet at the top of the food tab: the tariff line and the tiles for the persons.
  *
  * - `../../buffet/tariff.ts`: Chooses the buffet by clock, weekday, public holiday.
+ * - `../element.ts`: Makes elements, the Chinese name and the label of both names.
+ * - `./menuView.ts`: Shows the drinks or food menu of the order screen,
+ *   first its group list, then one group.
  * - `./ordered.ts`: Holds the ordered list of an open table on the phone until the way back to the plan.
  */
 
 import { buffetOf } from "../../buffet/tariff.ts";
+import { chineseOf, elementOf, labelOf } from "../element.ts";
+import { countOf } from "./menuView.ts";
 import { lineAdd, lineRemove, quantityOf } from "./ordered.ts";
 
 import type { Category } from "../../catalog/menu.ts";
@@ -27,44 +32,6 @@ const kindsChosen: WeakMap<Ordered, Article> = new WeakMap();
 const labelAdults: { de: string; zh: string; } = { de: "Buffet", zh: "自助" };
 
 /**
- * Makes an element with a class and its children.
- * - {@link Element#append}: Puts the children into the element, texts as text nodes.
- *
- * @param tag - Tag name, like `button`
- * @param className - Class of the element
- * @param children - Elements or texts inside the element
- * @returns The element
- */
-function elementOf(tag: string, className: string, ...children: (Node | string)[]): HTMLElement {
-    const element: HTMLElement = document.createElement(tag);
-    element.className = className;
-    element.append(...children);
-    return element;
-}
-
-/**
- * Makes the Chinese name, which the page shows grey beside or below the German name.
- *
- * @param text - Chinese name
- * @returns Span in Chinese language
- */
-function chineseOf(text: string): HTMLElement {
-    const chinese: HTMLElement = elementOf("span", "buffet-chinese", text);
-    chinese.lang = "zh-Hans";
-    return chinese;
-}
-
-/**
- * Makes the label of a row: the German name, the Chinese name beside it.
- *
- * @param name - German and Chinese name
- * @returns Span with both names on one line
- */
-function labelOf(name: { de: string; zh: string; }): HTMLElement {
-    return elementOf("span", "menu-names", name.de, chineseOf(name.zh));
-}
-
-/**
  * Finds the buffet kind that already has persons on the table.
  * - {@link Array#find}: Finds the first kind with persons.
  * - {@link Array#some}: Tells whether a line of the kind has persons.
@@ -73,7 +40,7 @@ function labelOf(name: { de: string; zh: string; }): HTMLElement {
  * @param ordered - Ordered list of the table
  * @returns The buffet article, or `undefined` while no person is booked
  */
-function bookedOf(kinds: Article[], ordered: Ordered): Article | undefined {
+function kindBookedOf(kinds: Article[], ordered: Ordered): Article | undefined {
     return kinds.find((kind: Article): boolean =>
         ordered.lines.some((line: Line): boolean =>
             line.articleId === kind.name.de && quantityOf(line) > 0));
@@ -86,6 +53,7 @@ function bookedOf(kinds: Article[], ordered: Ordered): Article | undefined {
  * Without a kind the tile is grey and does nothing, and so is the count at 0.
  * The add button and the count button are two buttons on top of each other,
  * since a button inside a button is not allowed.
+ * - {@link countOf}: Makes the text of the count button.
  * - {@link Array#find}: Finds the line of the tile.
  * - {@link Element#toggleAttribute}: Greys a button, or makes it work again.
  * - {@link Element#setAttribute}: Names the count button for readers of the screen.
@@ -104,7 +72,7 @@ function bookedOf(kinds: Article[], ordered: Ordered): Article | undefined {
 function tileOf(name: { de: string; zh: string; }, variantId: string, kind: Article | undefined,
                 ordered: Ordered): HTMLElement {
 
-    const isTile: (line: Line) => boolean = (line: Line): boolean =>
+    const lineOfTile: (line: Line) => boolean = (line: Line): boolean =>
         line.articleId === kind?.name.de && line.variantId === variantId;
 
     const add: HTMLElement = elementOf("button", "buffet-add", name.de, chineseOf(name.zh));
@@ -114,10 +82,8 @@ function tileOf(name: { de: string; zh: string; }, variantId: string, kind: Arti
     const tile: HTMLElement = elementOf("div", "buffet-tile", add, count);
 
     const countShow: () => void = (): void => {
-        const line: Line | undefined = ordered.lines.find(isTile);
-        const quantity: number = line === undefined ? 0 : quantityOf(line);
-        count.textContent = quantity === 0 ? "" : String(quantity);
-        count.toggleAttribute("disabled", quantity === 0);
+        count.textContent = countOf(ordered, lineOfTile);
+        count.toggleAttribute("disabled", count.textContent === "");
     };
     countShow();
 
@@ -127,7 +93,7 @@ function tileOf(name: { de: string; zh: string; }, variantId: string, kind: Arti
         tile.classList.add("booked");
     });
     count.addEventListener("click", (): void => {
-        lineRemove(ordered, ordered.lines.find(isTile) as Line);
+        lineRemove(ordered, ordered.lines.find(lineOfTile) as Line);
         countShow();
     });
     tile.addEventListener("animationend", (): void => tile.classList.remove("booked"));
@@ -144,17 +110,17 @@ function tileOf(name: { de: string; zh: string; }, variantId: string, kind: Arti
  * @param kinds - Buffet articles of the menu
  * @param kind - Buffet article of the table, `undefined` while none is chosen
  * @param locked - Tells whether the kind may not be changed
- * @param choose - Takes the kind of a tapped row as the kind of the table
+ * @param kindChoose - Takes the kind of a tapped row as the kind of the table
  * @returns One row per kind in catalog order
  */
 function rowsOf(kinds: Article[], kind: Article | undefined, locked: boolean,
-                choose: (kind: Article) => void): HTMLElement[] {
+                kindChoose: (kind: Article) => void): HTMLElement[] {
 
     return kinds.map((other: Article): HTMLElement => {
         const row: HTMLElement = elementOf("button", "menu-row buffet-kind", labelOf(other.name));
         row.classList.toggle("selected", other === kind);
         row.toggleAttribute("disabled", locked);
-        row.addEventListener("click", (): void => choose(other));
+        row.addEventListener("click", (): void => kindChoose(other));
         return row;
     });
 }
@@ -169,18 +135,21 @@ function rowsOf(kinds: Article[], kind: Article | undefined, locked: boolean,
  * @param kinds - Buffet articles of the menu
  * @param kind - Buffet article of the table, `undefined` while none is chosen
  * @param ordered - Ordered list of the table
- * @param choose - Takes the kind of a tapped row as the kind of the table
+ * @param kindChoose - Takes the kind of a tapped row as the kind of the table
  * @returns The line and the list of the kinds
  */
 function tariffOf(kinds: Article[], kind: Article | undefined, ordered: Ordered,
-                  choose: (kind: Article) => void): HTMLElement[] {
+                  kindChoose: (kind: Article) => void): HTMLElement[] {
 
-    const line: HTMLElement = elementOf("button", "menu-row buffet-line",
-        labelOf(kind?.name ?? { de: "Buffet wählen", zh: "选择自助" }));
-    const list: HTMLElement = elementOf("div", "buffet-kinds");
+    const line: HTMLElement = elementOf(
+        "button",
+        "menu-row buffet-line",
+        labelOf(kind?.name ?? { de: "Buffet wählen", zh: "选择自助" }),
+    );
+    const list: HTMLElement = document.createElement("div");
     line.addEventListener("click", (): void => {
-        const locked: boolean = bookedOf(kinds, ordered) !== undefined;
-        list.replaceChildren(...rowsOf(kinds, kind, locked, choose));
+        const locked: boolean = kindBookedOf(kinds, ordered) !== undefined;
+        list.replaceChildren(...rowsOf(kinds, kind, locked, kindChoose));
         list.hidden = !line.classList.toggle("open");
     });
     return [line, list];
@@ -208,8 +177,9 @@ export function buffetShow(container: Element, buffet: Category, ordered: Ordere
     const today: string | null = buffetOf(new Date());
     const proposal: Article | undefined =
         kinds.find((other: Article): boolean => other.name.de === today);
-    const kind: Article | undefined = bookedOf(kinds, ordered) ?? kindsChosen.get(ordered) ?? proposal;
-    const choose: (chosen: Article) => void = (chosen: Article): void => {
+    const kind: Article | undefined =
+        kindBookedOf(kinds, ordered) ?? kindsChosen.get(ordered) ?? proposal;
+    const kindChoose: (chosen: Article) => void = (chosen: Article): void => {
         kindsChosen.set(ordered, chosen);
         buffetShow(container, buffet, ordered);
     };
@@ -220,7 +190,7 @@ export function buffetShow(container: Element, buffet: Category, ordered: Ordere
         return tileOf(index === 0 ? labelAdults : name, name.de, kind, ordered);
     });
     container.replaceChildren(
-        ...tariffOf(kinds, kind, ordered, choose),
+        ...tariffOf(kinds, kind, ordered, kindChoose),
         elementOf("div", "buffet-tiles", ...tiles),
     );
 }

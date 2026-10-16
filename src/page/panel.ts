@@ -2,7 +2,12 @@
  * ## Panel
  *
  * A window sliding up from below, over a light veil.
+ *
+ * - `./element.ts`: Makes elements, the Chinese name and the label of both names.
  */
+
+import { elementOf } from "./element.ts";
+
 
 /**
  * Veil of the open panel, `null` when no panel is open.
@@ -87,17 +92,10 @@ function panelDrag(panel: HTMLElement, grab: HTMLElement): void {
  * @param content - Content of the caller, scrolls inside the panel
  */
 export function panelOpen(content: Element): void {
-    const veil: HTMLDivElement = document.createElement("div");
-    const panel: HTMLDivElement = document.createElement("div");
-    const grab: HTMLDivElement = document.createElement("div");
-    const scroll: HTMLDivElement = document.createElement("div");
-    veil.className = "panel-veil";
-    panel.className = "panel";
-    grab.className = "panel-grab";
-    scroll.className = "panel-content";
-    scroll.append(content);
-    panel.append(grab, scroll);
-    veil.append(panel);
+    const grab: HTMLElement = elementOf("div", "panel-grab");
+    const scroll: HTMLElement = elementOf("div", "panel-content", content);
+    const panel: HTMLElement = elementOf("div", "panel", grab, scroll);
+    const veil: HTMLElement = elementOf("div", "panel-veil", panel);
     document.body.append(veil);
 
     veilOpen = veil;

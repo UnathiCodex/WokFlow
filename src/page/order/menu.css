@@ -1,4 +1,4 @@
-/* Row of the group list and heading row: white, thin grey line below, content left */
+/* Group and heading row: white, grey line below, content left */
 .menu-row {
     display: flex;
     align-items: center;
@@ -18,7 +18,7 @@
     height: 32px;
 }
 
-/* German and Chinese name side by side on one line, gap keeps them apart */
+/* German and Chinese name side by side on one line */
 .menu-names {
     display: flex;
     gap: 8px;
@@ -26,7 +26,7 @@
     white-space: nowrap;
 }
 
-/* Counter field keeps its size at quantity 0, so nothing shifts when it fills */
+/* Counter keeps its size at quantity 0, so nothing shifts */
 .menu-count {
     min-width: 24px;
     min-height: 24px;
@@ -34,9 +34,10 @@
     font-weight: 600;
 }
 
-/* Arrow to the right at the end of a group row and in the corner of a window tile */
+/* Arrow to the right at the end of a row, in a tile corner */
 .menu-group::after,
-.menu-open::after {
+.menu-open::after,
+.buffet-line::after {
     content: "";
     width: 11px;
     height: 11px;
@@ -57,7 +58,7 @@
     transform: rotate(45deg);
 }
 
-/* Bar of an open drinks group stays at the top while the articles scroll */
+/* Bar of the open drinks group stays on top while scrolling */
 .menu-bar {
     display: flex;
     position: sticky;
@@ -66,7 +67,7 @@
     background: var(--background);
 }
 
-/* Bar buttons equally wide, picture or arrow in the middle, no fill */
+/* Bar buttons equally wide, picture or arrow centred, no fill */
 .menu-pick {
     display: flex;
     flex: 1;
@@ -97,7 +98,7 @@
     font-weight: 600;
 }
 
-/* Tile: grey, rounded, German name on top, Chinese name and counter below */
+/* Tile: grey, rounded, German name over Chinese name, counter */
 .menu-tile {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -117,14 +118,14 @@
 }
 
 /* Chinese name smaller, on one line */
-.menu-tile .menu-chinese,
-.menu-sort .menu-chinese {
+.menu-tile [lang="zh-Hans"],
+.menu-sort [lang="zh-Hans"] {
     overflow: hidden;
     font-size: 14px;
     white-space: nowrap;
 }
 
-/* Booked tile flashes soft red and fades back to grey in 150 ms */
+/* Booked tile flashes soft red, fades back to grey in 150 ms */
 .menu-tile.booked {
     animation: menu-flash 150ms;
 }
@@ -136,7 +137,7 @@
     }
 }
 
-/* Window tile: German name left, the arrow takes the top right corner */
+/* Window tile: German name left, arrow in the top right corner */
 .menu-open .menu-german {
     grid-column: 1;
 }
@@ -147,7 +148,7 @@
     justify-self: end;
 }
 
-/* Sizes of the window need no side space, the panel has it, and keep the room of four rows */
+/* Window sizes: panel gives the side space, four rows high */
 .menu-window .menu-grid {
     align-content: start;
     min-height: 282px;
@@ -177,7 +178,7 @@
     background: var(--accent-soft);
 }
 
-/* Lemon button unavailable: grey text, not the pale browser grey */
+/* Lemon button unavailable: grey text, not pale browser grey */
 .menu-lemon:disabled {
     color: var(--text-muted);
 }
