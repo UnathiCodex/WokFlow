@@ -1,0 +1,39 @@
+<!-- Cash window above the order screen, shown while a cash payment is taken -->
+<dialog class="cash">
+    <!-- Amount to pay, prefilled and selected, so the first typed key replaces it -->
+    <label class="cash-field">
+        <span>Betrag <span lang="zh-Hans">金额</span></span>
+        <input class="cash-amount" inputmode="none">
+    </label>
+
+    <!-- Money given by the guest, empty until typed -->
+    <label class="cash-field">
+        <span>Gegeben <span lang="zh-Hans">已收</span></span>
+        <input class="cash-given" inputmode="none">
+    </label>
+
+    <!-- Change, empty while the money given is missing or below the amount -->
+    <p class="cash-change">
+        <span>Rückgeld <span lang="zh-Hans">找零</span></span>
+        <output class="cash-change-value"></output>
+    </p>
+
+    <!-- Number keys, they type into the chosen field -->
+    <div class="cash-keys">
+        <button data-key="1">1</button>
+        <button data-key="2">2</button>
+        <button data-key="3">3</button>
+        <button data-key="4">4</button>
+        <button data-key="5">5</button>
+        <button data-key="6">6</button>
+        <button data-key="7">7</button>
+        <button data-key="8">8</button>
+        <button data-key="9">9</button>
+        <button data-key=".">.</button>
+        <button data-key="0">0</button>
+        <button class="cash-back" data-key="back" aria-label="Löschen 删除"></button>
+    </div>
+
+    <!-- Ends the cash payment, works with any input -->
+    <button class="cash-finish">Abschließen <span lang="zh-Hans">完成</span></button>
+</dialog>

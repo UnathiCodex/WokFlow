@@ -1,0 +1,121 @@
+/* Cash window fills the phone, white, no frame; flex only while open */
+.cash[open] {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 16px var(--inset-side);
+    border: 0;
+    background: var(--background);
+    color: var(--text-main);
+    font-size: 20px;
+}
+
+/* For device with mouse: fixed developing phone size in the middle */
+@media (pointer: fine) {
+    .cash[open] {
+        width: 360px;
+        height: 740px;
+        margin: auto;
+    }
+}
+
+/* Field: white row with thin grey line, label left, number right */
+.cash-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    padding: 0 var(--inset-side);
+    border: 1px solid var(--button-line);
+    border-radius: 12px;
+}
+
+/* Chosen field in rosé, the keys type into it */
+.cash-field:focus-within {
+    background: var(--accent-soft);
+}
+
+/* Number: big bold, right aligned, no frame, no own focus ring */
+.cash-field input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    font: inherit;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: right;
+    color: inherit;
+}
+
+/* Change line as high as a field, label left, change right */
+.cash-change {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 64px;
+    margin: 0;
+    padding: 0 var(--inset-side);
+}
+
+/* Change big and bold like the numbers of the fields */
+.cash-change-value {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* Number keys in three columns, rows share the free height, at least 64 px */
+.cash-keys {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(64px, 1fr);
+    gap: 8px;
+}
+
+/* Key: rounded, big bold digit */
+.cash-keys button {
+    border-radius: 12px;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* Backspace key: line and arrowhead meet in the middle of the key */
+.cash-back {
+    display: grid;
+    place-items: center;
+}
+
+/* Backspace line, drawn because the font has no such sign */
+.cash-back::before {
+    content: "";
+    grid-area: 1 / 1;
+    width: 24px;
+    border-top: 3px solid currentColor;
+}
+
+/* Backspace arrowhead at the left end of the line */
+.cash-back::after {
+    content: "";
+    grid-area: 1 / 1;
+    width: 14px;
+    height: 14px;
+    border-bottom: 3px solid currentColor;
+    border-left: 3px solid currentColor;
+    transform: translateX(-9px) rotate(45deg);
+}
+
+/* Finish button: full width, taller and bigger than the keys */
+.cash-finish {
+    min-height: 72px;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: 600;
+}
