@@ -1,0 +1,57 @@
+/* Body is the frame of veil and panel, so they stay inside it on the PC */
+body {
+    position: relative;
+}
+
+/* Light veil over the screen, cuts off the panel while it slides in */
+.panel-veil {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--text-main) 15%, transparent);
+}
+
+/* Panel slides up from below */
+@keyframes panel-up {
+    from {
+        transform: translateY(100%);
+    }
+}
+
+/* White panel at the bottom, rounded top, at most four fifths of the screen */
+.panel {
+    display: flex;
+    flex-direction: column;
+    max-height: 80%;
+    padding: 0 var(--inset-side) var(--inset-side);
+    border-radius: 16px 16px 0 0;
+    background: var(--background);
+    animation: panel-up 150ms ease-out;
+}
+
+/* Grab bar: big touch area, the browser does not scroll while dragging */
+.panel-grab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 44px;
+    touch-action: none;
+}
+
+/* Grey line in the middle of the grab bar */
+.panel-grab::before {
+    content: "";
+    width: 40px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--button-line);
+}
+
+/* Content scrolls inside the panel without scrollbar */
+.panel-content {
+    overflow-y: auto;
+    scrollbar-width: none;
+}
