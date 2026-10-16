@@ -1,7 +1,7 @@
 <!-- Voucher window above the order screen, shown while a voucher is credited -->
-<dialog class="voucher">
+<dialog class="voucher keypad">
     <!-- Value of the voucher, empty and chosen when the window opens -->
-    <label class="voucher-field">
+    <label class="keypad-field">
         <span>Gutschein <span lang="zh-Hans">代金券</span></span>
         <input class="voucher-value" inputmode="none">
     </label>
@@ -14,7 +14,7 @@
     </p>
 
     <!-- Number keys, they type into the value -->
-    <div class="voucher-keys">
+    <div class="keypad-keys">
         <button data-key="1">1</button>
         <button data-key="2">2</button>
         <button data-key="3">3</button>
@@ -26,7 +26,7 @@
         <button data-key="9">9</button>
         <button data-key=".">.</button>
         <button data-key="0">0</button>
-        <button class="voucher-back" data-key="back" aria-label="Löschen 删除"></button>
+        <button class="keypad-back" data-key="back" aria-label="Löschen 删除"></button>
     </div>
 
     <!-- Credits the voucher, works only with a value above 0 -->

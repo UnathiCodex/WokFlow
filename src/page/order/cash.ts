@@ -19,9 +19,9 @@ import { money } from "../money.ts";
  * - {@link String#replace}: Turns the comma into a dot.
  * - {@link String#match}: Splits the text into euros and cents,
  *   gives `null` when it is no amount.
- * - {@link String#padEnd}: Makes the cents `70` of the decimals `7`.
+ * - {@link String#padEnd}: Fills the decimals with zeros up to two.
  *
- * @param text - Typed text, like `60`, `59.7`, `59.70` or `59,70`
+ * @param text - Typed text
  * @returns Amount in whole cents, `null` when the text is no amount
  */
 export function centsOf(text: string): number | null {
@@ -42,7 +42,7 @@ export function centsOf(text: string): number | null {
  * @param field - Chosen field
  * @param key - Digit or `.`, or `back` for backspace
  */
-export function keyType(field: HTMLInputElement, key: string): void {
+function keyType(field: HTMLInputElement, key: string): void {
     const start: number = field.selectionStart ?? 0;
     const end: number = field.selectionEnd ?? 0;
     if (key === "back")
@@ -54,14 +54,34 @@ export function keyType(field: HTMLInputElement, key: string): void {
 }
 
 /**
+ * Lets the number keys of a window type into its chosen field
+ * and removes the window when it closes.
+ * - {@link keyType}: Types the key into the chosen field.
+ * - `click`: Fires on a number key, then types its `data-key`.
+ * - `keydown`: Stopped at the window, so the Escape that closes it
+ *   does not leave the screen below.
+ * - `close`: Fires on every close, then removes the window.
+ *
+ * @param dialog - Window with the number keys
+ * @param field - Gives the chosen field when a key is clicked
+ */
+export function keysStart(dialog: HTMLDialogElement, field: () => HTMLInputElement): void {
+    dialog.querySelectorAll("[data-key]").forEach((key: Element): void => {
+        key.addEventListener("click", (): void => keyType(field(), key.getAttribute("data-key") ?? ""));
+    });
+
+    dialog.addEventListener("keydown", (event: KeyboardEvent): void => event.stopPropagation());
+    dialog.addEventListener("close", (): void => dialog.remove());
+}
+
+/**
  * Opens the cash window above the current screen and removes it when it closes.
  * The amount is filled with the amount due and selected, so the first key replaces it.
  * Escape closes the window and nothing happens, Abschließen closes it and calls `done`.
  * Loads the HTML only now, since the test of {@link centsOf} imports this file without Vite.
  * - `import()`: Loads `cash.html` as text, packed into built code by Vite.
  * - {@link Element#insertAdjacentHTML}: Puts the window at the end of the body.
- * - {@link Number#toFixed}: Writes `cents / 100` with two decimals and a dot,
- *   so `2790` becomes `27.90`.
+ * - {@link Number#toFixed}: Writes `cents / 100` with two decimals and a dot.
  * - {@link HTMLDialogElement#showModal}: Opens the dialog above the page,
  *   Escape closes only the dialog.
  * - {@link HTMLInputElement#select}: Selects the whole text of the amount.
@@ -69,11 +89,10 @@ export function keyType(field: HTMLInputElement, key: string): void {
  *   then shows the change: money given minus amount, empty while one of them
  *   is no amount or the money given is below the amount.
  * - `focusin`: Fires when a field is tapped, then the number keys type into it.
- * - `keydown`: Stopped at the window, so the Escape that closes it
- *   does not leave the screen below.
- * - `close`: Fires on every close, then removes the window.
+ * - {@link keysStart}: Types the number keys into the chosen field,
+ *   stops the Escape that closes the window, removes the window when it closes.
  *
- * @param due - Amount due in whole cents, like `2790`
+ * @param due - Amount due in whole cents
  * @param done - Called after Abschließen
  * @throws {Error} - When the HTML of the window cannot be loaded
  */
@@ -101,15 +120,10 @@ export async function cashOpen(due: number, done: () => void): Promise<void> {
         if (event.target instanceof HTMLInputElement) field = event.target;
     });
 
-    dialog.querySelectorAll("[data-key]").forEach((key: Element): void => {
-        key.addEventListener("click", (): void => keyType(field, key.getAttribute("data-key") ?? ""));
-    });
+    keysStart(dialog, (): HTMLInputElement => field);
 
     dialog.querySelector(".cash-finish")?.addEventListener("click", (): void => {
         dialog.close();
         done();
     });
-
-    dialog.addEventListener("keydown", (event: KeyboardEvent): void => event.stopPropagation());
-    dialog.addEventListener("close", (): void => dialog.remove());
 }

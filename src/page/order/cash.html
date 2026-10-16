@@ -1,13 +1,13 @@
 <!-- Cash window above the order screen, shown while a cash payment is taken -->
-<dialog class="cash">
+<dialog class="cash keypad">
     <!-- Amount to pay, prefilled and selected, so the first typed key replaces it -->
-    <label class="cash-field">
+    <label class="keypad-field">
         <span>Betrag <span lang="zh-Hans">金额</span></span>
         <input class="cash-amount" inputmode="none">
     </label>
 
     <!-- Money given by the guest, empty until typed -->
-    <label class="cash-field">
+    <label class="keypad-field">
         <span>Gegeben <span lang="zh-Hans">已收</span></span>
         <input class="cash-given" inputmode="none">
     </label>
@@ -19,7 +19,7 @@
     </p>
 
     <!-- Number keys, they type into the chosen field -->
-    <div class="cash-keys">
+    <div class="keypad-keys">
         <button data-key="1">1</button>
         <button data-key="2">2</button>
         <button data-key="3">3</button>
@@ -31,7 +31,7 @@
         <button data-key="9">9</button>
         <button data-key=".">.</button>
         <button data-key="0">0</button>
-        <button class="cash-back" data-key="back" aria-label="Löschen 删除"></button>
+        <button class="keypad-back" data-key="back" aria-label="Löschen 删除"></button>
     </div>
 
     <!-- Ends the cash payment, works with any input -->

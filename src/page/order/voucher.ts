@@ -11,7 +11,7 @@
 
 /// <reference types="vite/client" />
 import { money } from "../money.ts";
-import { centsOf, keyType } from "./cash.ts";
+import { centsOf, keysStart } from "./cash.ts";
 
 
 /**
@@ -25,7 +25,7 @@ import { centsOf, keyType } from "./cash.ts";
  * - {@link money}: Shows the amount as euros.
  *
  * @param dialog - Voucher window
- * @param due - Amount due in whole cents, like `2790`
+ * @param due - Amount due in whole cents
  * @param cents - Voucher value in whole cents, `0` while nothing valid is typed
  */
 function restShow(dialog: HTMLDialogElement, due: number, cents: number): void {
@@ -49,12 +49,11 @@ function restShow(dialog: HTMLDialogElement, due: number, cents: number): void {
  * - {@link centsOf}: Reads the typed value, a text that is no amount counts as 0.
  * - `input`: Fires on every change of the value, typed, pasted or by number key,
  *   then shows the rest line.
- * - `keydown`: Stopped at the window, so the Escape that closes it
- *   does not leave the screen below.
- * - `close`: Fires on every close, then removes the window.
+ * - {@link keysStart}: Types the number keys into the value,
+ *   stops the Escape that closes the window, removes the window when it closes.
  *
- * @param due - Amount due in whole cents, like `2790`
- * @param credit - Called after Anrechnen with the voucher value in whole cents, like `3000`
+ * @param due - Amount due in whole cents
+ * @param credit - Called after Anrechnen with the voucher value in whole cents
  * @throws {Error} - When the HTML of the window cannot be loaded
  */
 export async function voucherOpen(due: number, credit: (cents: number) => void): Promise<void> {
@@ -72,15 +71,10 @@ export async function voucherOpen(due: number, credit: (cents: number) => void):
         restShow(dialog, due, cents);
     });
 
-    dialog.querySelectorAll("[data-key]").forEach((key: Element): void => {
-        key.addEventListener("click", (): void => keyType(value, key.getAttribute("data-key") ?? ""));
-    });
+    keysStart(dialog, (): HTMLInputElement => value);
 
     dialog.querySelector(".voucher-credit")?.addEventListener("click", (): void => {
         dialog.close();
         credit(cents);
     });
-
-    dialog.addEventListener("keydown", (event: KeyboardEvent): void => event.stopPropagation());
-    dialog.addEventListener("close", (): void => dialog.remove());
 }
