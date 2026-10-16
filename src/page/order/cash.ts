@@ -42,7 +42,7 @@ export function centsOf(text: string): number | null {
  * @param field - Chosen field
  * @param key - Digit or `.`, or `back` for backspace
  */
-function keyType(field: HTMLInputElement, key: string): void {
+export function keyType(field: HTMLInputElement, key: string): void {
     const start: number = field.selectionStart ?? 0;
     const end: number = field.selectionEnd ?? 0;
     if (key === "back")

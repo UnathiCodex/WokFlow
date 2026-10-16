@@ -1,0 +1,34 @@
+<!-- Voucher window above the order screen, shown while a voucher is credited -->
+<dialog class="voucher">
+    <!-- Value of the voucher, empty and chosen when the window opens -->
+    <label class="voucher-field">
+        <span>Gutschein <span lang="zh-Hans">代金券</span></span>
+        <input class="voucher-value" inputmode="none">
+    </label>
+
+    <!-- Amount due minus the value, Gutscheinrest in place of Rest when the value is higher -->
+    <p class="voucher-rest">
+        <span class="voucher-rest-text">Rest <span lang="zh-Hans">剩余</span></span>
+        <span class="voucher-excess-text">Gutscheinrest <span lang="zh-Hans">代金券余额</span></span>
+        <output class="voucher-rest-value"></output>
+    </p>
+
+    <!-- Number keys, they type into the value -->
+    <div class="voucher-keys">
+        <button data-key="1">1</button>
+        <button data-key="2">2</button>
+        <button data-key="3">3</button>
+        <button data-key="4">4</button>
+        <button data-key="5">5</button>
+        <button data-key="6">6</button>
+        <button data-key="7">7</button>
+        <button data-key="8">8</button>
+        <button data-key="9">9</button>
+        <button data-key=".">.</button>
+        <button data-key="0">0</button>
+        <button class="voucher-back" data-key="back" aria-label="Löschen 删除"></button>
+    </div>
+
+    <!-- Credits the voucher, works only with a value above 0 -->
+    <button class="voucher-credit">Anrechnen <span lang="zh-Hans">抵扣</span></button>
+</dialog>
